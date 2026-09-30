@@ -158,7 +158,7 @@ Then, in a browser:
 | Links on tags still point at localhost | `NEXT_PUBLIC_SITE_URL` left at the default | set it, redeploy |
 | `/record/...` shows "no record" (404 page) | `code` in `data/records.json` does not match the tag's `record` value | `npm run publish` lists orphans |
 | Tag opens the site but not a record | tag's URL has no `/t/`, or the code is not in `data/tags.json` | rewrite the tag / add the row |
-| Claim succeeds but `/collection` is empty | store not configured (`file` on Vercel), or you signed in with a different email | connect Upstash, `PASSPORT_STORE=kv`; use the claiming email |
+| Claim succeeds but `/collection` is empty | the browser did not keep the held-passport cookie (private window, cleared storage, or another device) | open that passport's verification link on the device and press "Save to my collection" |
 | In-page "Start reading" button missing | browser is not Android Chrome, or the origin is not HTTPS | expected — use the camera or the QR |
 | Passport id verifies but "signature only" | store is `file` on Vercel, or the Redis env vars are missing on that deployment | connect Upstash, redeploy |
 | `npm run record:svg` exits 1 | a trait label would reach its value, or the copy overruns the footer | shorten the value in `data/records.json`; the message names the row |
@@ -170,3 +170,35 @@ Everything a tag can reach is public: `data/records.json`, `data/tags.json` and
 price, a full address or anything a maker did not agree to publish in those
 files. `data/passports.json` holds holder names and emails — gitignore it if the
 repo is not private.
+
+Writing a passport is public by design: anyone can open `/record/<CODE>` and
+claim one, up to the record's `supply`. Reading the register and the traffic
+numbers is not: `/api/passports` returns counts only unless a request carries
+`Authorization: Bearer $PASSPORT_ADMIN_TOKEN`, and `/insights` is behind the same
+token. Both are `no-store`, and `/insights` carries `noindex`.
+
+## 10. Traffic numbers on your own page (optional)
+
+Vercel's Web Analytics collects visits as soon as it is switched on for the
+project; `/insights` reads them back through the public Web Analytics API
+(available since May 2026), so the programme's own page can show "how many people
+read the cloth this week" with no second tracker and no cookie of ours.
+
+1. Vercel → **Project → Analytics** → enable **Web Analytics**.
+2. Create an access token: **vercel.com/account/tokens**.
+3. Copy the project id: **Project → Settings → General → Project ID**.
+4. Add environment variables (Production + Preview), then redeploy:
+
+   | name | value |
+   | --- | --- |
+   | `VERCEL_ANALYTICS_TOKEN` | the token from step 2 |
+   | `VERCEL_PROJECT_ID` | the id from step 3 |
+   | `VERCEL_TEAM_ID` *or* `VERCEL_TEAM_SLUG` | only for a team project |
+   | `PASSPORT_ADMIN_TOKEN` | any long random string, gates `/insights` |
+
+5. Open `https://<domain>/api/admin?key=<PASSPORT_ADMIN_TOKEN>` once. It sets a
+   signed cookie and sends you to `/insights`; bookmark `/insights` after that.
+
+Two things the numbers do and do not cover: they are **production only**, and the
+range you can ask for is capped by your plan's reporting window. The page says so
+on screen instead of showing a bare total.

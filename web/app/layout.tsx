@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo_Narrow, Caveat, Hanken_Grotesk } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import { ScrollThread } from "@/components/motif/scroll-thread";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { ThreadCursor } from "@/components/motif/thread-cursor";
@@ -47,6 +48,7 @@ export default function RootLayout({
                 }}
             >
                 <SmoothScroll />
+                                <Analytics />
                 <ScrollThread />
                 <ThreadCursor />
                 {children}

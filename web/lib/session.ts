@@ -21,6 +21,7 @@ import type { Identity } from "@/lib/types";
  */
 
 const SESSION_COOKIE = "dpp_session";
+const ADMIN_COOKIE = "dpp_admin";
 const HELD_COOKIE = "dpp_held";
 const MAX_AGE = 60 * 60 * 24 * 180;
 const MAX_HELD = 200;
@@ -84,6 +85,7 @@ function cookieOptions() {
 }
 
 export const sessionCookieName = SESSION_COOKIE;
+export const adminCookieName = ADMIN_COOKIE;
 export const heldCookieName = HELD_COOKIE;
 
 /* ─────────────────────────── the session ─────────────────────────── */
@@ -165,6 +167,50 @@ export async function holdPassports(ids: string[]) {
 export async function setSession(identity: Identity) {
     const jar = await cookies();
     jar.set(SESSION_COOKIE, encodeIdentity(identity), cookieOptions());
+}
+
+/* ─────────────────────────── the programme team ─────────────────────────── */
+
+/** Constant-time compare against PASSPORT_ADMIN_TOKEN. */
+export function adminKeyMatches(presented: string | undefined): boolean {
+    const expected = process.env.PASSPORT_ADMIN_TOKEN;
+    if (!expected || !presented) return false;
+    const a = Buffer.from(presented);
+    const b = Buffer.from(expected);
+    return a.length === b.length && timingSafeEqual(a, b);
+}
+
+export function adminConfigured() {
+    return Boolean(process.env.PASSPORT_ADMIN_TOKEN);
+}
+
+/** A signed cookie, so the key does not have to stay in the URL or a bookmark. */
+export async function setAdminSession() {
+    const jar = await cookies();
+    const signature = mac("admin", "team");
+    if (!signature) {
+        throw new Error(
+            "PASSPORT_SIGNING_SECRET is not set, so the admin session cannot be signed.",
+        );
+    }
+    jar.set(ADMIN_COOKIE, `team.${signature}`, cookieOptions());
+}
+
+export async function isAdminSession(): Promise<boolean> {
+    const jar = await cookies();
+    const token = jar.get(ADMIN_COOKIE)?.value;
+    const [payload, signature] = (token ?? "").split(".");
+    if (payload !== "team" || !signature) return false;
+    const expected = mac("admin", payload);
+    if (!expected) return false;
+    const a = Buffer.from(signature);
+    const b = Buffer.from(expected);
+    return a.length === b.length && timingSafeEqual(a, b);
+}
+
+export async function clearAdminSession() {
+    const jar = await cookies();
+    jar.delete(ADMIN_COOKIE);
 }
 
 export async function clearSession() {
