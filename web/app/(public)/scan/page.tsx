@@ -1,10 +1,15 @@
 import Link from "next/link";
-import { collections, originCount, records } from "@/lib/records";
+import { attr, clothName, collections, formatPlace, getRecord, originCount, records, recordThumb } from "@/lib/records";
 import { t } from "@/lib/copy";
 import { TagLookupForm } from "@/components/nfc/tag-lookup-form";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { WarpField } from "@/components/motif/marks";
+import { TapDemo } from "@/components/nfc/tap-demo";
+import { catalogueNumber } from "@/components/records/RecordCard";
+
+/* the cloth on the table in the demonstration: a bold, square-friendly ikat */
+const DEMO_CODE = "07/TM";
 
 export const metadata = { title: "How it works" };
 
@@ -59,6 +64,7 @@ const FAQ = [
 /* How to explore the collection: the code box first — someone here usually
    has a label in front of them — then the four steps and the questions. */
 export default function ScanPage() {
+    const demo = getRecord(DEMO_CODE) ?? records[0];
     return (
         <>
             <PageHeader
@@ -71,8 +77,23 @@ export default function ScanPage() {
                 lead={`${records.length} cloths across ${collections.length} collections, woven in ${originCount} places across Indonesia. One page per weave.`}
             />
 
-            {/* the tool first */}
-            <section className="container-x mt-10">
+            {/* try the tap before standing in front of a cloth */}
+            {demo && (
+                <section className="container-x mt-10">
+                    <TapDemo
+                        cloth={{
+                            code: demo.code,
+                            number: catalogueNumber(demo.code),
+                            name: clothName(demo),
+                            origin: formatPlace(attr(demo, "Origin")) || (demo.collection ?? ""),
+                            photo: recordThumb(demo),
+                        }}
+                    />
+                </section>
+            )}
+
+            {/* no tag, or a phone that will not read one: the code works too */}
+            <section className="container-x mt-8">
                 <div className="card-stock relative overflow-hidden p-6 sm:p-10">
                     <WarpField className="pointer-events-none absolute inset-0 h-full w-full text-ink/[.05]" />
                     <div aria-hidden className="stitch absolute inset-x-5 top-3.5" />

@@ -7,9 +7,9 @@ import { heldIds } from "@/lib/session";
 import { safeDecode } from "@/lib/safe";
 import { PassportLeaf } from "@/components/passport/passport-leaf";
 import { HoldButton } from "@/components/passport/hold-button";
+import { LightTable } from "@/components/passport/light-table";
 import { Badge } from "@/components/ui/badge";
 import { t } from "@/lib/copy";
-import { Check, X } from "lucide-react";
 import type { Passport } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -66,8 +66,10 @@ export default async function VerifyPage({
 
     return (
         <>
-            <section className="bg-ink text-white" data-theme="dark">
-                <div className="container-x grid grid-cols-1 gap-10 py-12 sm:py-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-center lg:gap-16">
+            {/* the check, on paper: the register's stamp struck on the page, and
+                the certificate laid on a light table to show its watermark */}
+            <section className="stamp-thud">
+                <div className="container-x grid grid-cols-1 gap-10 pt-10 pb-6 sm:pt-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] lg:items-center lg:gap-16">
                     <div>
                         <div className="flex flex-wrap items-center gap-3">
                             <span className="eyebrow">{t.verifyEyebrow}</span>
@@ -75,44 +77,30 @@ export default async function VerifyPage({
                                 {revoked ? "Revoked" : stored ? t.verifyStored : t.verifySignature}
                             </Badge>
                         </div>
-                        <div className="mt-6 flex items-center gap-5">
-                            <span
-                                aria-hidden
-                                className={`grid h-16 w-16 shrink-0 place-items-center rounded-full sm:h-20 sm:w-20 ${
-                                    revoked
-                                        ? "shadow-[inset_0_0_0_2px_rgba(255,255,255,.4)]"
-                                        : "bg-salmon text-ink"
-                                }`}
-                            >
-                                {revoked ? (
-                                    <X className="h-8 w-8" strokeWidth={1.75} />
-                                ) : (
-                                    <Check className="h-9 w-9" strokeWidth={2} />
-                                )}
-                            </span>
-                            <h1 className="t-hero text-white [--hero-size:clamp(3rem,12vw,6.5rem)]">
-                                {revoked ? "Revoked." : "Genuine."}
-                            </h1>
-                        </div>
-                        <p className="read mt-6 max-w-[48ch] text-[18px] leading-relaxed text-white/75 sm:text-[20px]">
+                        <h1 className={`stamp stamp-big mt-8 ${revoked ? "stamp-ink" : ""}`}>
+                            {revoked ? "Revoked" : "Genuine"}
+                        </h1>
+                        <p className="read mt-8 max-w-[48ch] text-[18px] leading-relaxed text-ink-2 sm:text-[20px]">
                             {revoked ? (
                                 <>
                                     This certificate was issued for{" "}
-                                    <span className="text-white">{cloth}</span>, but it no
+                                    <span className="text-ink">{cloth}</span>, but it no
                                     longer stands.
                                 </>
                             ) : (
                                 <>
                                     Issued by Tracing Weavers to{" "}
-                                    <span className="text-white">{passport.holder}</span> for{" "}
-                                    <span className="text-salmon">{cloth}</span> on {issuedOn}.
+                                    <span className="font-script text-[1.45em] leading-none text-ink">{passport.holder}</span> for{" "}
+                                    <span className="text-bt-red">{cloth}</span> on {issuedOn}.
                                 </>
                             )}
                         </p>
-                        <p className="data mt-4 text-white/60">{passport.id}</p>
+                        <p className="data mt-4 text-ink-3">{passport.id}</p>
                     </div>
 
-                    <PassportLeaf passport={passport} record={record} className="mx-auto max-w-sm lg:max-w-none" />
+                    <LightTable id={passport.id} className="mx-auto w-full max-w-sm lg:max-w-none">
+                        <PassportLeaf passport={passport} record={record} />
+                    </LightTable>
                 </div>
             </section>
 

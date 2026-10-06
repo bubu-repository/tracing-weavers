@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 import type { Passport } from "@/lib/types";
 
+/* the cloths bound into the sample book */
+const SPECIMEN_CODES = ["07/TM", "14/GW", "05/GW"];
+
 export const dynamic = "force-dynamic";
 
 export const metadata = { title: "Traces" };
@@ -51,13 +54,26 @@ export default async function CollectionPage() {
     );
 
     if (!identity) {
+        /* a book to turn before there is one of your own: real cloths, a
+           placeholder name, SPECIMEN where the ids would be */
+        const sample: Passport[] = SPECIMEN_CODES.map((code, i) => ({
+            id: `SPECIMEN-${i + 1}`,
+            code,
+            holder: "Your name here",
+            issuedAt: "2026-09-24T09:00:00.000Z",
+            serial: 1,
+            status: "issued" as const,
+        })).filter((p) => records.some((r) => r.code === p.code));
         return (
             <>
                 <PageHeader
                     eyebrow="Traces"
                     title="Your book of traces."
-                    lead="Every cloth you claim becomes a page in it — the photograph, the cloth's data, and a certificate in your name that anyone can check."
+                    lead="Every cloth you claim becomes a page in it — the photograph, the cloth's data, and a certificate in your name that anyone can check. Here is a sample: drag a page to turn it."
                 />
+                <div className="mt-10">
+                    <PassportShelf issued={sample} records={records} specimen />
+                </div>
                 <div className="container-x mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center">
                     <div className="flex flex-wrap gap-3">
                         <Button asChild size="lg">

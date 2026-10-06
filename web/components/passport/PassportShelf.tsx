@@ -34,14 +34,19 @@ export function PassportShelf({
     issued,
     records,
     emptyState,
+    specimen = false,
 }: {
     issued: Passport[];
     records: ProductRecord[];
     emptyState?: ReactNode;
+    /** a sample book for someone signed out: marked, without the list, and
+        never mixed with certificates this browser happens to hold */
+    specimen?: boolean;
 }) {
     const [merged, setMerged] = useState<Passport[]>(issued);
 
     useEffect(() => {
+        if (specimen) return;
         const byId = new Map<string, Passport>();
         for (const passport of [...issued, ...readLocalPassports()]) {
             byId.set(passport.id, passport);
@@ -49,7 +54,7 @@ export function PassportShelf({
         setMerged(
             [...byId.values()].sort((a, b) => (a.issuedAt < b.issuedAt ? 1 : -1)),
         );
-    }, [issued]);
+    }, [issued, specimen]);
 
     if (!merged.length) return <>{emptyState ?? null}</>;
 
@@ -128,6 +133,7 @@ export function PassportShelf({
             content: (
                 <PassportLeaf
                     fill
+                    specimen={specimen}
                     passport={passport}
                     record={records.find((r) => r.code === passport.code)}
                 />
@@ -195,7 +201,10 @@ export function PassportShelf({
     return (
         <div className="space-y-12">
             {/* the book lies on the gallery wall */}
-            <div className="bg-ink py-10 sm:py-14" data-theme="dark">
+            <div className="relative bg-ink py-10 sm:py-14" data-theme="dark">
+                {specimen && (
+                    <span className="stamp absolute top-5 right-5 z-10 text-[13px] sm:top-8 sm:right-10">Specimen</span>
+                )}
                 <div className="container-x">
                     <div className="mx-auto max-w-sm sm:max-w-3xl">
                         <PassportBook
@@ -211,6 +220,7 @@ export function PassportShelf({
             {/* The same certificates as a plain list: quicker than turning
                 pages to find one, and the book's pages are hidden from screen
                 readers except the spread that is open. */}
+            {!specimen && (
             <section aria-labelledby="all-certificates" className="container-x">
                 <h2 id="all-certificates" className="eyebrow">
                     Every certificate
@@ -256,6 +266,7 @@ export function PassportShelf({
                     })}
                 </ul>
             </section>
+            )}
         </div>
     );
 }

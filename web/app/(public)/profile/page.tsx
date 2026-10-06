@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { brand } from "@/lib/brand";
 import { WarpField } from "@/components/motif/marks";
 import { BrandMark } from "@/components/motif/brand-mark";
+import { MemberCard } from "@/components/passport/member-card";
 import { PageHeader } from "@/components/page-header";
 import { getRecord, paletteFor } from "@/lib/records";
 import type { Passport } from "@/lib/types";
@@ -109,40 +110,76 @@ export default async function ProfilePage() {
             <div className="container-x mt-10 grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
                 {/* ── the member card, as a card ── */}
                 <section aria-label="Member card" className="lg:sticky lg:top-28 lg:self-start">
-                    <div
-                        className="ink-band cloth relative mx-auto flex aspect-[1.586] w-full max-w-[30rem] flex-col justify-between overflow-hidden p-5 shadow-[0_30px_60px_-30px_rgba(32,30,29,.7)] sm:p-7"
-                        data-theme="dark"
-                    >
-                        <WarpField className="pointer-events-none absolute inset-0 h-full w-full text-white/7" />
-                        <div className="relative flex items-start justify-between gap-4">
-                            <div className="flex items-center gap-2.5">
-                                <BrandMark className="h-6 w-6" />
-                                <span className="display text-[16px] text-white">{brand}</span>
-                            </div>
-                            <span className="text-[11px] tracking-[.18em] text-white/65 uppercase">Member</span>
-                        </div>
+                    <MemberCard
+                        front={
+                            <div
+                                className="ink-band cloth relative flex h-full w-full flex-col justify-between overflow-hidden rounded-[10px] p-5 shadow-[0_30px_60px_-30px_rgba(32,30,29,.7)] sm:p-7"
+                                data-theme="dark"
+                            >
+                                <WarpField className="pointer-events-none absolute inset-0 h-full w-full text-white/7" />
+                                <div className="relative flex items-start justify-between gap-4">
+                                    <div className="flex items-center gap-2.5">
+                                        <BrandMark className="h-6 w-6" />
+                                        <span className="display text-[16px] text-white">{brand}</span>
+                                    </div>
+                                    <span className="text-[11px] tracking-[.18em] text-white/65 uppercase">Member</span>
+                                </div>
 
-                        <div className="relative">
-                            <p className="data text-[clamp(1.3rem,5vw,1.9rem)] tracking-[.12em] text-salmon">
-                                {memberNo}
-                            </p>
-                            <p className="display mt-2 truncate text-[clamp(1.4rem,5vw,2rem)] leading-tight text-white">
-                                {identity.name}
-                            </p>
-                            <div className="mt-1 flex items-center justify-between gap-4 text-[12px] tracking-[.12em] text-white/50 uppercase">
-                                <span className="truncate">{identity.outlet ?? identity.email}</span>
-                                {since && <span className="shrink-0">Since {since}</span>}
-                            </div>
-                        </div>
+                                <div className="relative">
+                                    <p className="data text-[clamp(1.3rem,5vw,1.9rem)] tracking-[.12em] text-salmon">
+                                        {memberNo}
+                                    </p>
+                                    <p className="display mt-2 truncate text-[clamp(1.4rem,5vw,2rem)] leading-tight text-white">
+                                        {identity.name}
+                                    </p>
+                                    <div className="mt-1 flex items-center justify-between gap-4 text-[12px] tracking-[.12em] text-white/50 uppercase">
+                                        <span className="truncate">{identity.outlet ?? identity.email}</span>
+                                        {since && <span className="shrink-0">Since {since}</span>}
+                                    </div>
+                                </div>
 
-                        <div aria-hidden className="absolute inset-x-0 bottom-0 flex h-2">
-                            {bands.length ? (
-                                bands.map((hex, i) => <span key={i} className="flex-1" style={{ background: hex }} />)
-                            ) : (
-                                <span className="selvedge-dye h-full w-full" />
-                            )}
-                        </div>
-                    </div>
+                                <div aria-hidden className="absolute inset-x-0 bottom-0 flex h-2">
+                                    {bands.length ? (
+                                        bands.map((hex, i) => <span key={i} className="flex-1" style={{ background: hex }} />)
+                                    ) : (
+                                        <span className="selvedge-dye h-full w-full" />
+                                    )}
+                                </div>
+                            </div>
+                        }
+                        back={
+                            <div
+                                className="ink-band cloth relative flex h-full w-full flex-col justify-between overflow-hidden rounded-[10px] shadow-[0_30px_60px_-30px_rgba(32,30,29,.7)]"
+                                data-theme="dark"
+                            >
+                                {/* the threads of every cloth held, woven across the back */}
+                                <div aria-hidden className="woven relative mt-5 flex h-7">
+                                    {bands.length ? (
+                                        bands.map((hex, i) => <span key={i} className="flex-1" style={{ background: hex }} />)
+                                    ) : (
+                                        <span className="selvedge-dye h-full w-full" />
+                                    )}
+                                </div>
+                                <div className="px-5 sm:px-7">
+                                    <div className="text-[10.5px] tracking-[.18em] text-white/55 uppercase">Signature of the member</div>
+                                    <div className="mt-1.5 bg-[#F8F3E9] px-3 py-1.5 text-ink shadow-[inset_0_1px_3px_rgba(0,0,0,.25)]">
+                                        <span className="font-script text-[clamp(1.5rem,6vw,2.1rem)] leading-none">{identity.name}</span>
+                                    </div>
+                                </div>
+                                <div className="flex items-end justify-between gap-4 px-5 pb-5 text-[12px] leading-snug text-white/65 sm:px-7 sm:pb-6">
+                                    <p className="max-w-[26ch]">
+                                        {owned.length} {owned.length === 1 ? "certificate" : "certificates"} held. Each cloth
+                                        claimed adds its thread to this card.
+                                    </p>
+                                    <p className="data shrink-0 text-right text-white/75">
+                                        {memberNo}
+                                        <br />
+                                        ICM × TBN × Torajamelo
+                                    </p>
+                                </div>
+                            </div>
+                        }
+                    />
 
                     <dl className="mx-auto mt-6 grid max-w-[30rem] grid-cols-2 border-t border-ink">
                         <div className="border-b border-border py-4 pr-4">

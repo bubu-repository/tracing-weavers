@@ -213,10 +213,12 @@
     line-height: 1.25;
     letter-spacing: .24em;
     text-transform: uppercase;
-    color: var(--bt-red);
+    color: var(--eyebrow, var(--bt-red));
   }
-  [data-theme="dark"] .eyebrow { color: var(--bt-salmon); }
-  [data-theme="light"] .eyebrow { color: var(--bt-red); }
+  /* the nearest ground decides (an ink cover inside a paper page inside the
+     ink wall): each theme sets the colour as an inherited property */
+  [data-theme="dark"] { --eyebrow: var(--bt-salmon); }
+  [data-theme="light"] { --eyebrow: var(--bt-red); }
 
   /* Data register: codes, ids and counts read as machine output, not prose */
   .data {
@@ -441,6 +443,33 @@
     background-color: rgba(251, 248, 242, .9);
   }
   .stamp-ink { --stamp: var(--bt-ink); }
+
+  /* the stamp a register uses on a document it has checked: big, double
+     ruled, struck once — it lands with a little overshoot */
+  .stamp-big {
+    font-size: clamp(2.4rem, 9vw, 4.6rem);
+    font-family: var(--font-display);
+    font-weight: 900;
+    letter-spacing: .06em;
+    padding: .18em .42em .12em;
+    box-shadow: inset 0 0 0 4px currentColor, inset 0 0 0 9px transparent, inset 0 0 0 11px currentColor;
+    background-color: transparent;
+    transform: rotate(-4deg);
+    animation: stamp-in 620ms cubic-bezier(.2, .9, .25, 1.1) 250ms both;
+  }
+  @keyframes stamp-in {
+    0% { opacity: 0; transform: scale(1.9) rotate(-11deg); }
+    55% { opacity: 1; transform: scale(.94) rotate(-3deg); }
+    75% { transform: scale(1.03) rotate(-4.5deg); }
+    100% { opacity: 1; transform: scale(1) rotate(-4deg); }
+  }
+  /* the paper takes the blow */
+  .stamp-thud { animation: stamp-thud 420ms ease-out 560ms both; }
+  @keyframes stamp-thud {
+    0%, 100% { transform: translateY(0); }
+    30% { transform: translateY(3px); }
+    60% { transform: translateY(-1px); }
+  }
 
   /* a pencil note in the margin, in the cataloguer's hand */
   .note {

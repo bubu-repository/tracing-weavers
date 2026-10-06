@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { TagLookupForm } from "@/components/nfc/tag-lookup-form";
 import { Button } from "@/components/ui/button";
+import { DroppedStitch } from "@/components/motif/dropped-stitch";
 
 export const metadata = { title: "Not found", robots: { index: false } };
 
@@ -21,8 +22,9 @@ export default function NotFound() {
                     page has moved. If you have a code from a cloth&apos;s label, type it
                     here.
                 </p>
+                <DroppedStitch />
 
-                <TagLookupForm className="mt-8 max-w-md" />
+                <TagLookupForm className="mt-6 max-w-md" />
 
                 <div className="mt-8 flex flex-wrap items-center gap-3">
                     <Button asChild size="lg">

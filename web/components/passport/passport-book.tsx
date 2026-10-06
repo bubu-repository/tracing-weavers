@@ -316,7 +316,7 @@ export function PassportBook({
 
                 <p
                     aria-live="polite"
-                    className="data min-w-0 flex-1 truncate text-center text-[12px] text-muted-foreground"
+                    className={`data min-w-0 flex-1 truncate text-center text-[12px] ${tone === "ink" ? "text-white/70" : "text-muted-foreground"}`}
                 >
                     {spreadLabel}
                 </p>
