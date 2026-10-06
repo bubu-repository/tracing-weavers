@@ -207,6 +207,7 @@ export default async function RecordPage({
                             supply={record.supply}
                             remaining={remaining}
                             identity={identity}
+                            colors={palette?.colors.map((c) => c.hex)}
                         />
                     )}
                 </div>

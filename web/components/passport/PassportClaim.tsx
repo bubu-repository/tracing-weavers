@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { rememberLocalPassport } from "@/lib/local-passports";
-import { ClaimNotice } from "@/components/passport/claim-notice";
+import { ClaimCeremony } from "@/components/passport/claim-ceremony";
 import { PassportLeaf } from "@/components/passport/passport-leaf";
 import { getRecord } from "@/lib/records";
 import { CLAIMED_EVENT } from "@/components/records/claim-bar";
@@ -29,17 +29,25 @@ export function PassportClaim({
     supply,
     remaining,
     identity,
+    colors,
 }: {
     code: string;
     title: string;
     supply: number;
     remaining: number | null;
     identity: { name: string; email: string; outlet?: string } | null;
+    /** the cloth's measured palette, for the ceremony's weave */
+    colors?: string[];
 }) {
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [issued, setIssued] = useState<Passport | null>(null);
-    const [showNotice, setShowNotice] = useState(false);
+    const [ceremony, setCeremony] = useState(false);
+    /* leaving the ceremony lands on the certificate it just issued */
+    const endCeremony = useCallback(() => {
+        setCeremony(false);
+        document.getElementById("claim")?.focus({ preventScroll: false });
+    }, []);
 
     const soldOut = remaining !== null && remaining <= 0;
     const clothName = title.split(" · ")[0];
@@ -87,7 +95,7 @@ export function PassportClaim({
 
             rememberLocalPassport(body.passport);
             setIssued(body.passport);
-            setShowNotice(true);
+            setCeremony(true);
             window.dispatchEvent(new Event(CLAIMED_EVENT));
         } catch {
             setError(
@@ -104,7 +112,8 @@ export function PassportClaim({
         <>
             <section
                 id="claim"
-                className="scroll-mt-24 bg-card p-6 shadow-[inset_0_0_0_1px_var(--bt-stone-2)] sm:p-7"
+                tabIndex={-1}
+                className="scroll-mt-24 outline-none bg-card p-6 shadow-[inset_0_0_0_1px_var(--bt-stone-2)] sm:p-7"
             >
                 <div className="eyebrow">
                     {issued ? t.claimedEyebrow : soldOut ? "Certificate" : t.claimEyebrow}
@@ -248,11 +257,12 @@ export function PassportClaim({
                 )}
             </section>
 
-            {showNotice && issued && (
-                <ClaimNotice
-                    passportId={issued.id}
+            {ceremony && issued && (
+                <ClaimCeremony
+                    passport={issued}
                     clothName={clothName}
-                    onClose={() => setShowNotice(false)}
+                    colors={colors}
+                    onClose={endCeremony}
                 />
             )}
         </>

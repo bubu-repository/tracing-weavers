@@ -14,7 +14,7 @@ const EXPLORE = [
    allows, and every figure counted from data/records.json. */
 export default function Footer() {
     return (
-        <footer className="no-print mt-24 overflow-hidden bg-ink text-white" data-theme="dark">
+        <footer className="no-print grain relative mt-24 overflow-hidden bg-ink text-white" data-theme="dark">
             <div className="selvedge-dye" aria-hidden />
             <div className="container-x pt-14 pb-8">
                 <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)]">

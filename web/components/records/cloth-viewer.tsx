@@ -28,6 +28,9 @@ const REST: View = { s: 1, x: 0, y: 0 };
  * of a stamp. So the photograph opens into a viewer: pinch or scroll to zoom
  * (towards the point under the fingers or the pointer), drag to move,
  * double-tap to jump in and out, + − 0 and Esc on a keyboard.
+ *
+ * On the page itself the photograph arrives warp-first, thread by thread, and
+ * a raking light follows the mouse across it to bring up the relief.
  */
 export function ClothViewer({
     src,
@@ -50,6 +53,27 @@ export function ClothViewer({
 }) {
     const [open, setOpen] = useState(false);
     const trigger = useRef<HTMLButtonElement | null>(null);
+    const light = useRef<HTMLSpanElement | null>(null);
+    const photo = useRef<HTMLImageElement | null>(null);
+    /* the warp is laid once the photograph is here to be revealed; one that
+       was already cached when the page woke up starts straight away */
+    const [phase, setPhase] = useState<"wait" | "weave" | "done">("wait");
+    const arrive = useCallback(() => setPhase((p) => (p === "wait" ? "weave" : p)), []);
+    useEffect(() => {
+        const el = photo.current;
+        if (!el?.complete || !el.naturalWidth) return;
+        const frame = window.requestAnimationFrame(arrive);
+        return () => window.cancelAnimationFrame(frame);
+    }, [arrive]);
+
+    /* the raking light follows a mouse; a finger has nothing to hover with */
+    function rake(event: ReactPointerEvent<HTMLButtonElement>) {
+        const lamp = light.current;
+        if (event.pointerType !== "mouse" || !lamp) return;
+        const box = event.currentTarget.getBoundingClientRect();
+        lamp.style.setProperty("--lx", `${((event.clientX - box.left) / box.width) * 100}%`);
+        lamp.style.setProperty("--ly", `${((event.clientY - box.top) / box.height) * 100}%`);
+    }
     const close = useCallback(() => {
         setOpen(false);
         trigger.current?.focus();
@@ -61,17 +85,28 @@ export function ClothViewer({
                 ref={trigger}
                 type="button"
                 onClick={() => setOpen(true)}
+                onPointerMove={rake}
                 aria-label={`Look closer at ${alt}`}
                 className={cn("group relative block w-full cursor-zoom-in overflow-hidden", className)}
                 style={style}
             >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
+                    ref={photo}
                     src={src}
                     alt={alt}
                     fetchPriority="high"
                     draggable={false}
-                    className={cn("settle", imgClassName)}
+                    onLoad={arrive}
+                    onAnimationEnd={(e) => {
+                        if (e.animationName === "warp-in") setPhase("done");
+                    }}
+                    className={cn(phase === "wait" ? "warp-wait" : phase === "weave" && "warp-in", imgClassName)}
+                />
+                <span
+                    ref={light}
+                    aria-hidden
+                    className="raking-light pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
                 />
                 {children}
                 <span className="absolute right-3 bottom-3 inline-flex items-center gap-2 bg-ink/82 px-3 py-2 text-[11px] tracking-[.16em] text-white uppercase transition-colors duration-200 group-hover:bg-salmon group-hover:text-ink">

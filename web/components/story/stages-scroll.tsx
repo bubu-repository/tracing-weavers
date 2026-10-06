@@ -57,7 +57,7 @@ export function StagesScroll({ id = "chapter-path" }: { id?: string }) {
             id={id}
             data-chapter
             data-theme="dark"
-            className="relative scroll-mt-16 bg-ink text-white lg:h-[480vh] motion-reduce:lg:h-auto"
+            className="grain relative scroll-mt-16 bg-ink text-white lg:h-[480vh] motion-reduce:lg:h-auto"
         >
             <div className="py-20 lg:sticky lg:top-[68px] lg:flex lg:h-[calc(100svh-68px)] lg:flex-col lg:justify-center lg:overflow-hidden lg:py-0 motion-reduce:lg:static motion-reduce:lg:h-auto motion-reduce:lg:py-24">
                 <div className="container-x flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">

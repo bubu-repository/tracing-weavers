@@ -15,7 +15,7 @@ import { passportStore } from "@/lib/store";
 import { currentIdentity } from "@/lib/session";
 import { t } from "@/lib/copy";
 import { RecordGallery } from "@/components/records/record-gallery";
-import { ClothMarquee } from "@/components/home/cloth-marquee";
+import { LivingLoom, type LoomCloth } from "@/components/story/living-loom";
 import { Origins } from "@/components/home/origins";
 import { StoryThread, Chapter, ChapterHead } from "@/components/story/story-thread";
 import { ScrollWords } from "@/components/story/scroll-words";
@@ -31,10 +31,13 @@ import type { Passport } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-/* Three columns of cloth for the hero wall, dealt out like cards so no two
-   neighbours are the same and each column drifts at its own pace. */
-const deal = (n: number) =>
-    Array.from({ length: n }, (_, col) => records.filter((_, i) => i % n === col));
+/* The loom's warp: one band per cloth, in that cloth's measured colours. */
+const loomCloths: LoomCloth[] = records.map((record) => ({
+    code: record.code,
+    number: catalogueNumber(record.code),
+    name: clothName(record),
+    colors: (paletteFor(record)?.colors ?? []).map((c) => c.hex),
+}));
 
 /* The specimen in the certificate section: a real cloth, a placeholder
    holder, and SPECIMEN where the id would be — so it cannot pass for one. */
@@ -115,91 +118,61 @@ export default async function Home() {
         .issuableCounts(records.map((r) => r.code))
         .catch(() => null);
 
-    const [colA, colB, colC] = deal(3);
-
     return (
         <>
-            {/* ── the cover ─────────────────────────────────────────────── */}
-            <section className="relative overflow-hidden bg-ink text-white" data-theme="dark">
-                <div className="container-x grid grid-cols-1 gap-10 pt-10 pb-12 sm:pt-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-12 lg:py-0">
-                    <div className="flex flex-col justify-center lg:min-h-[calc(100svh-68px)] lg:py-20">
+            {/* ── the cover: a loom you weave on ─────────────────────────── */}
+            <LivingLoom
+                cloths={loomCloths}
+                className="h-[calc(100svh-7.75rem)] min-h-[600px] lg:h-[calc(100svh-68px)] lg:min-h-[640px]"
+            >
+                {/* shade behind the words, so the loom stays bright elsewhere */}
+                <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink/92 via-ink/70 to-transparent lg:bg-gradient-to-r lg:from-ink/95 lg:via-ink/72 lg:to-transparent"
+                />
+                <div className="container-x relative flex flex-col pt-8 sm:pt-14 lg:h-[70%] lg:justify-center lg:pt-6">
+                    <div className="max-w-2xl">
                         <div className="eyebrow">{t.homeEyebrow}</div>
                         <RevealText
                             as="h1"
-                            className="t-hero mt-5 text-white"
+                            className="t-hero mt-4 text-[clamp(3.2rem,14vw,6.6rem)] text-white"
                             text={`${t.homeTitleA} ${t.homeTitleB}.`}
                             accentFrom={2}
                             accentClass="text-salmon"
                         />
-                        <p className="mt-6 max-w-[44ch] text-[17px] leading-relaxed text-white/72 sm:text-[19px]">
+                        <p className="mt-5 hidden max-w-[44ch] text-[17px] leading-relaxed text-white/75 sm:block sm:text-[18px]">
                             {t.homeLead}
                         </p>
+                        <p className="mt-4 border-l-2 border-salmon pl-3 text-[14px] text-white/85 lg:hidden">
+                            This cover is a loom: sweep across it to weave, tap a thread to pluck it.
+                        </p>
 
-                        <div className="mt-8 max-w-md border-t border-white/16 pt-6">
+                        <div className="mt-6 max-w-md">
                             <TagLookupForm tone="ink" label="Have a label in front of you? Type its code" />
                         </div>
 
                         <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
                             <a
-                                href="#collection"
+                                href="#chapter-name"
                                 className="group inline-flex items-center gap-2 text-[16px] text-white hover:text-salmon"
                             >
-                                {t.exploreCloths}
+                                Follow the thread
                                 <span aria-hidden className="transition-transform duration-200 group-hover:translate-y-0.5">
                                     ↓
                                 </span>
                             </a>
-                            <Link href="/scan" className="text-[16px] text-white/60 hover:text-white">
-                                {t.howItWorks}
-                            </Link>
+                            <a href="#collection" className="text-[16px] text-white/65 hover:text-white">
+                                {t.exploreCloths}
+                            </a>
                             {identity && (
-                                <Link href="/collection" className="text-[16px] text-white/60 hover:text-white">
+                                <Link href="/collection" className="text-[16px] text-white/65 hover:text-white">
                                     {t.openPassport} →
                                 </Link>
                             )}
                         </div>
-
-                        <dl className="mt-10 grid max-w-md grid-cols-3 gap-4">
-                            {[
-                                { value: records.length, label: "Cloths" },
-                                { value: collections.length, label: "Collections" },
-                                { value: originCount, label: "Origins" },
-                            ].map((stat) => (
-                                <div key={stat.label} className="flex flex-col-reverse border-l border-white/16 pl-3">
-                                    <dt className="mt-1 text-[11px] tracking-[.2em] uppercase text-white/50">
-                                        {stat.label}
-                                    </dt>
-                                    <dd className="numeral text-[44px] text-white sm:text-[52px]">{stat.value}</dd>
-                                </div>
-                            ))}
-                        </dl>
-                    </div>
-
-                    {/* the wall of cloth: three drifting columns on a desk… */}
-                    <div className="relative hidden h-[calc(100svh-68px)] min-h-[560px] grid-cols-3 gap-3 lg:grid">
-                        <ClothMarquee records={colA} direction="y" duration={90} tileClassName="aspect-[3/4]" />
-                        <ClothMarquee records={colB} direction="y" reverse duration={110} className="-mt-28 h-[calc(100%+7rem)]" tileClassName="aspect-[3/4]" />
-                        <ClothMarquee records={colC} direction="y" duration={100} tileClassName="aspect-[3/4]" />
                     </div>
                 </div>
-
-                {/* the invitation to follow the thread */}
-                <a
-                    href="#chapter-name"
-                    className="group absolute bottom-6 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-3 text-[11px] tracking-[.24em] text-white/60 uppercase hover:text-white lg:left-[calc(max(0px,(100%-1280px)/2)+1.1rem)] lg:flex lg:translate-x-[-50%]"
-                >
-                    <span className="relative block h-14 w-px overflow-hidden bg-white/15">
-                        <span className="thread-drip absolute inset-x-0 top-0 h-1/2 bg-bt-red-bright" />
-                    </span>
-                    <span className="[writing-mode:vertical-rl] rotate-180">Follow the thread</span>
-                </a>
-
-                {/* …and two drifting rows on a phone */}
-                <div className="space-y-2 pb-10 lg:hidden">
-                    <ClothMarquee records={[...colA, ...colB]} duration={80} tileClassName="h-28 w-24 sm:h-36 sm:w-32" />
-                    <ClothMarquee records={[...colC, ...colA]} reverse duration={95} tileClassName="h-28 w-24 sm:h-36 sm:w-32" />
-                </div>
-            </section>
+            </LivingLoom>
 
             <StoryNav chapters={CHAPTERS} />
 
