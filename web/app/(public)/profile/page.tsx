@@ -3,6 +3,7 @@ import { currentIdentity, heldIds } from "@/lib/session";
 import { passportStore } from "@/lib/store";
 import { accountStore, formatMemberNo, highestMemberNo } from "@/lib/accounts";
 import { ProfileForms } from "@/components/profile-forms";
+import { SignOutButton } from "@/components/sign-out-button";
 import { Button } from "@/components/ui/button";
 import { brand } from "@/lib/brand";
 import { ThreadRule, WarpField } from "@/components/motif/marks";
@@ -44,12 +45,24 @@ export default async function ProfilePage() {
                         Sign in to see your member card and manage the account
                         your certificates are kept under.
                     </p>
-                    <Link
-                        href={`/login?next=${encodeURIComponent("/profile")}`}
-                        className="mt-5 inline-block"
-                    >
-                        <Button size="lg">Sign in</Button>
-                    </Link>
+                    <div className="mt-5 flex flex-wrap gap-3">
+                        <Button asChild size="lg">
+                            <Link
+                                href={`/login?next=${encodeURIComponent("/profile")}`}
+                                className="text-white hover:text-white"
+                            >
+                                Sign in
+                            </Link>
+                        </Button>
+                        <Button asChild size="lg" variant="outline">
+                            <Link
+                                href={`/login?mode=register&next=${encodeURIComponent("/profile")}`}
+                                className="text-ink hover:text-ink"
+                            >
+                                Create an account
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
             </div>
         );
@@ -71,14 +84,23 @@ export default async function ProfilePage() {
     const memberNo = account?.memberNo ?? "—";
     const since = account?.createdAt ? longDate(account.createdAt) : null;
 
+    /* The same two sources the Traces page reads — held on this device, and
+       issued to this account — so the count here matches the book there. It
+       used to count only this device's cookie, and read 0 on a new phone. */
     const ids = await heldIds();
     const passports = passportStore();
-    const owned = (
-        await Promise.all(ids.map((id) => passports.get(id).catch(() => null)))
-    ).filter(
-        (p): p is Passport =>
-            p !== null &&
-            (p.email ?? "").trim().toLowerCase() === identity.email,
+    const [held, byAccount] = await Promise.all([
+        Promise.all(ids.map((id) => passports.get(id).catch(() => null))),
+        passports.listByHolder(identity.email).catch(() => [] as Passport[]),
+    ]);
+    const owned = new Set(
+        [...held, ...byAccount]
+            .filter(
+                (p): p is Passport =>
+                    p !== null &&
+                    (p.email ?? "").trim().toLowerCase() === identity.email,
+            )
+            .map((p) => p.id),
     );
 
     return (
@@ -136,7 +158,7 @@ export default async function ProfilePage() {
                                 Certificates
                             </div>
                             <p className="num mt-1.5 text-[19px] leading-none text-white">
-                                {owned.length}
+                                {owned.size}
                             </p>
                             <Link
                                 href="/collection"
@@ -166,11 +188,15 @@ export default async function ProfilePage() {
                 </p>
             </section>
 
-            <ThreadRule className="h-2 w-full text-stone" aria-hidden />
+            <section className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
+                <p className="max-w-[44ch] text-[14px] text-muted-foreground">
+                    Signing out clears this device: the session and the local copy
+                    of your certificates. They stay safe under your account.
+                </p>
+                <SignOutButton variant="outline" />
+            </section>
 
-            <p className="text-[12px] tracking-[.12em] uppercase text-muted-foreground">
-                &copy; {brand} &middot; All rights reserved &middot; Confidential
-            </p>
+            <ThreadRule className="h-2 w-full text-stone" aria-hidden />
         </div>
     );
 }

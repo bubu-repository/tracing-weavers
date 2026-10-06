@@ -29,8 +29,15 @@ export const t = {
     homeTitleB: "has a story",
     homeLead:
         "From seed to loom, from Adonara to the world. Hold your phone to the tag on any cloth, and trace every hand that shaped it.",
+    exploreCloths: "Explore the cloths",
+    howItWorks: "How it works",
+    joinLead:
+        "Claim a cloth's certificate and keep it under your name — one page per weave, bound as a book.",
+    joinButton: "Create an account",
     recordsEyebrow: "Cloth records",
     recordsTitle: "Trace the weave.",
+    recordsLead:
+        "Every cloth in the exhibition has a page. Search by its name, where it was woven, or the code on its label.",
     recordsCount: "records",
     tagsCount: "tags",
 
@@ -76,7 +83,7 @@ export const t = {
     /* record page */
     backToRecords: "All records",
     recordEyebrow: "Cloth record",
-    supplyUnique: "the only one",
+    supplyUnique: "One of one",
     supplyShared: "up to {n} holders",
     issued: "Issued",
     remaining: "Still available",
@@ -125,13 +132,13 @@ export const t = {
     signInTitle: "Sign in, or make an account.",
     signInLead: "A name and an email. No wallet, no crypto.",
     signInButton: "Sign in",
-    verifyEyebrow: "Passport check",
+    verifyEyebrow: "Certificate check",
     verifyStored: "Verified against the register",
     verifySignature: "Verified by signature",
     verifyProves: "What this page proves",
 
     /* scan */
-    scanEyebrow: "Browse the collection",
+    scanEyebrow: "How it works",
     scanTitleA: "One cloth,",
     scanTitleB: "one page.",
     scanLead: "cloths registered across six collections.",

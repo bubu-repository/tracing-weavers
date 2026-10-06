@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import Link from "next/link";
 import { PassportLeaf } from "@/components/passport/passport-leaf";
 import { PassportBook, type BookPage } from "@/components/passport/passport-book";
 import { readLocalPassports } from "@/lib/local-passports";
 import { WarpField } from "@/components/motif/marks";
 import { brand } from "@/lib/brand";
 import type { Passport } from "@/lib/types";
-import type { ProductRecord } from "@/lib/records";
+import { recordVisual, type ProductRecord } from "@/lib/records";
 
 const issuedOn = (iso: string) =>
     new Date(iso).toLocaleDateString("en-GB", {
@@ -192,12 +193,63 @@ export function PassportShelf({
     );
 
     return (
-        <div className="mx-auto max-w-sm sm:max-w-3xl">
-            <PassportBook
-                pages={pages}
-                insideCover={insideCover}
-                backCover={backCover}
-            />
+        <div className="space-y-12">
+            <div className="mx-auto max-w-sm sm:max-w-3xl">
+                <PassportBook
+                    pages={pages}
+                    insideCover={insideCover}
+                    backCover={backCover}
+                />
+            </div>
+
+            {/* The same certificates as a plain list: quicker than turning
+                pages to find one, and the book's pages are hidden from screen
+                readers except the spread that is open. */}
+            <section aria-labelledby="all-certificates">
+                <h2 id="all-certificates" className="eyebrow">
+                    Every certificate
+                </h2>
+                <ul className="mt-3 divide-y divide-border border-y border-border">
+                    {merged.map((passport) => {
+                        const record = records.find((r) => r.code === passport.code);
+                        return (
+                            <li
+                                key={passport.id}
+                                className="flex items-center gap-4 py-3"
+                            >
+                                {record && (
+                                    /* eslint-disable-next-line @next/next/no-img-element */
+                                    <img
+                                        src={recordVisual(record)}
+                                        alt=""
+                                        loading="lazy"
+                                        className="h-14 w-11 shrink-0 rounded-md object-cover shadow-[var(--ring)]"
+                                        draggable={false}
+                                    />
+                                )}
+                                <div className="min-w-0 flex-1">
+                                    <Link
+                                        href={`/record/${encodeURIComponent(passport.code)}`}
+                                        className="block truncate text-[16px] text-ink hover:text-bt-red"
+                                    >
+                                        {record?.title.split(" · ")[0] ?? passport.code}
+                                    </Link>
+                                    <p className="data mt-0.5 truncate text-muted-foreground">
+                                        {passport.code} · {issuedOn(passport.issuedAt)}
+                                        {passport.status === "revoked" ? " · revoked" : ""}
+                                    </p>
+                                </div>
+                                <Link
+                                    href={`/verify/${encodeURIComponent(passport.id)}`}
+                                    className="shrink-0 rounded-full px-3 py-1.5 text-[13px] text-ink-2 shadow-[var(--ring)] hover:text-ink hover:shadow-[var(--ring-hover)]"
+                                >
+                                    Check
+                                </Link>
+                            </li>
+                        );
+                    })}
+                </ul>
+            </section>
         </div>
     );
 }

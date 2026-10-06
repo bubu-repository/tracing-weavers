@@ -1,46 +1,77 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { attr, getRecord, recordVisual } from "@/lib/records";
+import {
+    attr,
+    clothName,
+    formatPlace,
+    getRecord,
+    isPlaceholder,
+    neighbours,
+    recordVisual,
+    type ProductRecord,
+} from "@/lib/records";
 import { passportStore } from "@/lib/store";
 import { currentIdentity } from "@/lib/session";
 import { t } from "@/lib/copy";
 import { PassportClaim } from "@/components/passport/PassportClaim";
 import { PassportLeaf } from "@/components/passport/passport-leaf";
-import { ClothTabs } from "@/components/cloth-tabs";
+import { RecordTraits } from "@/components/records/RecordTraits";
 import { JourneyRail } from "@/components/journey-rail";
+import { ShareButton } from "@/components/share-button";
 import { ThreadRule } from "@/components/motif/marks";
+
 export const dynamic = "force-dynamic";
 
-
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ code: string }>;
+}): Promise<Metadata> {
+    const { code } = await params;
+    const record = getRecord(code);
+    if (!record) return { title: "Record not found" };
+    const title = `${clothName(record)} · ${record.code}`;
+    return {
+        title,
+        description: record.description,
+        openGraph: {
+            title,
+            description: record.description,
+            images: [recordVisual(record)],
+        },
+    };
+}
 
 /**
- * LEARN surface with one Configure action: where an NFC tap lands, on a phone,
- * one-handed. The artwork leads (it is the object), the facts follow as
- * hairline rows, and the claim is reachable by thumb. On desktop the cloth
- * stays put while the story scrolls beside it.
+ * LEARN surface with one Configure action: where a tap or a scan lands, on a
+ * phone, one-handed.
+ *
+ * The photograph leads (it is the object), then the name — once, not three
+ * times — what it is, the facts, and the claim. On a desk the photograph stays
+ * put while the story scrolls beside it. At the foot, the cloths hung either
+ * side of this one, so a visitor can walk the exhibition from their phone.
  */
 export default async function RecordPage({
     params,
-    searchParams,
 }: {
     params: Promise<{ code: string }>;
-    searchParams?: Promise<{ tag?: string }>;
 }) {
     const { code } = await params;
-
-
     const record = getRecord(code);
     if (!record) notFound();
 
-        const store = passportStore();
+    const store = passportStore();
     /* Two queries on purpose: `issued` is the row list the holder is matched
        against (any status), while the quota counts only what the claim path
        counts — a revoked passport must not read as "sold out" while the API
        would still issue. */
-    const issued = await store.listByRecord(record.code);
-    const issuedCount = await store.issuableCount(record.code);
+    const [issued, issuedCount, identity] = await Promise.all([
+        store.listByRecord(record.code),
+        store.issuableCount(record.code),
+        currentIdentity(),
+    ]);
     const remaining = Math.max(record.supply - issuedCount, 0);
-    const identity = await currentIdentity();
 
     const mine = identity
         ? issued.find(
@@ -51,153 +82,91 @@ export default async function RecordPage({
         : undefined;
 
     const step = attr(record, "Journey step");
+    const origin = formatPlace(attr(record, "Origin"));
+    const name = clothName(record);
+    const { previous, next } = neighbours(record.code);
 
     return (
         <div>
-            <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center justify-between gap-3">
                 <Link
-                    href="/"
-                    className="inline-block min-h-6 py-1 text-[14px] text-muted-foreground hover:text-ink"
+                    href="/#records"
+                    className="inline-flex min-h-9 items-center gap-1.5 text-[14px] text-muted-foreground hover:text-ink"
                 >
-                    ← {t.backToRecords}
+                    <span aria-hidden>←</span> {t.backToRecords}
                 </Link>
-
+                <ShareButton title={`${name} · ${record.code}`} text={record.description} />
             </div>
 
-            <div className="mt-6 grid gap-10 lg:grid-cols-2 lg:gap-14">
-                {/* the cloth, and what it is made of */}
+            <div className="mt-5 grid gap-8 lg:mt-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-14">
+                {/* the cloth */}
                 <div className="lg:sticky lg:top-24 lg:self-start">
                     <figure className="relative overflow-hidden rounded-xl bg-ink shadow-[var(--ring)]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                             src={recordVisual(record)}
-                            alt={record.title}
+                            alt={`${name}, handwoven cloth from ${origin}`}
+                            fetchPriority="high"
                             className="aspect-4/5 w-full object-cover"
                             draggable={false}
                         />
-                        <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-ink/95 via-ink/55 to-transparent px-5 pt-24 pb-6">
-                            <div className="font-mono text-[15px] tracking-[.06em] uppercase text-salmon">{record.code}</div>
-                            <div className="display mt-2 text-[clamp(1.7rem,6vw,2.15rem)] text-white">
-                                {record.title.split(" · ")[0]}
-                            </div>
-                            <div className="mt-2 text-[15px] text-white/75">
-                                {String(attr(record, "Origin") ?? "")}
-                                {record.supply > 1
-                                    ? ` · ${t.supplyShared.replace("{n}", String(record.supply))}`
-                                    : ` · ${t.supplyUnique}`}
-                            </div>
-                        </figcaption>
+                        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3 sm:p-4">
+                            <span className="rounded-[4px] bg-ink/75 px-2 py-1 font-mono text-[13px] tracking-[.04em] text-white">
+                                {record.code}
+                            </span>
+                            <span className="rounded-full bg-paper/95 px-2.5 py-1 text-[11px] tracking-[.12em] text-ink uppercase">
+                                {remaining <= 0
+                                    ? "Claimed"
+                                    : record.supply > 1
+                                      ? `${remaining} of ${record.supply} left`
+                                      : "Available"}
+                            </span>
+                        </div>
                     </figure>
-                    {record.photoCredit && (
-                        <p className="mt-3 text-[13px] text-ink-2">
+                    {!isPlaceholder(record.photoCredit) && (
+                        <p className="mt-2.5 text-[13px] text-ink-2">
                             Photo: {record.photoCredit}
                         </p>
                     )}
-
-                    <ClothTabs
-                        className="mt-6"
-                        items={[
-                            {
-                                id: "material",
-                                label: "Material",
-                                body: (
-                                    <div className="space-y-3">
-                                        <div className="flex items-baseline justify-between gap-4 border-b border-border pb-2">
-                                            <span className="label">Material</span>
-                                            <span className="num text-right text-[15px] text-ink">{String(attr(record, "Material") ?? "Not recorded")}</span>
-                                        </div>
-                                        <div className="flex items-baseline justify-between gap-4 border-b border-border pb-2">
-                                            <span className="label">Technique</span>
-                                            <span className="num text-right text-[15px] text-ink">{String(attr(record, "Technique") ?? "Not recorded")}</span>
-                                        </div>
-                                        {/* Dye only when the record actually carries
-                                            one: falling back to Material printed the
-                                            same value twice. */}
-                                        {attr(record, "Dye") && (
-                                            <div className="flex items-baseline justify-between gap-4 border-b border-border pb-2">
-                                                <span className="label">Dye</span>
-                                                <span className="num text-right text-[15px] text-ink">{String(attr(record, "Dye"))}</span>
-                                            </div>
-                                        )}
-                                        {attr(record, "Size") && (
-                                            <div className="flex items-baseline justify-between gap-4 border-b border-border pb-2">
-                                                <span className="label">Size</span>
-                                                <span className="num text-right text-[15px] text-ink">{String(attr(record, "Size"))}</span>
-                                            </div>
-                                        )}
-                                        {attr(record, "Displayed at") && (
-                                            <div className="flex items-baseline justify-between gap-4 border-b border-border pb-2">
-                                                <span className="label">Displayed at</span>
-                                                <span className="text-right text-[15px] text-ink">{String(attr(record, "Displayed at"))}</span>
-                                            </div>
-                                        )}
-                                        <p className="text-[15px] text-muted-foreground pt-1">
-                                            Handwoven in {String(attr(record, "Origin") ?? "Indonesia")}, one thread at a time.
-                                        </p>
-                                    </div>
-                                ),
-                            },
-                            {
-                                id: "motif",
-                                label: "Motif",
-                                gloss: "What the motif may tell",
-                                body: (
-                                    <>
-                                        This motif is worn at family ceremonies. The community decides how much may be recorded; the rest stays with the weaver.
-                                    </>
-                                ),
-                            },
-                            {
-                                id: "origin",
-                                label: "Origin",
-                                body: (
-                                    <div className="space-y-3">
-                                        <div className="flex items-baseline justify-between gap-4 border-b border-border pb-2">
-                                            <span className="label">Origin</span>
-                                            <span className="num text-right text-[15px] text-ink">{String(attr(record, "Origin") ?? "")}</span>
-                                        </div>
-                                        <div className="flex items-baseline justify-between gap-4 border-b border-border pb-2">
-                                            <span className="label">Collection</span>
-                                            <span className="num text-right text-[15px] text-ink">{record.collection}</span>
-                                        </div>
-                                        <div className="flex items-baseline justify-between gap-4 border-b border-border pb-2">
-                                            <span className="label">Journey stage</span>
-                                            <span className="text-right text-[15px] text-ink">
-                                                {step ? String(step) : "Not recorded"}
-                                            </span>
-                                        </div>
-                                        <p className="text-[15px] text-muted-foreground pt-1">
-                                            Part of the Tracing Weavers programme — Indonesia Heritage for Human Flourishing. ICM × TBN Indonesia × Torajamelo.
-                                        </p>
-                                    </div>
-                                ),
-                            },
-                        ]}
-                    />
                 </div>
 
                 {/* the story, the facts, the action */}
-                <div className="space-y-9">
+                <div className="space-y-8">
                     <header>
-                        <div className="eyebrow">{record.collection ?? "Jejak"}</div>
-                        <h1 className="mt-3">{record.title.split(" · ")[0]}</h1>
-                        {record.subtitle && (
-                            <p className="mt-2 text-[15px] uppercase tracking-[.14em] text-muted-foreground">
-                                {record.subtitle}
-                            </p>
-                        )}
-                        <p className="mt-4 max-w-[58ch] text-[15px] text-muted-foreground">
+                        <div className="eyebrow">{record.collection ?? t.recordEyebrow}</div>
+                        <h1 className="mt-3">{name}</h1>
+                        <p className="mt-2 text-[15px] text-ink-2">
+                            {origin}
+                            <span className="text-ink-3">
+                                {" · "}
+                                {record.supply > 1
+                                    ? t.supplyShared.replace("{n}", String(record.supply))
+                                    : t.supplyUnique}
+                            </span>
+                        </p>
+                        <p className="mt-4 max-w-[58ch] text-[17px] leading-relaxed text-muted-foreground">
                             {record.description}
                         </p>
                     </header>
 
+                    <RecordTraits record={record} />
 
+                    <div className="max-w-[58ch] border-l-2 border-bt-red/40 pl-4">
+                        <div className="text-[11px] tracking-[.2em] uppercase text-bt-red">The motif</div>
+                        <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">
+                            The community decides how much of a motif may be recorded
+                            and shown. What it means stays with the weaver and their
+                            family.
+                        </p>
+                    </div>
 
                     {mine ? (
-                        <div className="space-y-4">
-                            <div className="eyebrow">{t.yourPassport}</div>
+                        <section aria-labelledby="your-certificate" className="space-y-4">
+                            <h2 id="your-certificate" className="eyebrow">
+                                {t.yourPassport}
+                            </h2>
                             <PassportLeaf passport={mine} record={record} className="max-w-md" />
-                        </div>
+                        </section>
                     ) : (
                         <PassportClaim
                             code={record.code}
@@ -207,14 +176,21 @@ export default async function RecordPage({
                             identity={identity}
                         />
                     )}
-
                 </div>
             </div>
 
-            {/* Where this piece sits in the three-year path. It used to hide
-                behind "See the seven stages", which pushed the page down and
-                left the column beside it empty; the rail is one line tall, so
-                it can simply be open. */}
+            {/* walk the exhibition */}
+            {(previous || next) && (
+                <nav
+                    aria-label="More cloths"
+                    className="mt-14 grid grid-cols-2 gap-3 border-t border-border pt-6 sm:gap-6"
+                >
+                    {previous ? <Neighbour record={previous} direction="previous" /> : <span />}
+                    {next ? <Neighbour record={next} direction="next" /> : <span />}
+                </nav>
+            )}
+
+            {/* Where this piece sits in the three-year path. */}
             <section className="mt-12">
                 <ThreadRule className="h-2 w-full text-stone" aria-hidden />
                 <div className="mt-6">
@@ -222,10 +198,9 @@ export default async function RecordPage({
                     <h2 className="mt-2 text-[clamp(1.3rem,4vw,1.7rem)]">
                         {t.journeyTitle}
                     </h2>
-                    {/* Same self-running rail as the home page: the path
-                        walks itself, no click needed.  `activeStep` stays so
-                        the stage this particular cloth sits at keeps its
-                        "this record" badge while the journey animates. */}
+                    {/* Same self-running rail as the home page. `activeStep`
+                        keeps the stage this cloth sits at marked "this
+                        record" while the journey animates. */}
                     <JourneyRail
                         activeStep={step ? String(step) : undefined}
                         autoPlay
@@ -233,8 +208,42 @@ export default async function RecordPage({
                     />
                 </div>
             </section>
-
-
         </div>
+    );
+}
+
+function Neighbour({
+    record,
+    direction,
+}: {
+    record: ProductRecord;
+    direction: "previous" | "next";
+}) {
+    const forward = direction === "next";
+    return (
+        <Link
+            href={`/record/${encodeURIComponent(record.code)}`}
+            className={`group flex min-w-0 items-center gap-3 rounded-lg p-2 text-ink hover:bg-card hover:text-ink sm:gap-4 ${
+                forward ? "flex-row-reverse text-right" : ""
+            }`}
+        >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+                src={recordVisual(record)}
+                alt=""
+                loading="lazy"
+                className="h-16 w-13 shrink-0 rounded-md object-cover shadow-[var(--ring)] sm:h-20 sm:w-16"
+                draggable={false}
+            />
+            <span className="min-w-0">
+                <span className="label block">
+                    {forward ? "Next →" : "← Previous"}
+                </span>
+                <span className="mt-1 block truncate text-[15px] leading-tight group-hover:text-bt-red sm:text-[17px]">
+                    {clothName(record)}
+                </span>
+                <span className="data mt-0.5 block text-muted-foreground">{record.code}</span>
+            </span>
+        </Link>
     );
 }

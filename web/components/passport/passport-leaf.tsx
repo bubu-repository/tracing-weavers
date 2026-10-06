@@ -3,7 +3,14 @@ import { Badge } from "@/components/ui/badge";
 import { t } from "@/lib/copy";
 import { siteUrl } from "@/lib/brand";
 import type { Passport } from "@/lib/types";
-import { attr, recordVisual, type ProductRecord } from "@/lib/records";
+import {
+    attr,
+    clothName,
+    formatPlace,
+    formatSize,
+    recordVisual,
+    type ProductRecord,
+} from "@/lib/records";
 
 const issuedOn = (iso: string) =>
     new Date(iso).toLocaleDateString("en-GB", {
@@ -48,7 +55,15 @@ export function PassportLeaf({
     for (const key of ["Origin", "Technique", "Material", "Size"]) {
         const value = record ? attr(record, key) : undefined;
         if (value !== undefined && String(value).trim()) {
-            facts.push({ label: key, value: String(value) });
+            facts.push({
+                label: key,
+                value:
+                    key === "Origin"
+                        ? formatPlace(value)
+                        : key === "Size"
+                          ? formatSize(value)
+                          : String(value),
+            });
         }
     }
 
@@ -100,7 +115,7 @@ export function PassportLeaf({
                 <dl className="mt-auto pt-2">
                     <Row
                         label="Cloth"
-                        value={record ? record.title : passport.code}
+                        value={record ? clothName(record) : passport.code}
                         strong
                     />
                     {facts.map((fact) => (

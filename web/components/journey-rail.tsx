@@ -49,17 +49,28 @@ export function JourneyRail({
 
     const [index, setIndex] = useState(here < 0 ? 0 : here);
     const reduce = useReducedMotion();
-    const nodes = useRef<(HTMLButtonElement | null)[]>([]);
+    const nodes = useRef<(HTMLSpanElement | null)[]>([]);
+    const rail = useRef<HTMLDivElement | null>(null);
     const ink = tone === "ink";
+    /* The first note is in the server HTML as it is; only later changes fade
+       in, so nothing is invisible before hydration. */
+    const [moved, setMoved] = useState(false);
+    const select = (next: number | ((prev: number) => number)) => {
+        setMoved(true);
+        setIndex(next);
+    };
 
-    /* Keep the selected stage in view when it was chosen by keyboard or set
-       from the record. `block: "nearest"` so the page itself never jumps. */
+    /* Keep the selected stage in view on a phone, where the rail scrolls
+       sideways. This scrolls the rail itself, never the page: the old
+       `scrollIntoView` could tug the whole page while it auto-played, and in
+       auto-play it had no node to scroll to, so Hub and Flourish lit up off
+       screen. */
     useEffect(() => {
-        nodes.current[index]?.scrollIntoView({
-            block: "nearest",
-            inline: "center",
-            behavior: reduce ? "auto" : "smooth",
-        });
+        const box = rail.current;
+        const node = nodes.current[index];
+        if (!box || !node || box.scrollWidth <= box.clientWidth) return;
+        const left = node.offsetLeft - (box.clientWidth - node.offsetWidth) / 2;
+        box.scrollTo({ left: Math.max(left, 0), behavior: reduce ? "auto" : "smooth" });
     }, [index, reduce]);
 
     /* Auto-play: walk through all seven stages, one every 2.5 seconds.
@@ -67,6 +78,7 @@ export function JourneyRail({
     useEffect(() => {
         if (!autoPlay || reduce) return;
         const timer = setInterval(() => {
+            setMoved(true);
             setIndex((prev) => (prev + 1) % n);
         }, 2500);
         return () => clearInterval(timer);
@@ -74,7 +86,7 @@ export function JourneyRail({
 
     function move(to: number) {
         const next = (to + n) % n;
-        setIndex(next);
+        select(next);
         nodes.current[next]?.focus();
     }
 
@@ -111,7 +123,8 @@ export function JourneyRail({
                 /* items-start, and every warp thread the same height: with the
                    items centred, the stage carrying the extra "this record"
                    line sat five pixels above the rest and broke the thread. */
-                className="-mx-4 flex snap-x snap-mandatory flex-nowrap items-start overflow-x-auto scroll-smooth px-4 pt-4 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden"
+                ref={rail}
+                className="-mx-4 flex snap-x snap-mandatory flex-nowrap items-start overflow-x-auto px-4 pt-4 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden"
             >
                 {steps.map((s, i) => {
                     const on = i === index;
@@ -120,13 +133,13 @@ export function JourneyRail({
                     return (
                         <span
                             key={s.id}
-                            ref={autoPlay ? undefined : (el) => {
-                                nodes.current[i] = el as HTMLButtonElement | null;
+                            ref={(el) => {
+                                nodes.current[i] = el;
                             }}
                             role={autoPlay ? "presentation" : "tab"}
                             aria-selected={autoPlay ? undefined : on}
                             tabIndex={autoPlay ? undefined : on ? 0 : -1}
-                            onClick={autoPlay ? undefined : () => setIndex(i)}
+                            onClick={autoPlay ? undefined : () => select(i)}
                             /* flex-1 from sm up so the thread spans the full
                                width of the section instead of stopping short. */
                             className="group/step relative shrink-0 snap-center px-3 pb-2 text-center sm:flex-1 outline-none"
@@ -230,9 +243,9 @@ export function JourneyRail({
                 </span>
                 <motion.p
                     key={step.id}
-                    aria-live="polite"
-                    initial={reduce ? false : { opacity: 0, y: 4, filter: "blur(2px)" }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                    aria-live={autoPlay ? "off" : "polite"}
+                    initial={moved ? { opacity: 0, y: 4 } : false}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
                     className={cn(
                         "max-w-[48ch] text-[15px] leading-snug",

@@ -47,6 +47,9 @@ export type IssueOutcome =
 export interface PassportStore {
     backend: "file" | "kv";
     issuableCount(code: string): Promise<number>;
+    /** The same count for many records in one round trip — the catalogue
+        shows which cloths are still available without 29 separate reads. */
+    issuableCounts(codes: string[]): Promise<Record<string, number>>;
     listByHolder(email: string): Promise<Passport[]>;
     listByRecord(code: string): Promise<Passport[]>;
     all(): Promise<Passport[]>;
@@ -136,6 +139,14 @@ const fileStore: PassportStore = {
     async issuableCount(code) {
         const { passports } = await readFileStore();
         return passports.filter((p) => p.code === code && p.status === "issued").length;
+    },
+    async issuableCounts(codes) {
+        const { passports } = await readFileStore();
+        const counts: Record<string, number> = Object.fromEntries(codes.map((c) => [c, 0]));
+        for (const p of passports) {
+            if (p.status === "issued" && p.code in counts) counts[p.code] += 1;
+        }
+        return counts;
     },
     async listByHolder(email) {
         const { passports } = await readFileStore();
@@ -254,6 +265,31 @@ async function kvCommand<T>(command: (string | number)[]): Promise<T> {
     return body.result;
 }
 
+/* Several commands, one request: Upstash's REST API takes a list at /pipeline
+   and answers with one { result } per command, in order. */
+async function kvPipeline<T>(commands: (string | number)[][]): Promise<T[]> {
+    const { url, token } = kvConfig();
+    const res = await fetch(`${url.replace(/\/$/, "")}/pipeline`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(commands),
+        cache: "no-store",
+    });
+
+    if (!res.ok) {
+        throw new Error(`KV pipeline failed (${res.status}): ${await res.text()}`);
+    }
+
+    const body = (await res.json()) as { result?: T; error?: string }[];
+    return body.map((entry) => {
+        if (entry.error) throw new Error(`KV pipeline command failed: ${entry.error}`);
+        return entry.result as T;
+    });
+}
+
 const PASSPORT_KEY = (id: string) => `dpp:passport:${id}`;
 const RECORD_SET = (code: string) => `dpp:record:${code}`;
 const HOLDER_SET = (email: string) => `dpp:holder:${email.trim().toLowerCase()}`;
@@ -267,6 +303,11 @@ const kvStore: PassportStore = {
     backend: "kv",
     async issuableCount(code) {
         return Number(await kvCommand<number>(["SCARD", RECORD_SET(code)])) || 0;
+    },
+    async issuableCounts(codes) {
+        if (!codes.length) return {};
+        const results = await kvPipeline<number>(codes.map((code) => ["SCARD", RECORD_SET(code)]));
+        return Object.fromEntries(codes.map((code, i) => [code, Number(results[i]) || 0]));
     },
     async listByHolder(email) {
         return readIds(await kvCommand<string[]>(["SMEMBERS", HOLDER_SET(email)]));

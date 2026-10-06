@@ -1,9 +1,12 @@
+import Link from "next/link";
 import { passportStore } from "@/lib/store";
 import { t } from "@/lib/copy";
-import { brand } from "@/lib/brand";
 import type { Passport } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
+
+/* Holder names and emails are on this page: keep it out of search results. */
+export const metadata = { title: "Admin", robots: { index: false, follow: false } };
 
 const issuedOn = (iso: string) =>
     new Date(iso).toLocaleDateString("en-GB", {
@@ -64,10 +67,22 @@ export default async function AdminPage() {
                                     key={passport.id}
                                     className="border-b border-border/60 hover:bg-card/60"
                                 >
-                                    <td className="data py-2.5 pr-4 text-[12px]">
-                                        {passport.id.slice(0, 24)}…
+                                    <td className="data py-2.5 pr-4 text-[12px] whitespace-nowrap">
+                                        <Link
+                                            href={`/verify/${encodeURIComponent(passport.id)}`}
+                                            className="text-ink hover:text-bt-red"
+                                        >
+                                            {passport.id}
+                                        </Link>
                                     </td>
-                                    <td className="py-2.5 pr-4">{passport.code}</td>
+                                    <td className="py-2.5 pr-4 whitespace-nowrap">
+                                        <Link
+                                            href={`/record/${encodeURIComponent(passport.code)}`}
+                                            className="text-ink hover:text-bt-red"
+                                        >
+                                            {passport.code}
+                                        </Link>
+                                    </td>
                                     <td className="py-2.5 pr-4 font-medium">
                                         {passport.holder}
                                     </td>
@@ -98,9 +113,6 @@ export default async function AdminPage() {
                 </div>
             )}
 
-            <p className="mt-8 text-[12px] text-muted-foreground">
-                © {brand} · Confidential · All rights reserved
-            </p>
         </div>
     );
 }

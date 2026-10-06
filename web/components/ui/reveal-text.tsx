@@ -1,18 +1,17 @@
-"use client";
-
-import { motion, useReducedMotion } from "framer-motion";
+import { Fragment } from "react";
 
 /**
- * A line of type that rises out of its own baseline as it comes into view.
+ * A line of type that rises out of its own baseline, word by word, once.
  *
- * The marketplace "Text Reveal" in this material's terms: each word sits in a
- * band of its own and is lifted out of it, 40ms apart, once — the heading is
- * read once, so the animation happens once and never again. Under
- * `prefers-reduced-motion` the words are simply there.
+ * Pure CSS now. The framer version rendered every word at translateY(108%)
+ * on the server and only lifted it after hydration, so on a slow connection
+ * the headline was blank until JavaScript arrived, and it rendered a different
+ * tree for reduced motion than the server had sent. A keyframe needs neither:
+ * the words are in the HTML, the animation runs on paint, and the global
+ * `prefers-reduced-motion` rule in globals.css collapses it to nothing.
  *
  * It takes a plain string rather than children on purpose: splitting arbitrary
- * markup into words would break links and emphasis, and a heading that needs
- * markup does not need this.
+ * markup into words would break links and emphasis.
  */
 export function RevealText({
     text,
@@ -25,63 +24,38 @@ export function RevealText({
     text: string;
     as?: "span" | "h1" | "h2" | "h3" | "p";
     className?: string;
+    /** Seconds before the first word moves. */
     delay?: number;
     /** Word index from which the line takes the accent colour. */
     accentFrom?: number;
     /** Which accent: morinda red on paper, salmon on ink. */
     accentClass?: string;
 }) {
-    const reduce = useReducedMotion();
     const words = text.split(" ");
 
-    if (reduce) {
-        return (
-            <Tag className={className}>
-                {words.map((word, i) => (
-                    <span
-                        key={`${word}-${i}`}
-                        className={
-                            accentFrom !== undefined && i >= accentFrom
-                                ? accentClass
-                                : undefined
-                        }
-                    >
-                        {word}
-                        {i < words.length - 1 ? " " : ""}
-                    </span>
-                ))}
-            </Tag>
-        );
-    }
-
     return (
-        <Tag className={className}>
+        <Tag className={className} aria-label={text}>
             {words.map((word, i) => (
-                <span
-                    key={`${word}-${i}`}
-                    /* The band the word is lifted out of. `pb` leaves room for
-                       descenders, which a plain overflow-hidden would shave. */
-                    className="inline-block overflow-hidden pb-[0.12em] align-bottom"
-                >
-                    <motion.span
-                        className={`inline-block ${
-                            accentFrom !== undefined && i >= accentFrom
-                                ? accentClass
-                                : ""
-                        }`}
-                        initial={{ y: "108%" }}
-                        whileInView={{ y: "0%" }}
-                        viewport={{ once: true, margin: "-12%" }}
-                        transition={{
-                            duration: 0.62,
-                            delay: delay + i * 0.04,
-                            ease: [0.23, 1, 0.32, 1],
-                        }}
+                <Fragment key={`${word}-${i}`}>
+                    {/* The band the word is lifted out of. `pb` leaves room
+                        for descenders, which a plain overflow-hidden would
+                        shave. The space sits outside the band: trailing
+                        whitespace inside an inline-block is dropped. */}
+                    <span
+                        aria-hidden
+                        className="inline-block overflow-hidden pb-[0.12em] align-bottom"
                     >
-                        {word}
-                    </motion.span>
-                    {i < words.length - 1 ? <span>&nbsp;</span> : null}
-                </span>
+                        <span
+                            className={`word-rise inline-block ${
+                                accentFrom !== undefined && i >= accentFrom ? accentClass : ""
+                            }`}
+                            style={{ animationDelay: `${delay + i * 0.045}s` }}
+                        >
+                            {word}
+                        </span>
+                    </span>
+                    {i < words.length - 1 ? " " : null}
+                </Fragment>
             ))}
         </Tag>
     );

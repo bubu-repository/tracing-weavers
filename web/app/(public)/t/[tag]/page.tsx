@@ -1,17 +1,23 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { resolveTag } from "@/lib/tags";
-import { t } from "@/lib/copy";
+import { findRecord } from "@/lib/records";
+import { safeDecode } from "@/lib/safe";
+import { TagLookupForm } from "@/components/nfc/tag-lookup-form";
 import { ThreadRule } from "@/components/motif/marks";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = { title: "Code not found", robots: { index: false } };
+
 /**
- * The NFC / QR landing route.
+ * The NFC / QR landing route, and the code lookup.
  *
  * A tag is written with exactly one URL: `${NEXT_PUBLIC_SITE_URL}/t/<TAG_CODE>`.
- * The code is resolved against data/tags.json and forwarded to the record, so a
- * tag can be re-pointed without rewriting the physical chip.
+ * The code is resolved against data/tags.json first — so a tag can be
+ * re-pointed without rewriting the chip — and then against the record codes
+ * themselves, so the code printed on an exhibition label ("07/TM", "07tm",
+ * "7") opens its cloth too.
  */
 export default async function TagPage({
     params,
@@ -22,44 +28,42 @@ export default async function TagPage({
     const resolved = resolveTag(tag);
 
     if (resolved) {
-        redirect(`/record/${resolved.record.code}?tag=${encodeURIComponent(tag)}`);
+        redirect(`/record/${encodeURIComponent(resolved.record.code)}?tag=${encodeURIComponent(tag)}`);
     }
 
+    const record = findRecord(tag);
+    if (record) redirect(`/record/${encodeURIComponent(record.code)}`);
+
+    const shown = safeDecode(tag);
+
     return (
-        <div className="mx-auto max-w-2xl">
-            <div className="eyebrow">Tag not recognised</div>
-            <h1 className="mt-4">This tag is not connected to a record yet.</h1>
+        <div className="mx-auto max-w-xl">
+            <div className="eyebrow">Code not found</div>
+            <h1 className="mt-4">No cloth answers to that code.</h1>
             <p className="mt-4 max-w-[52ch] text-[17px] text-muted-foreground">
-                Tag read: <span className="data text-ink">{tag}</span>. Its code is not in the register yet, or the cloth has not been recorded.
+                We looked for <span className="data text-[15px] text-ink">{shown}</span>{" "}
+                and found nothing. Check the label beside the cloth and try again —
+                the code looks like <span className="data text-[15px] text-ink">07/TM</span>.
             </p>
 
-            <div className="mt-9 grid gap-6 sm:grid-cols-2">
-                <div className="rounded-lg bg-card p-6 shadow-[var(--ring)]">
-                    <div className="eyebrow">Another way to read it</div>
-                    <p className="mt-3 text-[16px] text-muted-foreground">
-                        Type the code printed beside the tag.
-                    </p>
-                    <Link href="/scan" className="mt-4 inline-block text-[14px]">
-                        Open the reader →
-                    </Link>
-                </div>
-                <div className="rounded-lg bg-card p-6 shadow-[var(--ring)]">
-                    <div className="eyebrow">Field team</div>
-                    <p className="mt-3 text-[16px] text-muted-foreground">
-                        Add its code to{" "}
-                        <span className="data text-ink">data/tags.json</span> with the record it should open, then redeploy.
-                    </p>
-                </div>
+            <div className="mt-8 rounded-lg bg-card p-5 shadow-[var(--ring)] sm:p-6">
+                <TagLookupForm />
             </div>
 
-            <ThreadRule className="mt-12 h-2 w-full text-stone" aria-hidden />
-
             <Link
-                href="/"
-                className="mt-6 inline-block text-[14px] text-muted-foreground hover:text-ink"
+                href="/#records"
+                className="mt-6 inline-flex min-h-9 items-center text-[15px] font-medium text-ink hover:text-bt-red"
             >
-                ← {t.backToRecords}
+                Browse all the cloths instead →
             </Link>
+
+            <ThreadRule className="mt-10 h-2 w-full text-stone" aria-hidden />
+
+            <p className="mt-4 text-[13px] text-muted-foreground">
+                Field team: a tag that should open a record needs its code in{" "}
+                <span className="data text-ink">data/tags.json</span>, pointing at that
+                record, then a redeploy.
+            </p>
         </div>
     );
 }

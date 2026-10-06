@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { records } from "@/lib/records";
-import { tagCount } from "@/lib/tags";
-import { brand } from "@/lib/brand";
+import { collections, originCount, records } from "@/lib/records";
+import { passportStore } from "@/lib/store";
+import { currentIdentity } from "@/lib/session";
 import { t } from "@/lib/copy";
 import { RecordGallery } from "@/components/records/record-gallery";
 import { JourneyRail } from "@/components/journey-rail";
@@ -9,7 +9,8 @@ import { ThreadRule, WarpField } from "@/components/motif/marks";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 import { RevealText } from "@/components/ui/reveal-text";
-import { StatCounter } from "@/components/records/stat-counter";
+
+export const dynamic = "force-dynamic";
 
 /* The four dyestuffs the weavers actually use — the brand's reserved dye
    colours, so each swatch is a material, not a decoration. */
@@ -23,20 +24,25 @@ const DYES = [
 /**
  * Explore surface, written for a phone held in one hand.
  *
- * Length is the design constraint here: this page used to run a masthead, a
- * ticker, a grid, a list of dyes as rows, and then two full chapters side by
- * side — most of a metre of scrolling before anything could be tapped. It is
- * now four screens at most. The catalogue is a rail you drag instead of a
- * column you scroll, the dyes are one line, and the chapter that explains the
- * programme carries the seven stages inline as a rail rather than as a
- * disclosure that opened a two-column list.
+ * The promise, three real numbers, then the catalogue — searchable, because a
+ * visitor in the exhibition is usually looking for one cloth whose label they
+ * have just read. The programme's story comes after the cloths, not before.
  */
-export default function Home() {
+export default async function Home() {
+    const identity = await currentIdentity();
+
+    /* Which cloths are still available. A store that does not answer must not
+       take the catalogue down with it: without counts, the badges simply do
+       not show. */
+    const issued = await passportStore()
+        .issuableCounts(records.map((r) => r.code))
+        .catch(() => null);
+
     return (
         <>
-            {/* masthead — a photo band with a scrim, framing the catalogue */}
+            {/* masthead — a photo band with a scrim */}
             <section
-                className="relative mt-4 overflow-hidden rounded-xl bg-ink"
+                className="relative overflow-hidden rounded-xl bg-ink"
                 data-theme="dark"
             >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -44,55 +50,81 @@ export default function Home() {
                     src="/imagery/weaving-hands-loom.jpg"
                     alt=""
                     aria-hidden
+                    fetchPriority="high"
                     className="absolute inset-0 h-full w-full object-cover"
                     draggable={false}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/78 to-ink/40" />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-ink/35 sm:bg-gradient-to-r sm:from-ink sm:via-ink/75 sm:to-ink/10" />
                 <WarpField className="pointer-events-none absolute inset-0 h-full w-full text-white/8" />
 
-                <div className="relative max-w-2xl px-6 py-10 sm:px-10 sm:py-14">
-                    <div className="eyebrow">{t.homeEyebrow}</div>
-                    <RevealText
-                        as="h1"
-                        className="mt-3 text-[clamp(2rem,7vw,3rem)] text-white"
-                        text={`${t.homeTitleA} ${t.homeTitleB}.`}
-                        accentFrom={2}
-                        accentClass="text-salmon"
-                    />
-                    <p className="mt-3 max-w-[46ch] text-[16px] text-white/80">
-                        {t.homeLead}
-                    </p>
-                    <div className="mt-6 flex flex-wrap items-center gap-3">
-                        <Link href="/scan">
-                            <Button variant="inverse">{t.readTag}</Button>
-                        </Link>
-                        <Link
-                            href="/login"
-                            className="text-[15px] text-white/75 underline decoration-white/30 underline-offset-4 hover:text-white"
-                        >
-                            {t.openPassport}
-                        </Link>
+                <div className="relative px-5 pt-28 pb-7 sm:px-10 sm:py-16 lg:py-20">
+                    <div className="max-w-2xl">
+                        <div className="eyebrow leading-relaxed">{t.homeEyebrow}</div>
+                        <RevealText
+                            as="h1"
+                            className="mt-3 text-[clamp(2.2rem,8vw,3.6rem)] text-white"
+                            text={`${t.homeTitleA} ${t.homeTitleB}.`}
+                            accentFrom={2}
+                            accentClass="text-salmon"
+                        />
+                        <p className="mt-4 max-w-[46ch] text-[16px] leading-relaxed text-white/80 sm:text-[17px]">
+                            {t.homeLead}
+                        </p>
+                        <div className="mt-6 flex flex-wrap items-center gap-3">
+                            <Button asChild variant="inverse" size="lg">
+                                <a href="#records" className="text-ink hover:text-ink">
+                                    {t.exploreCloths}
+                                </a>
+                            </Button>
+                            <Button asChild variant="inverseGhost" size="lg">
+                                <Link href="/scan" className="text-white hover:text-white">
+                                    {t.howItWorks}
+                                </Link>
+                            </Button>
+                        </div>
+                        {identity && (
+                            <Link
+                                href="/collection"
+                                className="mt-4 inline-block text-[15px] text-white/75 underline decoration-white/30 underline-offset-4 hover:text-white"
+                            >
+                                {t.openPassport} →
+                            </Link>
+                        )}
                     </div>
+
+                    <dl className="mt-9 grid max-w-md grid-cols-3 gap-4 border-t border-white/18 pt-5">
+                        {[
+                            { value: records.length, label: "Cloths" },
+                            { value: collections.length, label: "Collections" },
+                            { value: originCount, label: "Origins" },
+                        ].map((stat) => (
+                            <div key={stat.label}>
+                                <dt className="text-[11px] tracking-[.16em] uppercase text-white/55">
+                                    {stat.label}
+                                </dt>
+                                <dd className="display num mt-1 text-[28px] text-white sm:text-[34px]">
+                                    {stat.value}
+                                </dd>
+                            </div>
+                        ))}
+                    </dl>
                 </div>
             </section>
 
-            {/* the catalogue — a rail on a phone, a grid on a desk */}
-            <section className="mt-10 sm:mt-12">
-                <div className="mb-4 flex items-end justify-between gap-4 border-b border-border pb-3">
-                    <div>
-                        <div className="eyebrow">{t.recordsEyebrow}</div>
-                        <h2 className="mt-2">{t.recordsTitle}</h2>
-                    </div>
-                    <span className="data shrink-0 pb-1 text-muted-foreground">
-                        <StatCounter value={records.length} label={t.recordsCount} /> ·
-                        <StatCounter value={tagCount} label={t.tagsCount} />
-                    </span>
+            {/* the catalogue */}
+            <section id="records" className="mt-10 scroll-mt-20 sm:mt-14">
+                <div className="mb-5 border-b border-border pb-4">
+                    <div className="eyebrow">{t.recordsEyebrow}</div>
+                    <h2 className="mt-2">{t.recordsTitle}</h2>
+                    <p className="mt-2 max-w-[56ch] text-[15px] text-muted-foreground">
+                        {t.recordsLead}
+                    </p>
                 </div>
-                <RecordGallery records={records} />
+                <RecordGallery records={records} issued={issued} />
             </section>
 
             {/* the dyes — one line of materials, not a section */}
-            <section className="mt-10 border-t border-border pt-4">
+            <section className="mt-12 border-t border-border pt-4">
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
                     <div className="eyebrow shrink-0">{t.dyeEyebrow}</div>
                     <ul className="flex flex-wrap items-center gap-x-5 gap-y-3">
@@ -114,9 +146,9 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* one chapter: what a passport is, and the path it follows */}
+            {/* one chapter: what a certificate is, and the path it follows */}
             <section
-                className="ink-band cloth mt-10 rounded-xl px-6 py-9 sm:mt-14 sm:px-10 sm:py-12"
+                className="ink-band cloth mt-10 rounded-xl px-5 py-9 sm:mt-14 sm:px-10 sm:py-12"
                 data-theme="dark"
             >
                 <div className="eyebrow">{t.journeyEyebrow}</div>
@@ -159,9 +191,18 @@ export default function Home() {
                     </p>
                 </Reveal>
 
-                <p className="mt-8 border-t border-white/18 pt-4 text-[12px] tracking-[.12em] uppercase text-white/50">
-                    {brand} · All rights reserved · Confidential
-                </p>
+                {!identity && (
+                    <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-white/18 pt-6">
+                        <p className="max-w-[44ch] text-[15px] text-white/75">
+                            {t.joinLead}
+                        </p>
+                        <Button asChild variant="inverse">
+                            <Link href="/login?mode=register" className="text-ink hover:text-ink">
+                                {t.joinButton}
+                            </Link>
+                        </Button>
+                    </div>
+                )}
             </section>
 
             <ThreadRule className="mt-10 h-2 w-full text-stone" aria-hidden />

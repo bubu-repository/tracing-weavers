@@ -57,21 +57,36 @@ export default async function CollectionPage() {
                     <h1 className="mt-3">Your certificates</h1>
                 </header>
                 <div className="mt-6 rounded-lg bg-card p-6 shadow-[var(--ring)]">
-                    <p className="text-[15px] text-muted-foreground">
-                        Sign in to see the certificates kept under your account —
-                        one page per cloth you have claimed, bound as a book you
-                        can open anywhere.
+                    <p className="text-[16px] text-muted-foreground">
+                        Every cloth you claim becomes a page in your book of
+                        traces — the photograph, the cloth&apos;s data, and a
+                        certificate in your name that anyone can check.
                     </p>
-                    <Link
-                        href={`/login?next=${encodeURIComponent("/collection")}`}
-                        className="mt-5 inline-block"
-                    >
-                        <Button size="lg">Sign in</Button>
-                    </Link>
-                    <p className="mt-4 text-[14px] text-muted-foreground">
-                        No account yet? The same page makes one.
-                    </p>
+                    <div className="mt-6 flex flex-wrap gap-3">
+                        <Button asChild size="lg">
+                            <Link
+                                href={`/login?next=${encodeURIComponent("/collection")}`}
+                                className="text-white hover:text-white"
+                            >
+                                Sign in
+                            </Link>
+                        </Button>
+                        <Button asChild size="lg" variant="outline">
+                            <Link
+                                href={`/login?mode=register&next=${encodeURIComponent("/collection")}`}
+                                className="text-ink hover:text-ink"
+                            >
+                                Create an account
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
+                <Link
+                    href="/#records"
+                    className="mt-6 inline-block text-[15px] text-muted-foreground hover:text-ink"
+                >
+                    Browse the cloths first →
+                </Link>
             </div>
         );
     }
@@ -83,9 +98,11 @@ export default async function CollectionPage() {
                 Claim a cloth and its certificate appears here — one page per
                 weave, kept under {identity.email}.
             </p>
-            <Link href="/" className="mt-6 inline-block">
-                <Button size="lg">Browse the collection</Button>
-            </Link>
+            <Button asChild size="lg" className="mt-6">
+                <Link href="/#records" className="text-white hover:text-white">
+                    Browse the cloths
+                </Link>
+            </Button>
         </div>
     );
 
@@ -99,7 +116,7 @@ export default async function CollectionPage() {
                         ? `Kept under ${identity.email}.`
                         : `${issued.length} certificate${
                               issued.length === 1 ? "" : "s"
-                          } kept under ${identity.email}. Open the book to read any of them.`}
+                          } kept under ${identity.email}. Drag a page, or use the arrows, to turn the book.`}
                 </p>
             </header>
 
@@ -107,9 +124,8 @@ export default async function CollectionPage() {
 
             {issued.length > 0 && (
                 <p className="max-w-[56ch] text-[14px] text-muted-foreground">
-                    A certificate claimed on another device arrives here once you
-                    open its verification link and press “Save to my
-                    collection”.{" "}
+                    Your certificates follow your account: sign in on any device
+                    and this book is there.{" "}
                     <Link
                         href="/profile"
                         className="underline underline-offset-2 hover:text-ink"

@@ -115,6 +115,8 @@
 
 @layer base {
   * { @apply border-border outline-ring/50; }
+  /* the sticky header must not cover what an anchor or a focus lands on */
+  html { scroll-padding-top: 5rem; -webkit-tap-highlight-color: transparent; }
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body);
@@ -212,6 +214,10 @@
 }
 
 @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+
+/* RevealText: each word lifted out of its own band */
+.word-rise { animation: word-rise 620ms var(--ease-out) both; }
+@keyframes word-rise { from { transform: translateY(108%); } to { transform: translateY(0); } }
 
 @media (hover: hover) and (pointer: fine) {
     /* The cloth catching the light as you pass over it. Hover devices only, and

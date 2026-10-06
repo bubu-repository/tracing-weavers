@@ -1,35 +1,38 @@
-import { WeftCrossing } from "@/components/motif/marks";
+import { attr, formatPlace, formatSize, type ProductRecord } from "@/lib/records";
 
-type Attribute = { trait_type?: string; value?: unknown };
+/**
+ * The fact table of the record: hairline rows, label caps left, value right.
+ *
+ * One list instead of three tabs. The tabs held five facts between them, put
+ * two of them behind a click, and their active label rendered grey-on-ink
+ * because the resting text sat above the highlight. On a phone a list of six
+ * rows is shorter than the tab bar plus its panel.
+ */
+export function RecordTraits({ record }: { record: ProductRecord }) {
+    const rows: { label: string; value: string }[] = [
+        { label: "Origin", value: formatPlace(attr(record, "Origin")) },
+        { label: "Technique", value: String(attr(record, "Technique") ?? "") },
+        { label: "Material", value: String(attr(record, "Material") ?? "") },
+        { label: "Size", value: formatSize(attr(record, "Size")) },
+        { label: "Collection", value: record.collection ?? "" },
+        { label: "On display", value: String(attr(record, "Displayed at") ?? "") },
+    ].filter((row) => row.value.trim());
 
-/* The attribute names are already English (data/records.json), so the table
-   prints them as they are — no gloss, nothing to translate. */
-function label(traitType: string | undefined): string {
-    return traitType?.trim() ?? "";
-}
-
-/* The fact table of the record: hairline rows, label caps left, value right.
-   Structure carries the hierarchy — no boxes, no chips. */
-export function RecordTraits({ attributes }: { attributes?: Attribute[] }) {
-    if (!attributes?.length) return null;
+    if (!rows.length) return null;
 
     return (
-        <section>
-            <div className="flex items-end justify-between gap-4">
-                <h2 className="eyebrow">Cloth notes</h2>
-                <WeftCrossing className="h-4 w-20 text-stone" aria-hidden />
-            </div>
-
-            <dl className="mt-4">
-                {attributes.map((attribute, i) => (
+        <section aria-labelledby="cloth-notes">
+            <h2 id="cloth-notes" className="eyebrow">
+                Cloth notes
+            </h2>
+            <dl className="mt-3">
+                {rows.map((row) => (
                     <div
-                        key={`${attribute.trait_type}-${i}`}
-                        className="flex items-baseline justify-between gap-6 border-t border-border py-3"
+                        key={row.label}
+                        className="flex items-baseline justify-between gap-6 border-t border-border py-2.5 last:border-b"
                     >
-                        <dt className="label">{label(attribute.trait_type)}</dt>
-                        <dd className="num text-right text-[17px]">
-                            {String(attribute.value)}
-                        </dd>
+                        <dt className="label shrink-0">{row.label}</dt>
+                        <dd className="num text-right text-[15px] text-ink">{row.value}</dd>
                     </div>
                 ))}
             </dl>

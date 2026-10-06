@@ -158,7 +158,7 @@ Then, in a browser:
 | Links on tags still point at localhost | `NEXT_PUBLIC_SITE_URL` left at the default | set it, redeploy |
 | `/record/...` shows "no record" (404 page) | `code` in `data/records.json` does not match the tag's `record` value | `npm run publish` lists orphans |
 | Tag opens the site but not a record | tag's URL has no `/t/`, or the code is not in `data/tags.json` | rewrite the tag / add the row |
-| Claim succeeds but `/collection` is empty | the browser did not keep the held-passport cookie (private window, cleared storage, or another device) | open that passport's verification link on the device and press "Save to my collection" |
+| Claim succeeds but `/collection` is empty | the browser did not keep the held-passport cookie (private window, cleared storage, or another device) | open that passport's verification link on the device and press "Save to my traces" |
 | In-page "Start reading" button missing | browser is not Android Chrome, or the origin is not HTTPS | expected — use the camera or the QR |
 | Passport id verifies but "signature only" | store is `file` on Vercel, or the Redis env vars are missing on that deployment | connect Upstash, redeploy |
 | `npm run record:svg` exits 1 | a trait label would reach its value, or the copy overruns the footer | shorten the value in `data/records.json`; the message names the row |

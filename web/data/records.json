@@ -5,7 +5,7 @@
       "code": "01/JM",
       "title": "Gringsing Tenganan, Gringsing Wayang",
       "subtitle": "Heritage Collection",
-      "description": "Handspun Cotton, natural dyes. woven in double ikat. from Karangasem/Bali.",
+      "description": "Double ikat in handspun cotton coloured with natural dyes, woven by hand in Karangasem, Bali.",
       "photo": "/imagery/weaving-hands-loom.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/01-JM.svg",
@@ -43,7 +43,7 @@
       "code": "02/GW",
       "title": "Tais Feto Biboki",
       "subtitle": "Gallery",
-      "description": "Cotton, natural dyes. woven in warp ikat, buna. from Timor Tengah Utara (TTU)/NTT.",
+      "description": "Warp ikat and buna in cotton coloured with natural dyes, woven by hand in Timor Tengah Utara (TTU), NTT.",
       "photo": "/imagery/tenun/02-GW.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/02-GW.svg",
@@ -57,7 +57,7 @@
         },
         {
           "trait_type": "Technique",
-          "value": "Warp ikat, Buna"
+          "value": "Warp ikat, buna"
         },
         {
           "trait_type": "Material",
@@ -69,7 +69,7 @@
         },
         {
           "trait_type": "Displayed at",
-          "value": "Stage : Left & Right (portable partitions)"
+          "value": "Stage: left & right (portable partitions)"
         },
         {
           "trait_type": "Journey step",
@@ -81,7 +81,7 @@
       "code": "03/GW",
       "title": "Beti Naek Biboki",
       "subtitle": "Gallery",
-      "description": "Cotton, natural dyes. woven in warp ikat. from Timor Tengah Utara (TTU)/NTT.",
+      "description": "Warp ikat in cotton coloured with natural dyes, woven by hand in Timor Tengah Utara (TTU), NTT.",
       "photo": "/imagery/tenun/03-GW.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/03-GW.svg",
@@ -95,7 +95,7 @@
         },
         {
           "trait_type": "Technique",
-          "value": "Warp Ikat"
+          "value": "Warp ikat"
         },
         {
           "trait_type": "Material",
@@ -107,7 +107,7 @@
         },
         {
           "trait_type": "Displayed at",
-          "value": "Stage : Left & Right (portable partitions)"
+          "value": "Stage: left & right (portable partitions)"
         },
         {
           "trait_type": "Journey step",
@@ -119,7 +119,7 @@
       "code": "04/TM",
       "title": "Penetoten",
       "subtitle": "Weave Archive",
-      "description": "Cotton, chemical dyes. woven in supplementary warp. from Adonara/NTT.",
+      "description": "Supplementary warp in cotton coloured with chemical dyes, woven by hand in Adonara, NTT.",
       "photo": "/imagery/tenun/04-TM.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/04-TM.svg",
@@ -145,7 +145,7 @@
         },
         {
           "trait_type": "Displayed at",
-          "value": "Stage : Left & Right (portable partitions)"
+          "value": "Stage: left & right (portable partitions)"
         },
         {
           "trait_type": "Journey step",
@@ -157,7 +157,7 @@
       "code": "05/GW",
       "title": "Pahikung Witikau",
       "subtitle": "Gallery",
-      "description": "Cotton, chemical dyes. woven in supplementary warp. from Sumba Timur/NTT.",
+      "description": "Supplementary warp in cotton coloured with chemical dyes, woven by hand in Sumba Timur, NTT.",
       "photo": "/imagery/tenun/05-GW.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/05-GW.svg",
@@ -183,7 +183,7 @@
         },
         {
           "trait_type": "Displayed at",
-          "value": "Stage : Left & Right (portable partitions)"
+          "value": "Stage: left & right (portable partitions)"
         },
         {
           "trait_type": "Journey step",
@@ -195,7 +195,7 @@
       "code": "06/GW",
       "title": "Kafate Palola",
       "subtitle": "Gallery",
-      "description": "Cotton, chemical dyes. woven in warp ikat. from Alor/NTT.",
+      "description": "Warp ikat in cotton coloured with chemical dyes, woven by hand in Alor, NTT.",
       "photo": "/imagery/tenun/06-GW.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/06-GW.svg",
@@ -221,7 +221,7 @@
         },
         {
           "trait_type": "Displayed at",
-          "value": "Stage : Left & Right (portable partitions)"
+          "value": "Stage: left & right (portable partitions)"
         },
         {
           "trait_type": "Journey step",
@@ -233,7 +233,7 @@
       "code": "07/TM",
       "title": "Kebat Batang Pakis",
       "subtitle": "Weave Archive",
-      "description": "Cotton, chemical dyes. woven in warp ikat. from Sintang/Kalimantan Barat.",
+      "description": "Warp ikat in cotton coloured with chemical dyes, woven by hand in Sintang, Kalimantan Barat.",
       "photo": "/imagery/tenun/07-TM.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/07-TM.svg",
@@ -259,7 +259,7 @@
         },
         {
           "trait_type": "Displayed at",
-          "value": "Stage : Left & Right (portable partitions)"
+          "value": "Stage: left & right (portable partitions)"
         },
         {
           "trait_type": "Journey step",
@@ -271,7 +271,7 @@
       "code": "08/TM",
       "title": "Sandung, Ruit, Perahu",
       "subtitle": "Weave Archive",
-      "description": "Cotton, chemical dyes. woven in warp ikat. from Sintang/Kalimantan Barat.",
+      "description": "Warp ikat in cotton coloured with chemical dyes, woven by hand in Sintang, Kalimantan Barat.",
       "photo": "/imagery/tenun/08-TM.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/08-TM.svg",
@@ -309,7 +309,7 @@
       "code": "09/TM",
       "title": "Ikat Langa",
       "subtitle": "Weave Archive",
-      "description": "Cotton, natural dyes. woven in warp ikat. from Bajawa/NTT.",
+      "description": "Warp ikat in cotton coloured with natural dyes, woven by hand in Bajawa, NTT.",
       "photo": "/imagery/tenun/09-TM.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/09-TM.svg",
@@ -347,7 +347,7 @@
       "code": "10/TM",
       "title": "Gringsing",
       "subtitle": "Weave Archive",
-      "description": "Handspun Cotton, natural dyes. woven in double ikat. from Karangasem/Bali.",
+      "description": "Double ikat in handspun cotton coloured with natural dyes, woven by hand in Karangasem, Bali.",
       "photo": "/imagery/tenun/10-TM.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/10-TM.svg",
@@ -385,7 +385,7 @@
       "code": "11/TM",
       "title": "Penetoten",
       "subtitle": "Weave Archive",
-      "description": "Cotton, chemical dyes. woven in supplementary warp. from Lembata/NTT.",
+      "description": "Supplementary warp in cotton coloured with chemical dyes, woven by hand in Lembata, NTT.",
       "photo": "/imagery/tenun/11-TM.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/11-TM.svg",
@@ -423,7 +423,7 @@
       "code": "12/TM",
       "title": "Songket",
       "subtitle": "Weave Archive",
-      "description": "Cotton-Natural dyes. woven in supplementary weft. from Sukarara/NTB.",
+      "description": "Supplementary weft in cotton coloured with natural dyes, woven by hand in Sukarara, NTB.",
       "photo": "/imagery/tenun/12-TM.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/12-TM.svg",
@@ -441,7 +441,7 @@
         },
         {
           "trait_type": "Material",
-          "value": "Cotton-Natural dyes"
+          "value": "Cotton, natural dyes"
         },
         {
           "trait_type": "Size",
@@ -461,7 +461,7 @@
       "code": "13/GW",
       "title": "Lau Witikau",
       "subtitle": "Gallery",
-      "description": "Cotton, nassa shellls, beads. woven in plain weave. from Sumba Timur/NTT.",
+      "description": "Plain weave in cotton worked with nassa shells and beads, woven by hand in Sumba Timur, NTT.",
       "photo": "/imagery/tenun/13-GW.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/13-GW.svg",
@@ -479,7 +479,7 @@
         },
         {
           "trait_type": "Material",
-          "value": "Cotton, nassa shellls, beads"
+          "value": "Cotton, nassa shells, beads"
         },
         {
           "trait_type": "Size",
@@ -499,7 +499,7 @@
       "code": "14/GW",
       "title": "Ei Worapi",
       "subtitle": "Gallery",
-      "description": "Cotton, natural dyes. woven in warp ikat. from Sawu/NTT.",
+      "description": "Warp ikat in cotton coloured with natural dyes, woven by hand in Sawu, NTT.",
       "photo": "/imagery/tenun/14-GW.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/14-GW.svg",
@@ -537,7 +537,7 @@
       "code": "15/JM",
       "title": "Kewatek Nai Telo",
       "subtitle": "Heritage Collection",
-      "description": "Handspun Cotton, natural dyes. woven in warp ikat. from Lembata/NTT.",
+      "description": "Warp ikat in handspun cotton coloured with natural dyes, woven by hand in Lembata, NTT.",
       "photo": "/imagery/tenun/15-JM.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/15-JM.svg",
@@ -575,7 +575,7 @@
       "code": "16/JM",
       "title": "Amanuban",
       "subtitle": "Heritage Collection",
-      "description": "Cotton, mix dyes. woven in warp ikat. from Timor Tengah Selatan (TTS)/NTT.",
+      "description": "Warp ikat in cotton coloured with mixed dyes, woven by hand in Timor Tengah Selatan (TTS), NTT.",
       "photo": "/imagery/tenun/16-JM.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/16-JM.svg",
@@ -593,7 +593,7 @@
         },
         {
           "trait_type": "Material",
-          "value": "Cotton, mix dyes"
+          "value": "Cotton, mixed dyes"
         },
         {
           "trait_type": "Size",
@@ -613,7 +613,7 @@
       "code": "17/GW",
       "title": "Hanggi",
       "subtitle": "Gallery",
-      "description": "Cotton, chemical dyes. woven in warp ikat. from Sumba Barat/NTT.",
+      "description": "Warp ikat in cotton coloured with chemical dyes, woven by hand in Sumba Barat, NTT.",
       "photo": "/imagery/tenun/17-GW.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/17-GW.svg",
@@ -651,7 +651,7 @@
       "code": "18/GW",
       "title": "Hinggi Kawiru",
       "subtitle": "Gallery",
-      "description": "Cotton, natural dyes. woven in warp ikat. from Sumba Timur/NTT.",
+      "description": "Warp ikat in cotton coloured with natural dyes, woven by hand in Sumba Timur, NTT.",
       "photo": "/imagery/tenun/18-GW.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/18-GW.svg",
@@ -689,7 +689,7 @@
       "code": "19/GW",
       "title": "Rohubangi - A",
       "subtitle": "Gallery",
-      "description": "Cotton, natural dyes. woven in supplementary warp. from Sumba Timur/NTT.",
+      "description": "Supplementary warp in cotton coloured with natural dyes, woven by hand in Sumba Timur, NTT.",
       "photo": "/imagery/tenun/19-GW.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/19-GW.svg",
@@ -727,7 +727,7 @@
       "code": "20/GW",
       "title": "Rohubangi - B",
       "subtitle": "Gallery",
-      "description": "Cotton, chemical dyes. woven in supplementary warp. from Sumba Timur/NTT.",
+      "description": "Supplementary warp in cotton coloured with chemical dyes, woven by hand in Sumba Timur, NTT.",
       "photo": "/imagery/tenun/20-GW.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/20-GW.svg",
@@ -765,7 +765,7 @@
       "code": "21/JM",
       "title": "Tapis Inuh Lampung",
       "subtitle": "Heritage Collection",
-      "description": "Cotton, mix dyes. woven in ikat & emroidery. from Lampung/Sumatera Selatan.",
+      "description": "Ikat with embroidery in cotton coloured with mixed dyes, woven by hand in Lampung, Sumatera Selatan.",
       "photo": "/imagery/tenun/21-JM.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/21-JM.svg",
@@ -779,11 +779,11 @@
         },
         {
           "trait_type": "Technique",
-          "value": "Ikat & Emroidery"
+          "value": "Ikat & embroidery"
         },
         {
           "trait_type": "Material",
-          "value": "Cotton, mix dyes"
+          "value": "Cotton, mixed dyes"
         },
         {
           "trait_type": "Size",
@@ -803,7 +803,7 @@
       "code": "22/TM-NFS",
       "title": "Sakka-Maroon",
       "subtitle": "Not for Sale",
-      "description": "Polyester. woven in supplementary warp. from Mamasa/Sulawesi Barat.",
+      "description": "Supplementary warp in polyester, woven by hand in Mamasa, Sulawesi Barat.",
       "photo": "/imagery/tenun/22-TM-NFS.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/22-TM-NFS.svg",
@@ -829,7 +829,7 @@
         },
         {
           "trait_type": "Displayed at",
-          "value": "Stage : Super Long (Not for Sale)"
+          "value": "Stage: super long (not for sale)"
         },
         {
           "trait_type": "Journey step",
@@ -841,7 +841,7 @@
       "code": "23/TM-NFS",
       "title": "Sakka - Light Blue",
       "subtitle": "Not for Sale",
-      "description": "Polyester. woven in supplementary warp. from Mamasa/Sulawesi Barat.",
+      "description": "Supplementary warp in polyester, woven by hand in Mamasa, Sulawesi Barat.",
       "photo": "/imagery/tenun/23-TM-NFS.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/23-TM-NFS.svg",
@@ -855,7 +855,7 @@
         },
         {
           "trait_type": "Technique",
-          "value": "Supplementary Warp"
+          "value": "Supplementary warp"
         },
         {
           "trait_type": "Material",
@@ -867,7 +867,7 @@
         },
         {
           "trait_type": "Displayed at",
-          "value": "Stage : Super Long (Not for Sale)"
+          "value": "Stage: super long (not for sale)"
         },
         {
           "trait_type": "Journey step",
@@ -879,7 +879,7 @@
       "code": "24/TM-NFS",
       "title": "Sakka - Red",
       "subtitle": "Not for Sale",
-      "description": "Polyester. woven in supplementary warp. from Mamasa/Sulawesi Barat.",
+      "description": "Supplementary warp in polyester, woven by hand in Mamasa, Sulawesi Barat.",
       "photo": "/imagery/tenun/24-TM-NFS.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/24-TM-NFS.svg",
@@ -893,7 +893,7 @@
         },
         {
           "trait_type": "Technique",
-          "value": "Supplementary Warp"
+          "value": "Supplementary warp"
         },
         {
           "trait_type": "Material",
@@ -905,7 +905,7 @@
         },
         {
           "trait_type": "Displayed at",
-          "value": "Stage : Super Long (Not for Sale)"
+          "value": "Stage: super long (not for sale)"
         },
         {
           "trait_type": "Journey step",
@@ -917,7 +917,7 @@
       "code": "25/TM-NFS",
       "title": "Sakka - Purple",
       "subtitle": "Not for Sale",
-      "description": "Polyester. woven in supplementary warp. from Mamasa/Sulawesi Barat.",
+      "description": "Supplementary warp in polyester, woven by hand in Mamasa, Sulawesi Barat.",
       "photo": "/imagery/tenun/25-TM-NFS.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/25-TM-NFS.svg",
@@ -931,7 +931,7 @@
         },
         {
           "trait_type": "Technique",
-          "value": "Supplementary Warp"
+          "value": "Supplementary warp"
         },
         {
           "trait_type": "Material",
@@ -943,7 +943,7 @@
         },
         {
           "trait_type": "Displayed at",
-          "value": "Stage : Super Long (Not for Sale)"
+          "value": "Stage: super long (not for sale)"
         },
         {
           "trait_type": "Journey step",
@@ -955,7 +955,7 @@
       "code": "26/TM",
       "title": "Pa'borong-Blue",
       "subtitle": "Weave Archive",
-      "description": "Cotton, chemical dyes. woven in plain weave. from Toraja/Sulawesi Selatan.",
+      "description": "Plain weave in cotton coloured with chemical dyes, woven by hand in Toraja, Sulawesi Selatan.",
       "photo": "/imagery/tenun/26-TM.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/26-TM.svg",
@@ -993,7 +993,7 @@
       "code": "27/TM",
       "title": "Pa'borong-Green",
       "subtitle": "Weave Archive",
-      "description": "Cotton, chemical dyes. woven in plain weave. from Toraja/Sulawesi Selatan.",
+      "description": "Plain weave in cotton coloured with chemical dyes, woven by hand in Toraja, Sulawesi Selatan.",
       "photo": "/imagery/tenun/27-TM.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/27-TM.svg",
@@ -1031,7 +1031,7 @@
       "code": "28/TM-NFS",
       "title": "Sakka - Red&White -Long",
       "subtitle": "Not for Sale",
-      "description": "Polyester. woven in supplementary warp. from Mamasa/Sulawesi Barat.",
+      "description": "Supplementary warp in polyester, woven by hand in Mamasa, Sulawesi Barat.",
       "photo": "/imagery/tenun/28-TM-NFS.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/28-TM-NFS.svg",
@@ -1045,7 +1045,7 @@
         },
         {
           "trait_type": "Technique",
-          "value": "Supplementary Warp"
+          "value": "Supplementary warp"
         },
         {
           "trait_type": "Material",
@@ -1053,7 +1053,7 @@
         },
         {
           "trait_type": "Displayed at",
-          "value": "Stage : Super Long (Not for Sale)"
+          "value": "Stage: super long (not for sale)"
         },
         {
           "trait_type": "Journey step",
@@ -1065,7 +1065,7 @@
       "code": "29/TM-NFS",
       "title": "Sakka - Red &White - short",
       "subtitle": "Not for Sale",
-      "description": "Woll. woven in supplementary warp. from Mamasa/Sulawesi Barat.",
+      "description": "Supplementary warp in wool, woven by hand in Mamasa, Sulawesi Barat.",
       "photo": "/imagery/tenun/29-TM-NFS.jpg",
       "photoCredit": "[PHOTOGRAPHER · WEAVER'S PERMISSION]",
       "image": "/records/29-TM-NFS.svg",
@@ -1079,15 +1079,15 @@
         },
         {
           "trait_type": "Technique",
-          "value": "Supplementary Warp"
+          "value": "Supplementary warp"
         },
         {
           "trait_type": "Material",
-          "value": "Woll"
+          "value": "Wool"
         },
         {
           "trait_type": "Displayed at",
-          "value": "Stage : Super Long (Not for Sale)"
+          "value": "Stage: super long (not for sale)"
         },
         {
           "trait_type": "Journey step",

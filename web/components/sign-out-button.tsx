@@ -5,43 +5,54 @@ import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { forgetLocalPassports } from "@/lib/local-passports";
+import { cn } from "@/lib/utils";
 
 /**
  * Sign out — and mean it.
  *
- * `forgetLocalPassports` existed but nothing called it, and the DELETE handler
- * had no button: signing out left the holder's name, email and certificate
- * ids in localStorage on a shared phone. Now both cookies and the local copy
- * go.
+ * Both cookies and the local copy of the holder's certificates go, so a shared
+ * phone keeps nothing of the last person. If the request fails the button says
+ * so instead of pretending: the session cookie is httpOnly, so only the server
+ * can clear it.
  */
-export function SignOutButton() {
+export function SignOutButton({
+    className,
+    variant = "ghost",
+}: {
+    className?: string;
+    variant?: "ghost" | "outline";
+}) {
     const router = useRouter();
     const [busy, setBusy] = useState(false);
+    const [failed, setFailed] = useState(false);
 
     async function signOut() {
         setBusy(true);
+        setFailed(false);
         try {
-            await fetch("/api/auth", { method: "DELETE" });
+            const res = await fetch("/api/auth", { method: "DELETE" });
+            if (!res.ok) throw new Error(String(res.status));
         } catch {
-            /* Cookie is httpOnly: if the request fails, say so rather than
-               pretending the holder is signed out. */
             setBusy(false);
+            setFailed(true);
             return;
         }
         forgetLocalPassports();
+        router.push("/");
         router.refresh();
     }
 
     return (
         <Button
-            variant="ghost"
+            variant={variant}
             size="sm"
-            className="gap-2 text-ink-2"
+            className={cn("gap-2", variant === "ghost" && "text-ink-2", className)}
             onClick={signOut}
             disabled={busy}
+            title={failed ? "Could not sign out — try again" : undefined}
         >
-            <LogOut className="h-4 w-4" />
-            <span className="hidden sm:inline">Sign out</span>
+            <LogOut aria-hidden className="h-4 w-4" strokeWidth={1.5} />
+            {busy ? "Signing out…" : failed ? "Try again" : "Sign out"}
         </Button>
     );
 }

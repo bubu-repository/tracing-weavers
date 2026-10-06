@@ -125,6 +125,17 @@ export function PassportBook({
 
     useEffect(() => {
         function onKey(event: KeyboardEvent) {
+            /* Never steal the arrows from someone typing, or from a control
+               that uses them itself (a tab list, a slider). */
+            const target = event.target as HTMLElement | null;
+            if (
+                event.altKey ||
+                event.metaKey ||
+                event.ctrlKey ||
+                target?.closest("input, textarea, select, [contenteditable], [role=tablist], [role=slider]")
+            ) {
+                return;
+            }
             if (event.key === "ArrowRight") go(1);
             if (event.key === "ArrowLeft") go(-1);
         }

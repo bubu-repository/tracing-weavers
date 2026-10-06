@@ -9,12 +9,11 @@ import { PassportLeaf } from "@/components/passport/passport-leaf";
 import { HoldButton } from "@/components/passport/hold-button";
 import { Badge } from "@/components/ui/badge";
 import { t } from "@/lib/copy";
-import { ValueLoop } from "@/components/motif/marks";
 import type { Passport } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Check a passport" };
+export const metadata = { title: "Check a certificate", robots: { index: false } };
 
 /**
  * Verification, two ways:
@@ -55,43 +54,69 @@ export default async function VerifyPage({
     const record = getRecord(passport.code);
     const alreadyHeld = (await heldIds()).includes(passport.id);
 
+    const revoked = passport.status === "revoked";
+    const issuedOn = new Date(passport.issuedAt).toLocaleDateString("en-GB", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        timeZone: "Asia/Jakarta",
+    });
+    const cloth = record ? record.title.split(" · ")[0] : passport.code;
+
     return (
-        <div className="mx-auto max-w-2xl space-y-7">
-            <div className="flex flex-wrap items-center gap-2">
-                <h1 className="eyebrow">{t.verifyEyebrow}</h1>
-                <Badge variant={stored ? "positive" : "amber"}>
-                    {stored ? t.verifyStored : t.verifySignature}
-                </Badge>
-                {passport.status === "revoked" && <Badge>Revoked</Badge>}
-            </div>
+        <div className="mx-auto max-w-2xl space-y-8">
+            <header>
+                <div className="flex flex-wrap items-center gap-2">
+                    <span className="eyebrow">{t.verifyEyebrow}</span>
+                    <Badge variant={revoked ? "default" : stored ? "positive" : "amber"}>
+                        {revoked ? "Revoked" : stored ? t.verifyStored : t.verifySignature}
+                    </Badge>
+                </div>
+                <h1 className="mt-4">
+                    {revoked ? "This certificate was revoked." : "This certificate is genuine."}
+                </h1>
+                <p className="mt-3 max-w-[56ch] text-[17px] text-muted-foreground">
+                    {revoked ? (
+                        <>
+                            It was issued for <span className="text-ink">{cloth}</span>, but
+                            it no longer stands.
+                        </>
+                    ) : (
+                        <>
+                            Issued by Tracing Weavers to{" "}
+                            <span className="text-ink">{passport.holder}</span> for{" "}
+                            <span className="text-ink">{cloth}</span> on {issuedOn}.
+                        </>
+                    )}
+                </p>
+            </header>
 
             <PassportLeaf passport={passport} record={record} className="mx-auto max-w-md" />
 
-            {!alreadyHeld && (
-                <div>
-                    <HoldButton id={passport.id} token={token} />
-                    <p className="mt-1 text-[13px] text-muted-foreground">
-                        Save it so this passport appears in your collection on this device.
+            {!alreadyHeld && !revoked && (
+                <div className="rounded-lg bg-card p-5 shadow-[var(--ring)]">
+                    <p className="text-[15px] text-ink">Is this yours?</p>
+                    <p className="mt-1 text-[14px] text-muted-foreground">
+                        Save it to this device and it appears in your traces whenever
+                        you are signed in here.
                     </p>
+                    <HoldButton id={passport.id} token={token} />
                 </div>
             )}
 
-            <section className="rounded-lg bg-card p-6 shadow-[var(--ring)]">
-                <div className="flex items-start justify-between gap-6">
-                    <h2 className="eyebrow">{t.verifyProves}</h2>
-                    <ValueLoop className="h-9 w-16 text-stone" aria-hidden />
-                </div>
+            <section className="border-t border-border pt-6">
+                <h2 className="eyebrow">{t.verifyProves}</h2>
                 <p className="mt-3 max-w-[62ch] text-[16px] text-muted-foreground">
                     {stored
-                        ? "This passport was issued by this app, under the name shown. The record it points at is in the data file, so the two can be checked against each other."
-                        : "The register is not answering, but the signature on the link proves this passport was issued by this app. Open the record to match the holder."}
+                        ? "This certificate is in the Tracing Weavers register, under the name shown. The cloth it names has its own public record, so the two can be checked against each other."
+                        : "The register is not answering right now, but the signature on this link proves the certificate was issued by Tracing Weavers. Open the record to match the cloth."}
                 </p>
                 {record && (
                     <Link
-                        href={`/record/${record.code}`}
-                        className="mt-5 inline-block text-[14px] text-muted-foreground hover:text-ink"
+                        href={`/record/${encodeURIComponent(record.code)}`}
+                        className="mt-4 inline-flex min-h-9 items-center text-[15px] font-medium text-ink hover:text-bt-red"
                     >
-                        {t.recordEyebrow} →
+                        Read the cloth&apos;s record →
                     </Link>
                 )}
             </section>

@@ -104,56 +104,55 @@ export function PassportClaim({
                 id="claim"
                 className="scroll-mt-24 rounded-lg bg-card p-6 shadow-[var(--ring)]"
             >
-                <div className="eyebrow">{t.claimEyebrow}</div>
-                <h2 className="mt-3 text-[22px]">{t.claimTitle}</h2>
+                <div className="eyebrow">
+                    {issued ? t.claimedEyebrow : soldOut ? "Certificate" : t.claimEyebrow}
+                </div>
+                <h2 className="mt-3 text-[22px]">
+                    {issued
+                        ? "It is yours."
+                        : soldOut
+                          ? "This cloth's certificate is held."
+                          : t.claimTitle}
+                </h2>
                 {/* The lead is the one line that differs by state: telling a
-                    signed-in holder to sign in reads as a bug. */}
+                    signed-in holder to sign in reads as a bug, and inviting
+                    anyone to claim a certificate that is gone is worse. */}
                 <p className="mt-2 text-[15px] text-muted-foreground">
-                    {!identity
-                        ? t.claimLead
-                        : issued
-                          ? "Issued to you, and kept under your account."
-                          : "It will be issued to you and kept under your account."}
+                    {issued
+                        ? "Issued to you, and kept under your account."
+                        : soldOut
+                          ? supply > 1
+                              ? `All ${supply} certificates have been issued. The record stays open for anyone to read.`
+                              : "There is one certificate per cloth, and it has been claimed. The record stays open for anyone to read."
+                          : !identity
+                            ? t.claimLead
+                            : "It will be issued in your name and kept under your account."}
                 </p>
 
-                <dl className="mt-5">
-                    <Row label="Record" value={code} mono />
-                    {/* A one-of-one cloth already reads "the only one" in the
-                        caption above, so supply and remaining would both be
-                        restating it. They only carry information when there is
-                        more than one to go round. */}
-                    {supply > 1 && !issued && (
-                        <Row
-                            label="Supply"
-                            value={t.supplyShared.replace("{n}", String(supply))}
-                        />
-                    )}
-                    {supply > 1 && (
-                        <Row
-                            label={t.remaining}
-                            value={available === null ? "—" : String(available)}
-                        />
-                    )}
-                    {identity && (
-                        <Row label="Kept under" value={identity.email} />
-                    )}
-                </dl>
+                {(supply > 1 || (identity && !soldOut)) && (
+                    <dl className="mt-5">
+                        {supply > 1 && (
+                            <Row
+                                label={t.remaining}
+                                value={
+                                    available === null
+                                        ? "—"
+                                        : `${available} of ${supply}`
+                                }
+                            />
+                        )}
+                        {identity && !soldOut && (
+                            <Row label="Kept under" value={identity.email} />
+                        )}
+                    </dl>
+                )}
 
                 {issued ? (
                     /* The certificate itself, here, the moment it is issued —
                        claiming and then being handed a bare id made the
                        holder go and look for what they had just got. */
                     <div className="mt-5">
-                        <div className="rounded-md bg-success/8 p-4 shadow-[0_0_0_1px_rgba(62,107,46,.25)]">
-                            <div className="text-[11px] tracking-[.2em] uppercase text-success">
-                                {t.claimedEyebrow}
-                            </div>
-                            <p className="mt-1.5 text-[15px] text-ink">
-                                This certificate is yours, kept under your account.
-                            </p>
-                        </div>
-
-                        <div className="mt-4">
+                        <div>
                             <PassportLeaf
                                 passport={issued}
                                 record={getRecord(issued.code)}
@@ -180,9 +179,12 @@ export function PassportClaim({
                         </p>
                     </div>
                 ) : soldOut ? (
-                    <p className="mt-6 rounded-md bg-card p-4 text-[15px] text-muted-foreground shadow-[var(--ring)]">
-                        {t.claimSoldOut}. {t.claimOnePerCloth}.
-                    </p>
+                    <Link
+                        href="/#records"
+                        className="mt-5 inline-flex min-h-9 items-center text-[15px] font-medium text-ink hover:text-bt-red"
+                    >
+                        Find a cloth that is still available →
+                    </Link>
                 ) : identity ? (
                     <div className="mt-6">
                         {error && (
@@ -216,24 +218,32 @@ export function PassportClaim({
                     </div>
                 ) : (
                     <div className="mt-6">
-                        <Link
-                            href={`/login?next=${encodeURIComponent(`/record/${encodeURIComponent(code)}`)}`}
-                            className="block"
-                        >
-                            <Button size="lg" className="w-full">
+                        <Button asChild size="lg" className="w-full">
+                            <Link
+                                href={`/login?next=${encodeURIComponent(`/record/${encodeURIComponent(code)}#claim`)}`}
+                                className="text-white hover:text-white"
+                            >
                                 Sign in to claim
-                            </Button>
-                        </Link>
+                            </Link>
+                        </Button>
                         <p className="mt-3 text-[14px] text-muted-foreground">
-                            No account yet? The same page makes one — an email and
-                            a password, nothing else.
+                            New here?{" "}
+                            <Link
+                                href={`/login?mode=register&next=${encodeURIComponent(`/record/${encodeURIComponent(code)}#claim`)}`}
+                                className="underline underline-offset-2"
+                            >
+                                Create an account
+                            </Link>{" "}
+                            — a name, an email and a password, nothing else.
                         </p>
                     </div>
                 )}
 
-                <p className="mt-5 border-t border-border pt-4 text-[14px] leading-relaxed text-muted-foreground">
-                    {t.claimFine}
-                </p>
+                {!soldOut && (
+                    <p className="mt-5 border-t border-border pt-4 text-[14px] leading-relaxed text-muted-foreground">
+                        {t.claimFine}
+                    </p>
+                )}
             </section>
 
             {showNotice && issued && (

@@ -181,7 +181,7 @@ function Setup() {
                 <li>3. Project → Settings → General → copy the Project ID.</li>
                 <li>
                     4. Add <span className="data text-ink">VERCEL_ANALYTICS_TOKEN</span> and{" "}
-                    <span className="data text-ink">VERCEL_PROJECT_ID</span> to the project's
+                    <span className="data text-ink">VERCEL_PROJECT_ID</span> to the project&apos;s
                     environment variables (plus <span className="data text-ink">VERCEL_TEAM_ID</span>{" "}
                     for a team project).
                 </li>

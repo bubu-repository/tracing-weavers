@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { X } from "lucide-react";
 
 /**
  * The moment a claim lands.
@@ -52,7 +53,7 @@ export function ClaimNotice({
                     transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
                     role="status"
                     aria-live="polite"
-                    className="fixed right-4 bottom-4 left-4 z-50 mx-auto max-w-md overflow-hidden rounded-xl bg-ink text-white shadow-[0_18px_44px_rgba(32,30,29,.4)] sm:right-6 sm:left-auto sm:w-[26rem]"
+                    className="fixed right-4 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] left-4 z-[55] mx-auto max-w-md overflow-hidden rounded-xl bg-ink text-white shadow-[0_18px_44px_rgba(32,30,29,.4)] sm:right-6 sm:left-auto sm:w-[26rem] md:bottom-6"
                     data-theme="dark"
                 >
                     {/* the finished edge of the weave, across the top */}
@@ -67,7 +68,7 @@ export function ClaimNotice({
                             className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full text-white/45 transition-colors duration-150 hover:bg-white/10 hover:text-white"
                             aria-label="Close"
                         >
-                            ×
+                            <X aria-hidden className="h-4 w-4" strokeWidth={1.5} />
                         </button>
 
                         <div className="eyebrow">Congratulations</div>
@@ -79,9 +80,9 @@ export function ClaimNotice({
 
                         <p className="mt-2 text-[14px] leading-snug text-white/65">
                             It is kept under your account. Open{" "}
-                            <span className="text-white/90">Traces</span> in the
-                            menu to see it again — the cloth&apos;s photograph and
-                            its data, bound as a book you can open anywhere.
+                            <span className="text-white/90">Traces</span> any time
+                            to see it again — the cloth&apos;s photograph and its
+                            data, bound as a book you can open anywhere.
                         </p>
 
                         <p className="num mt-2 text-[11px] break-all text-white/40">

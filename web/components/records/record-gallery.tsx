@@ -1,58 +1,129 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Search, X } from "lucide-react";
+import { motion } from "framer-motion";
 import RecordCard from "@/components/records/RecordCard";
-import { attr, type ProductRecord } from "@/lib/records";
+import { attr, clothName, formatPlace, type ProductRecord } from "@/lib/records";
+
+const ALL = "All";
+
+const fold = (value: string) =>
+    value
+        .normalize("NFD")
+        .replace(/[̀-ͯ]/g, "")
+        .toLowerCase();
+
+/* What a visitor might type: the name, the place, the technique, or the code
+   from the label ("07/TM", "07tm", "7"). */
+function haystack(record: ProductRecord) {
+    return fold(
+        [
+            record.code,
+            record.code.replace(/[^A-Za-z0-9]/g, ""),
+            clothName(record),
+            record.collection ?? "",
+            formatPlace(attr(record, "Origin")),
+            String(attr(record, "Technique") ?? ""),
+            String(attr(record, "Material") ?? ""),
+        ].join(" "),
+    );
+}
+
+function matches(record: ProductRecord, text: string, query: string) {
+    const q = fold(query.trim());
+    if (!q) return true;
+    if (/^\d{1,2}$/.test(q)) return Number.parseInt(record.code, 10) === Number(q);
+    return q.split(/\s+/).every((word) => text.includes(word));
+}
 
 /**
- * The catalogue, two shapes in one component.
+ * The catalogue: search, the collections as filters, and the grid.
  *
- * On a phone it is a rail: the records lie side by side and you drag through
- * them, one snap per card, so four records cost one screen instead of four.
- * From `sm` up the same records lay out as the grid they always were — there is
- * room, so nothing is hidden behind a gesture.
+ * It used to be a sideways rail on a phone — fine for four records, a chore
+ * for twenty-nine — filtered by fifteen places of origin that each held one
+ * cloth. Now it is two columns on a phone and four on a desk, filtered by the
+ * four collections the exhibition is actually hung in, with a search box that
+ * also takes the code printed on the label beside each cloth.
  *
- * Above them, the districts as filters (the marketplace's "Filterable
- * Gallery"): tapping one keeps the cards that come from it and animates the
- * rest out, and the count next to the heading follows the filter, because a
- * filter that leaves a stale number behind is worse than no filter.
+ * The filters live in the URL (`?q=`, `?c=`), so the back button from a
+ * record returns to the same view instead of to the top of an unfiltered list.
  */
 export function RecordGallery({
     records,
+    issued,
     className,
 }: {
     records: ProductRecord[];
+    /** certificates issued per record code; null when the store did not answer */
+    issued: Record<string, number> | null;
     className?: string;
 }) {
-    const reduce = useReducedMotion();
-    const [place, setPlace] = useState<string>("All");
-    const rail = useRef<HTMLDivElement | null>(null);
+    /* Read from the live URL, not from props: "back" restores the page's first
+       render from the router cache, whose props predate the search. */
+    const params = useSearchParams();
+    const [query, setQuery] = useState(() => params.get("q") ?? "");
+    const [collection, setCollection] = useState(() => {
+        const wanted = params.get("c");
+        return wanted && records.some((r) => r.collection === wanted) ? wanted : ALL;
+    });
+    const [openOnly, setOpenOnly] = useState(false);
+    const deferred = useDeferredValue(query);
 
-    const places = useMemo(() => {
-        const found = new Set<string>();
-        for (const record of records) {
-            const origin = attr(record, "Origin");
-            if (origin) found.add(String(origin));
+    const indexed = useMemo(
+        () => records.map((record) => ({ record, text: haystack(record) })),
+        [records],
+    );
+
+    const collections = useMemo(() => {
+        const counts = new Map<string, number>();
+        for (const r of records) {
+            if (r.collection) counts.set(r.collection, (counts.get(r.collection) ?? 0) + 1);
         }
-        return ["All", ...[...found].sort()];
+        return [...counts.entries()];
     }, [records]);
 
-    const shown = useMemo(
-        () =>
-            place === "All"
-                ? records
-                : records.filter((r) => String(attr(r, "Origin") ?? "") === place),
-        [records, place],
-    );
+    const left = (record: ProductRecord) =>
+        issued ? Math.max(record.supply - (issued[record.code] ?? 0), 0) : undefined;
+
+    const shown = indexed
+        .filter(({ record }) => collection === ALL || record.collection === collection)
+        .filter(({ record }) => !openOnly || (left(record) ?? 1) > 0)
+        .filter(({ record, text }) => matches(record, text, deferred))
+        .map(({ record }) => record);
+
+    /* Mirror the view into the URL without a navigation. */
+    useEffect(() => {
+        const url = new URL(window.location.href);
+        const q = deferred.trim();
+        if (q) url.searchParams.set("q", q);
+        else url.searchParams.delete("q");
+        if (collection !== ALL) url.searchParams.set("c", collection);
+        else url.searchParams.delete("c");
+        const next = `${url.pathname}${url.search}${url.hash}`;
+        if (next !== `${window.location.pathname}${window.location.search}${window.location.hash}`) {
+            /* `null`, not the current state: Next only adopts the new URL
+               into its own router state when the state argument is empty,
+               and otherwise writes the old URL back on the next navigation,
+               so "back" from a record lost the search. */
+            window.history.replaceState(null, "", next);
+        }
+    }, [deferred, collection]);
+
+    const filtered = collection !== ALL || openOnly || deferred.trim() !== "";
+    const clear = () => {
+        setQuery("");
+        setCollection(ALL);
+        setOpenOnly(false);
+    };
 
     if (!records.length) {
         return (
             <div className="rounded-lg px-6 py-16 text-center shadow-[var(--ring)]">
                 <p className="display text-2xl">No records yet</p>
                 <p className="mx-auto mt-3 max-w-[46ch] text-[17px] text-muted-foreground">
-                    Records appear as soon as the first cloth is registered, from
-                    Adonara, Lembata and Manggarai.
+                    Records appear as soon as the first cloth is registered.
                 </p>
             </div>
         );
@@ -60,92 +131,134 @@ export function RecordGallery({
 
     return (
         <div className={className}>
-            {places.length > 2 && (
+            <div className="flex flex-col gap-3">
+                <label className="relative block sm:max-w-md">
+                    <span className="sr-only">Search the cloths</span>
+                    <Search
+                        aria-hidden
+                        strokeWidth={1.5}
+                        className="pointer-events-none absolute top-1/2 left-3.5 h-[18px] w-[18px] -translate-y-1/2 text-ink-3"
+                    />
+                    <input
+                        type="search"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        placeholder="Name, place, or label code"
+                        autoComplete="off"
+                        spellCheck={false}
+                        enterKeyHint="search"
+                        className="h-12 w-full rounded-full bg-card pr-11 pl-11 text-[16px] shadow-[var(--ring)] transition-shadow duration-[160ms] placeholder:text-ink-3 focus-visible:shadow-[0_0_0_2px_var(--bt-red)] [&::-webkit-search-cancel-button]:hidden"
+                    />
+                    {query && (
+                        <button
+                            type="button"
+                            onClick={() => setQuery("")}
+                            aria-label="Clear search"
+                            className="absolute top-1/2 right-2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-ink-3 hover:bg-ink/5 hover:text-ink"
+                        >
+                            <X aria-hidden className="h-4 w-4" strokeWidth={1.5} />
+                        </button>
+                    )}
+                </label>
+
                 <div
                     role="group"
-                    aria-label="Filter by district"
-                    className="-mx-4 mb-5 flex gap-1.5 overflow-x-auto px-4 [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden"
+                    aria-label="Filter by collection"
+                    className="-mx-4 flex gap-1.5 overflow-x-auto px-4 [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 [&::-webkit-scrollbar]:hidden"
                 >
-                    {places.map((name) => {
-                        const on = name === place;
+                    {[[ALL, records.length] as const, ...collections].map(([name, count]) => {
+                        const on = name === collection;
                         return (
                             <button
                                 key={name}
                                 type="button"
                                 aria-pressed={on}
-                                onClick={() => {
-                                    setPlace(name);
-                                    rail.current?.scrollTo({ left: 0, behavior: "smooth" });
-                                }}
-                                className="pressable relative shrink-0 rounded-full px-3.5 py-1.5 text-[13px] tracking-[.1em] uppercase"
+                                onClick={() => setCollection(name)}
+                                className="pressable relative shrink-0 rounded-full px-3.5 py-2 text-[12px] tracking-[.1em] uppercase shadow-[var(--ring)]"
                             >
                                 {on && (
                                     <motion.span
                                         layoutId="record-filter-pill"
                                         aria-hidden
                                         className="absolute inset-0 rounded-full bg-ink"
-                                        transition={
-                                            reduce
-                                                ? { duration: 0 }
-                                                : {
-                                                      type: "spring",
-                                                      duration: 0.34,
-                                                      bounce: 0.18,
-                                                  }
-                                        }
+                                        transition={{ type: "spring", duration: 0.34, bounce: 0.18 }}
                                     />
                                 )}
                                 <span
-                                    className={`relative ${
+                                    className={`relative whitespace-nowrap ${
                                         on ? "text-white" : "text-ink-2 hover:text-ink"
                                     }`}
                                 >
                                     {name}
-                                    {name !== "All" && (
-                                        <span className="ml-1.5 opacity-60">
-                                            {
-                                                records.filter(
-                                                    (r) =>
-                                                        String(
-                                                            attr(r, "Origin") ?? "",
-                                                        ) === name,
-                                                ).length
-                                            }
-                                        </span>
-                                    )}
+                                    <span className="num ml-1.5 opacity-60">{count}</span>
                                 </span>
                             </button>
                         );
                     })}
-                </div>
-            )}
-
-            {/* the rail on a phone, the grid from sm up — one list, two shapes */}
-            <div
-                ref={rail}
-                className="-mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 [-ms-overflow-style:none] [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-x-5 sm:gap-y-10 sm:overflow-visible sm:px-0 lg:grid-cols-3 lg:gap-x-7 [&::-webkit-scrollbar]:hidden"
-            >
-                <AnimatePresence initial={false} mode="popLayout">
-                    {shown.map((record, i) => (
-                        <motion.div
-                            key={record.code}
-                            layout={!reduce}
-                            initial={reduce ? false : { opacity: 0, scale: 0.97 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={reduce ? undefined : { opacity: 0, scale: 0.97 }}
-                            transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
-                            className="w-[78%] shrink-0 snap-start sm:w-auto"
+                    {issued && (
+                        <button
+                            type="button"
+                            aria-pressed={openOnly}
+                            onClick={() => setOpenOnly((v) => !v)}
+                            className={`pressable shrink-0 rounded-full px-3.5 py-2 text-[12px] tracking-[.1em] whitespace-nowrap uppercase ${
+                                openOnly
+                                    ? "bg-blush text-bt-red shadow-[0_0_0_1px_rgba(174,24,0,.3)]"
+                                    : "text-ink-2 shadow-[var(--ring)] hover:text-ink"
+                            }`}
                         >
-                            <RecordCard record={record} index={i} />
-                        </motion.div>
-                    ))}
-                </AnimatePresence>
+                            {openOnly ? "✓ " : ""}Unclaimed only
+                        </button>
+                    )}
+                </div>
             </div>
 
-            <p className="mt-1 text-[13px] text-muted-foreground sm:hidden">
-                {shown.length} {shown.length === 1 ? "record" : "records"} · drag
-                sideways
+            <p
+                aria-live="polite"
+                className="mt-4 mb-5 flex min-h-6 flex-wrap items-center gap-x-3 text-[14px] text-muted-foreground"
+            >
+                <span className="num">
+                    {filtered
+                        ? `${shown.length} of ${records.length} cloths`
+                        : `${records.length} cloths`}
+                </span>
+                {filtered && (
+                    <button
+                        type="button"
+                        onClick={clear}
+                        className="text-bt-red underline underline-offset-2 hover:text-bt-red-bright"
+                    >
+                        Clear filters
+                    </button>
+                )}
             </p>
+
+            {shown.length ? (
+                <div className="grid grid-cols-2 gap-x-3 gap-y-7 sm:grid-cols-3 sm:gap-x-5 sm:gap-y-9 lg:grid-cols-4 lg:gap-x-6">
+                    {shown.map((record, i) => (
+                        <RecordCard
+                            key={record.code}
+                            record={record}
+                            index={i}
+                            remaining={left(record)}
+                        />
+                    ))}
+                </div>
+            ) : (
+                <div className="rounded-lg px-6 py-14 text-center shadow-[var(--ring)]">
+                    <p className="display text-[22px]">No cloth matches that.</p>
+                    <p className="mx-auto mt-2 max-w-[44ch] text-[15px] text-muted-foreground">
+                        Try the cloth&apos;s name, where it was woven, or the code on
+                        its label — for example <span className="data text-ink">07/TM</span>.
+                    </p>
+                    <button
+                        type="button"
+                        onClick={clear}
+                        className="pressable mt-5 inline-flex h-11 items-center rounded-md bg-ink px-5 text-white hover:bg-ink/90"
+                    >
+                        Show all cloths
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

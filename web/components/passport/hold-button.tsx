@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
 /**
- * "Save to my collection" on a verification page.
+ * "Save to my traces" on a verification page.
  *
  * This is how a passport reaches a second device: the holder already has the
  * link (it is printed on the sheet and in the QR), so opening it and saving it
@@ -47,15 +47,15 @@ export function HoldButton({ id, token }: { id: string; token?: string }) {
     if (state === "saved") {
         return (
             <p className="mt-4 text-[15px] text-success" role="status">
-                Saved to this device's collection.
+                Saved. It now appears in your traces on this device.
             </p>
         );
     }
 
     return (
         <div className="mt-4">
-            <Button variant="ghost" onClick={save} disabled={state === "busy"}>
-                {state === "busy" ? "Saving…" : "Save to my collection"}
+            <Button variant="outline" onClick={save} disabled={state === "busy"}>
+                {state === "busy" ? "Saving…" : "Save to my traces"}
             </Button>
             {message && (
                 <p role="alert" className="mt-2 text-[15px] text-bt-red">
