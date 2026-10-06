@@ -118,11 +118,11 @@ export function ChapterHead({
             <div className="flex items-end gap-4">
                 <span
                     aria-hidden
-                    className={cn("numeral text-[clamp(4.5rem,11vw,8.5rem)]", ink ? "text-salmon/35" : "text-bt-red/22")}
+                    className={cn("numeral text-[clamp(3.6rem,8vw,6.25rem)]", ink ? "text-salmon/35" : "text-bt-red/25")}
                 >
                     {numeral}
                 </span>
-                <span className="eyebrow pb-3 sm:pb-5">{kicker}</span>
+                <span className="eyebrow pb-2.5 sm:pb-4">{kicker}</span>
             </div>
             <h2 className={cn("mt-2 max-w-[18ch] text-[clamp(2.4rem,6.5vw,4.75rem)] leading-[.92]", ink && "text-white")}>
                 {title}

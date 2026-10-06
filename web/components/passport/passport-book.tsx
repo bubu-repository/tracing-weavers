@@ -1,11 +1,14 @@
 "use client";
 
 import {
+    createContext,
     useCallback,
+    useContext,
     useEffect,
     useMemo,
     useRef,
     useState,
+    useSyncExternalStore,
     type PointerEvent as ReactPointerEvent,
     type ReactNode,
 } from "react";
@@ -21,21 +24,47 @@ import { Button } from "@/components/ui/button";
 
 export type BookPage = { id: string; label: string; content: ReactNode };
 
+/** An index tab on the fore-edge: one per page worth finding again. */
+export type BookTab = { pageId: string; label: string; title: string; color: string };
+
 type Sheet = { id: string; front: BookPage; back: BookPage | null };
 
 /* Two pages to a sheet, the way paper works: what you see on the right is the
-   front of the next sheet, and turning it puts its back on the left. */
-function toSheets(pages: BookPage[]): Sheet[] {
+   front of the next sheet, and turning it puts its back on the left. On a
+   phone only the right-hand page shows, so every page gets a sheet of its
+   own there — otherwise the backs (every second certificate) could never be
+   seen. */
+function toSheets(pages: BookPage[], paired: boolean): Sheet[] {
     const sheets: Sheet[] = [];
-    for (let i = 0; i < pages.length; i += 2) {
+    const step = paired ? 2 : 1;
+    for (let i = 0; i < pages.length; i += step) {
         sheets.push({
             id: pages[i].id,
             front: pages[i],
-            back: pages[i + 1] ?? null,
+            back: paired ? (pages[i + 1] ?? null) : null,
         });
     }
     return sheets;
 }
+
+/* the spread is two pages wide from `sm` up */
+const wide = "(min-width: 640px)";
+function useWide() {
+    return useSyncExternalStore(
+        (notify) => {
+            const query = window.matchMedia(wide);
+            query.addEventListener("change", notify);
+            return () => query.removeEventListener("change", notify);
+        },
+        () => window.matchMedia(wide).matches,
+        () => true,
+    );
+}
+
+/* Pages can turn the book themselves — a register entry that opens the
+   certificate it names. */
+const BookNav = createContext<{ toPage: (pageId: string) => void } | null>(null);
+export const useBookNav = () => useContext(BookNav);
 
 /**
  * The passport as a book you actually turn.
@@ -62,10 +91,13 @@ export function PassportBook({
     pages,
     insideCover,
     backCover,
+    tabs = [],
     tone = "paper",
     className,
 }: {
     pages: BookPage[];
+    /** coloured tabs on the fore-edge that turn straight to a page */
+    tabs?: BookTab[];
     /** "ink" when the book lies on the gallery wall: light controls */
     tone?: "paper" | "ink";
     /** Printed on the left-hand page while no sheet has been turned onto it —
@@ -77,9 +109,10 @@ export function PassportBook({
 }) {
     /* Keyed on the page ids: the parent rebuilds the array on every render, and
        the turn effect below must not restart mid-animation because of it. */
-    const key = pages.map((page) => page.id).join("|");
+    const paired = useWide();
+    const key = pages.map((page) => page.id).join("|") + (paired ? "|2" : "|1");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    const sheets = useMemo(() => toSheets(pages), [key]);
+    const sheets = useMemo(() => toSheets(pages, paired), [key]);
     const count = sheets.length;
     const reduce = useReducedMotion();
 
@@ -89,18 +122,46 @@ export function PassportBook({
     const [hint, setHint] = useState(true);
 
     /* One rotation value per sheet, kept outside React so the drag can write to
-       it every frame without a re-render. */
+       it every frame without a re-render. A new binding (the phone turned to
+       landscape, a sheet bound in) starts a fresh set, closed on the cover. */
     const rots = useRef(new Map<string, MotionValue<number>>());
-    const rotFor = useCallback((sheet: Sheet, turned: boolean) => {
-        const found = rots.current.get(sheet.id);
-        if (found) return found;
-        const made = motionValue(turned ? -180 : 0);
-        rots.current.set(sheet.id, made);
-        return made;
-    }, []);
+    const [shownKey, setShownKey] = useState(key);
+    if (shownKey !== key) {
+        setShownKey(key);
+        setIndex(0);
+    }
+    const rotFor = useCallback(
+        (sheet: Sheet, turned: boolean) => {
+            const id = `${paired ? 2 : 1}:${sheet.id}`;
+            const found = rots.current.get(id);
+            if (found) return found;
+            const made = motionValue(turned ? -180 : 0);
+            rots.current.set(id, made);
+            return made;
+        },
+        [paired],
+    );
 
     const atStart = index === 0;
     const atEnd = index >= count;
+
+    /* the index at which a page is in view: a front shows on the right while
+       its sheet is next, a back on the left once its sheet has turned */
+    const toPage = useCallback(
+        (pageId: string) => {
+            const p = pages.findIndex((page) => page.id === pageId);
+            if (p < 0) return;
+            setIndex(paired ? (p % 2 === 0 ? p / 2 : (p + 1) / 2) : p);
+            setHint(false);
+        },
+        [pages, paired],
+    );
+    const nav = useMemo(() => ({ toPage }), [toPage]);
+    const visible = new Set<string>(
+        [sheets[index]?.front.id, paired ? sheets[index - 1]?.back?.id : undefined].filter(Boolean) as string[],
+    );
+    /* the fore-edge grows with the number of sheets bound in */
+    const edge = Math.min(4 + count * 1.6, 16);
 
     const go = useCallback(
         (delta: number) => {
@@ -247,17 +308,51 @@ export function PassportBook({
           : (sheets[index]?.front.label ?? "");
 
     return (
+        <BookNav.Provider value={nav}>
         <div className={className}>
             {/* the block of the book: the closed edges under the spread */}
-            <div className="relative">
+            <div className="relative" style={{ paddingRight: edge }}>
+                {/* the fore-edge: the stacked edges of every sheet bound in */}
                 <div
                     aria-hidden
-                    className="pointer-events-none absolute inset-x-2 top-1.5 bottom-0 -z-10 rounded-[3px] bg-card shadow-[var(--ring),0_18px_44px_rgba(32,30,29,.14)]"
+                    className="pointer-events-none absolute top-1.5 right-0 bottom-1.5 rounded-r-[3px] shadow-[2px_0_0_rgba(60,44,28,.12)]"
+                    style={{
+                        width: edge + 6,
+                        background:
+                            "repeating-linear-gradient(90deg, #F7F2E8 0 1.5px, #D9CFBE 1.5px 2.4px), linear-gradient(180deg, rgba(0,0,0,.06), transparent 30%, transparent 70%, rgba(0,0,0,.1))",
+                        backgroundBlendMode: "multiply",
+                    }}
                 />
                 <div
                     aria-hidden
-                    className="pointer-events-none absolute inset-x-3.5 top-3 bottom-0 -z-20 rounded-[3px] bg-card/70 shadow-[var(--ring)]"
+                    className="pointer-events-none absolute inset-x-1 top-1 -bottom-1 -z-10 rounded-[3px] bg-[#EFE8DC] shadow-[0_34px_50px_-22px_rgba(60,44,28,.55),0_6px_12px_-6px_rgba(60,44,28,.35)]"
                 />
+
+                {/* index tabs, sticking out of the fore-edge */}
+                {tabs.length > 0 && (
+                    <ol className="absolute top-[7%] left-full z-[70] -ml-0.5 flex max-h-[86%] flex-col gap-1" aria-label="Turn to a certificate">
+                        {tabs.map((tab) => {
+                            const on = visible.has(tab.pageId);
+                            return (
+                                <li key={tab.pageId}>
+                                    <button
+                                        type="button"
+                                        onClick={() => toPage(tab.pageId)}
+                                        aria-label={`Turn to ${tab.title}`}
+                                        aria-current={on ? "page" : undefined}
+                                        title={tab.title}
+                                        className={`group/tab relative flex h-9 items-center justify-end rounded-r-[4px] pr-1 shadow-[1px_1px_3px_rgba(60,44,28,.35)] transition-[width] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] sm:h-10 sm:pr-1.5 ${
+                                            on ? "w-9 sm:w-11" : "w-7 hover:w-8 sm:w-9 sm:hover:w-10"
+                                        }`}
+                                        style={{ backgroundColor: tab.color }}
+                                    >
+                                        <span className="numeral rounded-[2px] bg-[#FBF8F2]/90 px-1 text-[13px] leading-[1.2] text-ink">{tab.label}</span>
+                                    </button>
+                                </li>
+                            );
+                        })}
+                    </ol>
+                )}
 
                 <div
                     data-theme="light"
@@ -355,6 +450,7 @@ export function PassportBook({
                 ))}
             </div>
         </div>
+        </BookNav.Provider>
     );
 }
 

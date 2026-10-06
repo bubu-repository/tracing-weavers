@@ -33,7 +33,7 @@ export function ClothStory({ record, remaining }: { record: ProductRecord; remai
     const neighbours = records.filter((r) => provinceOf(r) === province);
 
     return (
-        <section className="container-x mt-28" aria-labelledby="cloth-story">
+        <section className="container-x mt-20" aria-labelledby="cloth-story">
             <div className="border-t border-ink pt-10">
                 <div className="eyebrow">The story of this cloth</div>
                 <h2 id="cloth-story" className="mt-3 max-w-[20ch] text-[clamp(2.2rem,5.5vw,4rem)]">
@@ -41,7 +41,7 @@ export function ClothStory({ record, remaining }: { record: ProductRecord; remai
                 </h2>
             </div>
 
-            <ol className="mt-16 space-y-24 sm:space-y-32">
+            <ol className="mt-12 space-y-16 sm:space-y-20">
                 <Row n="01" kicker="Where it was woven" title={place} flip={false}
                     visual={
                         <div>
@@ -185,16 +185,16 @@ function Row({
     children: React.ReactNode;
 }) {
     return (
-        <li className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-20">
+        <li className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-14">
             <FadeIn className={cn(flip && "lg:order-2")}>
                 <div className="flex items-end gap-4">
-                    <span aria-hidden className="numeral text-[clamp(4rem,9vw,6.5rem)] text-bt-red/25">
+                    <span aria-hidden className="numeral text-[clamp(3.4rem,7vw,5.25rem)] text-bt-red/30">
                         {n}
                     </span>
                     <span className="eyebrow pb-3">{kicker}</span>
                 </div>
                 <h3 className="mt-2 text-[clamp(2rem,4.5vw,3.25rem)] leading-[.95]">{title}</h3>
-                <div className="read mt-5 max-w-[46ch] space-y-4 text-[17px] leading-relaxed text-muted-foreground">
+                <div className="read mt-4 max-w-[50ch] space-y-4 text-[17px] leading-relaxed text-muted-foreground">
                     {children}
                 </div>
             </FadeIn>

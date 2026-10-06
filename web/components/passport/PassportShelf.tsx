@@ -3,12 +3,13 @@
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { PassportLeaf } from "@/components/passport/passport-leaf";
-import { PassportBook, type BookPage } from "@/components/passport/passport-book";
+import { PassportBook, type BookPage, type BookTab } from "@/components/passport/passport-book";
+import { BookRegister, IndigoEndpaper, WovenCover } from "@/components/passport/book-pages";
+import { catalogueNumber } from "@/components/records/RecordCard";
 import { readLocalPassports } from "@/lib/local-passports";
-import { WarpField } from "@/components/motif/marks";
 import { brand } from "@/lib/brand";
 import type { Passport } from "@/lib/types";
-import { recordSwatch, type ProductRecord } from "@/lib/records";
+import { clothName, paletteFor, recordSwatch, type ProductRecord } from "@/lib/records";
 
 const issuedOn = (iso: string) =>
     new Date(iso).toLocaleDateString("en-GB", {
@@ -59,38 +60,33 @@ export function PassportShelf({
     if (!merged.length) return <>{emptyState ?? null}</>;
 
     const holder = merged[0]?.holder ?? "Holder";
+    const recordOf = (code: string) => records.find((r) => r.code === code);
+    const tabs: BookTab[] = merged.map((passport) => {
+        const record = recordOf(passport.code);
+        return {
+            pageId: passport.id,
+            label: catalogueNumber(passport.code),
+            title: record ? clothName(record) : passport.code,
+            color: (record && paletteFor(record)?.colors[0]?.hex) || "#B1241A",
+        };
+    });
 
     const pages: BookPage[] = [
-        /* the cover */
+        /* the cover, bound in the cloths it holds */
         {
             id: "cover",
             label: "Cover",
             content: (
-                <div
-                    className="ink-band cloth relative flex h-full w-full flex-col justify-between overflow-hidden p-6 text-white sm:p-7"
-                    data-theme="dark"
-                >
-                    <WarpField className="pointer-events-none absolute inset-0 h-full w-full text-white/10" />
-                    <div className="relative">
-                        <div className="eyebrow">{brand}</div>
-                        <p className="display mt-3 max-w-[18ch] text-[clamp(1.4rem,4.4vw,2rem)] leading-tight">
-                            {holder}
-                        </p>
-                    </div>
-                    <div className="relative">
-                        <p className="num text-[clamp(2.6rem,9vw,4rem)] leading-none text-salmon">
-                            {merged.length}
-                        </p>
-                        <p className="mt-1 text-[14px] text-white/70">
-                            {merged.length === 1
-                                ? "certificate in this book"
-                                : "certificates in this book"}
-                        </p>
-                    </div>
-                    <p className="relative text-[11px] tracking-[.16em] uppercase text-white/50">
-                        Drag the page to open it
-                    </p>
-                </div>
+                <WovenCover
+                    holder={holder}
+                    count={merged.length}
+                    specimen={specimen}
+                    bands={merged
+                        .map((p) => recordOf(p.code))
+                        .map((r) => (r ? paletteFor(r) : undefined))
+                        .filter((pal): pal is NonNullable<typeof pal> => Boolean(pal))
+                        .map((pal) => ({ colors: pal.colors }))}
+                />
             ),
         },
         /* the register: what is bound in, in the order it was claimed */
@@ -98,32 +94,19 @@ export function PassportShelf({
             id: "register",
             label: "Register",
             content: (
-                <div className="cloth flex h-full w-full flex-col bg-[#EDE7DC] p-6 sm:p-7">
-                    <div className="eyebrow">In this book</div>
-                    <ol className="mt-4 min-h-0 flex-1 overflow-hidden">
-                        {merged.slice(0, 7).map((passport, i) => (
-                            <li
-                                key={passport.id}
-                                className="flex items-baseline justify-between gap-3 border-t border-ink/12 py-2"
-                            >
-                                <span className="data w-5 shrink-0 text-bt-red">
-                                    {"0" + (i + 1)}
-                                </span>
-                                <span className="min-w-0 flex-1 truncate text-[15px]">
-                                    {records.find((r) => r.code === passport.code)
-                                        ?.title.split(" · ")[0] ?? passport.code}
-                                </span>
-                                <span className="data shrink-0 text-[11px] text-ink-2">
-                                    {issuedOn(passport.issuedAt)}
-                                </span>
-                            </li>
-                        ))}
-                    </ol>
-                    <p className="mt-3 border-t border-ink/12 pt-3 text-[13px] text-ink-2">
-                        One page per claimed cloth. Every page can be checked on its
-                        own.
-                    </p>
-                </div>
+                <BookRegister
+                    total={merged.length}
+                    entries={merged.map((passport) => {
+                        const record = recordOf(passport.code);
+                        return {
+                            pageId: passport.id,
+                            number: catalogueNumber(passport.code),
+                            name: record ? clothName(record) : passport.code,
+                            date: issuedOn(passport.issuedAt),
+                            color: (record && paletteFor(record)?.colors[0]?.hex) || "#B1241A",
+                        };
+                    })}
+                />
             ),
         },
         /* one page per certificate */
@@ -144,16 +127,23 @@ export function PassportShelf({
             id: "colophon",
             label: "Colophon",
             content: (
-                <div className="cloth flex h-full w-full flex-col justify-between bg-[#EDE7DC] p-6 sm:p-7">
-                    <div className="eyebrow">{brand}</div>
-                    <p className="read max-w-[26ch] text-[16px] leading-relaxed text-ink-2">
-                        The record travels with the cloth, including when it changes
-                        hands. Every resale returns value to the household that wove
-                        it.
-                    </p>
-                    <p className="data text-[11px] text-ink-3">
-                        Seed to Loom · Adonara · Lembata · Manggarai
-                    </p>
+                <div className="cloth flex h-full w-full flex-col justify-between bg-[#F3EDE2] p-6 sm:p-7">
+                    <div>
+                        <div className="eyebrow">Colophon</div>
+                        <p className="read mt-4 max-w-[26ch] text-[17px] leading-relaxed text-ink-2">
+                            The record travels with the cloth, including when it changes
+                            hands. Every resale returns value to the household that wove
+                            it.
+                        </p>
+                    </div>
+                    <div className="flex items-end justify-between gap-3">
+                        <p className="data text-[11px] text-ink-3">
+                            Seed to Loom
+                            <br />
+                            Adonara · Lembata · Manggarai
+                        </p>
+                        <span className="stamp stamp-ink text-[11px]">Bound by hand</span>
+                    </div>
                 </div>
             ),
         },
@@ -163,56 +153,61 @@ export function PassportShelf({
        onto it, and on the right-hand one once everything has: a spread with an
        empty half is exactly the problem this redesign set out to fix. */
     const insideCover = (
-        <div className="flex h-full w-full flex-col justify-between p-6 sm:p-7">
+        <IndigoEndpaper>
             <div>
                 <div className="eyebrow">Issued by</div>
-                <p className="display mt-2 text-[18px] leading-tight">{brand}</p>
-                <p className="mt-1 text-[13px] text-ink-2">
-                    ICM × TBN × Torajamelo · Seed to Loom
-                </p>
+                <p className="display mt-2 text-[20px] leading-tight text-white">{brand}</p>
+                <p className="mt-1 text-[13px] text-white/70">ICM × TBN × Torajamelo · Seed to Loom</p>
             </div>
-            <p className="max-w-[24ch] text-[14px] leading-snug text-ink-2">
+            <p className="read max-w-[24ch] text-[16px] leading-snug text-white/85">
                 This book records cloth, not ownership. The cloth and its motifs stay
                 with the weaver and their community.
             </p>
             <div className="flex items-end justify-between gap-3">
-                <span className="data text-[11px] text-ink-3">Adonara · Lembata</span>
+                <span className="data text-[11px] text-white/60">Adonara · Lembata</span>
                 <span
                     aria-hidden
-                    className="grid h-12 w-12 place-items-center rounded-full text-[9px] leading-tight tracking-[.1em] text-bt-red/70 uppercase shadow-[0_0_0_1.5px_rgba(174,24,0,.35)]"
+                    className="grid h-14 w-14 rotate-[-8deg] place-items-center rounded-full text-center text-[9.5px] leading-tight tracking-[.1em] text-[#F2C7A8] uppercase shadow-[0_0_0_1.5px_rgba(242,199,168,.7),inset_0_0_0_4px_rgba(39,53,95,1),inset_0_0_0_5px_rgba(242,199,168,.5)]"
                 >
                     seed to
                     <br />
                     loom
                 </span>
             </div>
-        </div>
+        </IndigoEndpaper>
     );
 
     const backCover = (
-        <div className="flex h-full w-full flex-col justify-end p-6 sm:p-7">
-            <p className="data text-[11px] text-ink-3">End of the book</p>
-            <p className="mt-2 max-w-[24ch] text-[15px] leading-snug text-ink-2">
-                Claim another tag and a new sheet is bound in here.
-            </p>
-        </div>
+        <IndigoEndpaper>
+            <span />
+            <div>
+                <p className="data text-[11px] text-white/60">End of the book</p>
+                <p className="read mt-2 max-w-[24ch] text-[17px] leading-snug text-white/90">
+                    Claim another cloth and a new sheet is bound in here — and its
+                    colours are woven into the cover.
+                </p>
+            </div>
+        </IndigoEndpaper>
     );
 
     return (
         <div className="space-y-12">
             {/* the book lies on the gallery wall */}
-            <div className="relative bg-ink py-10 sm:py-14" data-theme="dark">
+            {/* the book lies on a linen cloth on the table */}
+            <div
+                className="relative overflow-hidden py-10 shadow-[inset_0_14px_22px_-16px_rgba(60,44,28,.45),inset_0_-14px_22px_-16px_rgba(60,44,28,.45)] sm:py-14"
+                style={{
+                    backgroundColor: "#E2D8C5",
+                    backgroundImage:
+                        "repeating-linear-gradient(90deg, rgba(60,44,28,.07) 0 1px, transparent 1px 4px), repeating-linear-gradient(0deg, rgba(255,255,255,.18) 0 1px, transparent 1px 4px)",
+                }}
+            >
                 {specimen && (
-                    <span className="stamp absolute top-5 right-5 z-10 text-[13px] sm:top-8 sm:right-10">Specimen</span>
+                    <span className="stamp absolute top-3 left-4 z-10 text-[12px] sm:top-8 sm:right-10 sm:left-auto sm:text-[13px]">Specimen</span>
                 )}
                 <div className="container-x">
-                    <div className="mx-auto max-w-sm sm:max-w-3xl">
-                        <PassportBook
-                            pages={pages}
-                            insideCover={insideCover}
-                            backCover={backCover}
-                            tone="ink"
-                        />
+                    <div className="mx-auto max-w-sm pr-8 sm:max-w-[56rem] sm:pr-11">
+                        <PassportBook pages={pages} insideCover={insideCover} backCover={backCover} tabs={tabs} />
                     </div>
                 </div>
             </div>

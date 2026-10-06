@@ -111,7 +111,7 @@ export function TapDemo({ cloth }: { cloth: TapDemoCloth }) {
                 {/* the table */}
                 <div
                     ref={area}
-                    className="relative mx-auto grid h-[380px] w-full max-w-[560px] grid-cols-[1fr_auto] items-center gap-4 sm:h-[420px]"
+                    className="relative mx-auto grid h-[300px] w-full max-w-[560px] grid-cols-[1fr_auto] items-center gap-4 sm:h-[400px]"
                 >
                     {/* the cloth, with its label sewn into the corner */}
                     <div className="relative aspect-square w-full max-w-[300px] justify-self-center shadow-[0_18px_30px_-18px_rgba(60,44,28,.55)]">

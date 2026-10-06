@@ -33,7 +33,7 @@ export function PageHeader({
             className={cn(ink && "bg-ink text-white", className)}
             data-theme={ink ? "dark" : undefined}
         >
-            <div className="container-x pt-10 pb-10 sm:pt-16 sm:pb-12">
+            <div className="container-x pt-8 pb-8 sm:pt-12 sm:pb-10">
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
                     <div>
                         <div className="eyebrow">{eyebrow}</div>

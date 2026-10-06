@@ -178,18 +178,31 @@ export default async function Home() {
 
             <StoryThread>
                 {/* ── I · the name ───────────────────────────────────────── */}
-                <Chapter id="chapter-name" className="pt-24 pb-16 sm:pt-32 sm:pb-24">
-                    <div className="container-x">
-                        <ChapterHead numeral="I" kicker="The name" title="A name, rarely written down." />
-                        <ScrollWords
-                            text="In Adonara a weaver's name rarely appears anywhere. The cloth is sold, the motifs are photographed, the price is noted — the name is not."
-                            accent={["name", "not"]}
-                            accentClass="text-bt-red italic"
-                            className="read mt-12 max-w-[24ch] text-[clamp(1.9rem,5vw,3.9rem)] leading-[1.12] tracking-[-.015em]"
-                        />
-                        <div className="mt-16 grid grid-cols-1 items-end gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
-                            <FadeIn>
-                                <figure className="relative aspect-[4/3] overflow-hidden bg-ink">
+                <Chapter id="chapter-name" className="pt-16 pb-10 sm:pt-20 sm:pb-14">
+                    <div className="container-x grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,.75fr)] lg:gap-14">
+                        <div>
+                            <ChapterHead numeral="I" kicker="The name" title="A name, rarely written down." />
+                            <ScrollWords
+                                text="In Adonara a weaver's name rarely appears anywhere. The cloth is sold, the motifs are photographed, the price is noted — the name is not."
+                                accent={["name", "not"]}
+                                accentClass="text-bt-red italic"
+                                className="read mt-8 max-w-[22ch] text-[clamp(1.9rem,4.6vw,3.6rem)] leading-[1.12] tracking-[-.015em]"
+                            />
+                            <FadeIn delay={0.12} className="mt-8 grid grid-cols-1 gap-5 border-t border-ink pt-6 sm:grid-cols-2 sm:gap-8">
+                                <p className="read text-[19px] leading-relaxed text-ink">
+                                    Yet one length can mean eleven weeks of work, three dye
+                                    baths, and a motif only certain families may wear.
+                                </p>
+                                <p className="read text-[17px] leading-relaxed text-muted-foreground">
+                                    This record writes the name down. Every cloth that leaves
+                                    the garden and the loom carries one page: who made it, from
+                                    what, for how long. That page goes wherever the cloth goes.
+                                </p>
+                            </FadeIn>
+                        </div>
+                        <FadeIn className="lg:pt-28">
+                            <figure className="card-stock p-2">
+                                <div className="relative aspect-[4/5] overflow-hidden bg-ink">
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                         src="/imagery/story/weaver-portrait.webp"
@@ -197,20 +210,9 @@ export default async function Home() {
                                         loading="lazy"
                                         className="h-full w-full object-cover"
                                     />
-                                </figure>
-                            </FadeIn>
-                            <FadeIn delay={0.12}>
-                                <p className="read max-w-[44ch] text-[19px] leading-relaxed text-ink sm:text-[21px]">
-                                    Yet one length can mean eleven weeks of work, three dye
-                                    baths, and a motif only certain families may wear.
-                                </p>
-                                <p className="read mt-5 max-w-[46ch] text-[17px] leading-relaxed text-muted-foreground">
-                                    This record writes the name down. Every cloth that leaves
-                                    the garden and the loom carries one page: who made it, from
-                                    what, for how long. That page goes wherever the cloth goes.
-                                </p>
-                            </FadeIn>
-                        </div>
+                                </div>
+                            </figure>
+                        </FadeIn>
                     </div>
                 </Chapter>
 
@@ -218,15 +220,18 @@ export default async function Home() {
                 <StagesScroll id="chapter-path" />
 
                 {/* ── III · the colours ──────────────────────────────────── */}
-                <Chapter id="chapter-colours" className="pt-24 pb-16 sm:pt-32 sm:pb-24">
+                <Chapter id="chapter-colours" className="pt-16 pb-10 sm:pt-20 sm:pb-14">
                     <div className="container-x">
-                        <ChapterHead
-                            numeral="III"
-                            kicker="The colours"
-                            title="Every cloth keeps its colours."
-                            lead="Each thread below is one cloth, made of its own main colours — each as long as the share of the cloth it covers, measured from the photograph. Thread them by colour, and the collection reads as one weave."
-                        />
-                        <div className="relative mt-12">
+                        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:items-end">
+                            <ChapterHead numeral="III" kicker="The colours" title="Every cloth keeps its colours." />
+                            <p className="read max-w-[48ch] text-[17px] leading-relaxed text-muted-foreground lg:justify-self-end">
+                                Each thread below is one cloth, made of its own main colours — each
+                                as long as the share of the cloth it covers, measured from the
+                                photograph. Thread them by colour, and the collection reads as one
+                                weave.
+                            </p>
+                        </div>
+                        <div className="relative mt-14">
                             <MarginNote
                                 arrow="down-left"
                                 className="absolute -top-10 right-0 hidden max-w-[17ch] text-[23px] text-ink-2 md:flex"
@@ -239,7 +244,7 @@ export default async function Home() {
                 </Chapter>
 
                 {/* ── IV · the places ────────────────────────────────────── */}
-                <Chapter id="chapter-places" className="pt-24 pb-16 sm:pt-32 sm:pb-24">
+                <Chapter id="chapter-places" className="pt-16 pb-10 sm:pt-20 sm:pb-14">
                     <div className="container-x grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-16">
                         <div className="lg:sticky lg:top-28 lg:self-start">
                             <ChapterHead
@@ -256,7 +261,7 @@ export default async function Home() {
                 </Chapter>
 
                 {/* ── V · the cloths ─────────────────────────────────────── */}
-                <Chapter id="collection" className="pt-24 sm:pt-32">
+                <Chapter id="collection" className="pt-16 sm:pt-20">
                     <div className="container-x">
                         <div className="grid grid-cols-1 gap-6 pb-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:items-end">
                             <ChapterHead numeral="V" kicker={t.recordsEyebrow} title={t.recordsTitle} />
@@ -269,8 +274,8 @@ export default async function Home() {
                 </Chapter>
 
                 {/* ── epilogue · the certificate ─────────────────────────── */}
-                <Chapter id="chapter-certificate" className="pt-28 sm:pt-36">
-                    <div className="container-x grid grid-cols-1 items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:gap-20">
+                <Chapter id="chapter-certificate" className="pt-20 sm:pt-24">
+                    <div className="container-x grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:gap-16">
                         <div>
                             <ChapterHead
                                 numeral="VI"
@@ -312,7 +317,7 @@ export default async function Home() {
                                 </Button>
                             </div>
 
-                            <dl className="mt-12 grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-3">
+                            <dl className="mt-10 grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-3">
                                 {t.explain.map((item) => (
                                     <div key={item.title} className="border-t border-border pt-3">
                                         <dt className="text-[12px] tracking-[.18em] text-bt-red uppercase">{item.title}</dt>

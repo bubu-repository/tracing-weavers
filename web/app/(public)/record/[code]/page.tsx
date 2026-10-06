@@ -222,7 +222,7 @@ export default async function RecordPage({
 
             {/* walk the exhibition */}
             {(previous || next) && (
-                <nav aria-label="Next and previous cloths" className="container-x mt-20">
+                <nav aria-label="Next and previous cloths" className="container-x mt-16">
                     <div className="grid grid-cols-2 border-y border-ink">
                         {previous ? <Neighbour record={previous} direction="previous" /> : <span />}
                         {next ? <Neighbour record={next} direction="next" /> : <span />}
@@ -231,7 +231,7 @@ export default async function RecordPage({
             )}
 
             {related.length > 0 && (
-                <section className="container-x mt-16" aria-labelledby="more-from">
+                <section className="container-x mt-12" aria-labelledby="more-from">
                     <div className="mb-6 flex items-end justify-between gap-4">
                         <div>
                             <div className="eyebrow">More from the collection</div>
@@ -251,7 +251,7 @@ export default async function RecordPage({
             )}
 
             {/* where this piece sits in the three-year path */}
-            <section className="container-x mt-16">
+            <section className="container-x mt-12">
                 <div className="border-t border-border pt-8">
                     <div className="eyebrow">{t.journeyEyebrow}</div>
                     <h2 className="mt-2 text-[clamp(1.6rem,4vw,2.4rem)]">{t.journeyTitle}</h2>

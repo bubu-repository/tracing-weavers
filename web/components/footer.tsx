@@ -14,7 +14,7 @@ const EXPLORE = [
    allows, and every figure counted from data/records.json. */
 export default function Footer() {
     return (
-        <footer className="no-print grain gallery-light relative mt-24 overflow-hidden bg-ink text-white" data-theme="dark">
+        <footer className="no-print grain gallery-light relative mt-16 overflow-hidden bg-ink text-white" data-theme="dark">
             <div className="selvedge-dye" aria-hidden />
             <div className="container-x pt-14 pb-8">
                 <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)]">
@@ -74,7 +74,7 @@ export default function Footer() {
                 {/* the name, as large as the page allows */}
                 <p
                     aria-hidden
-                    className="display mt-16 -mb-[0.12em] text-[clamp(3.2rem,14.2vw,12.5rem)] leading-[.8] tracking-[-.055em] whitespace-nowrap text-white select-none"
+                    className="display mt-12 -mb-[0.12em] text-[clamp(3rem,11vw,9.5rem)] leading-[.8] tracking-[-.055em] whitespace-nowrap text-white select-none"
                 >
                     {brand}
                 </p>

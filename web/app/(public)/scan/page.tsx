@@ -114,7 +114,7 @@ export default function ScanPage() {
             </section>
 
             {/* the four steps */}
-            <section className="container-x mt-20" aria-labelledby="steps">
+            <section className="container-x mt-14" aria-labelledby="steps">
                 <h2 id="steps" className="eyebrow">
                     Four steps
                 </h2>
@@ -135,7 +135,7 @@ export default function ScanPage() {
             </section>
 
             {/* the questions */}
-            <section className="container-x mt-20" aria-labelledby="faq">
+            <section className="container-x mt-14" aria-labelledby="faq">
                 <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] lg:gap-16">
                     <div>
                         <div className="eyebrow">Questions</div>
@@ -162,7 +162,7 @@ export default function ScanPage() {
                 </div>
             </section>
 
-            <section className="container-x mt-20">
+            <section className="container-x mt-14">
                 <div className="flex flex-col gap-6 border-y border-ink py-10 sm:flex-row sm:items-center sm:justify-between">
                     <p className="display max-w-[22ch] text-[clamp(1.8rem,4vw,2.6rem)]">
                         {records.length} cloths are waiting to be read.
