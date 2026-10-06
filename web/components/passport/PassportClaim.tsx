@@ -8,6 +8,7 @@ import { rememberLocalPassport } from "@/lib/local-passports";
 import { ClaimNotice } from "@/components/passport/claim-notice";
 import { PassportLeaf } from "@/components/passport/passport-leaf";
 import { getRecord } from "@/lib/records";
+import { CLAIMED_EVENT } from "@/components/records/claim-bar";
 import { t } from "@/lib/copy";
 import type { Passport } from "@/lib/types";
 
@@ -87,6 +88,7 @@ export function PassportClaim({
             rememberLocalPassport(body.passport);
             setIssued(body.passport);
             setShowNotice(true);
+            window.dispatchEvent(new Event(CLAIMED_EVENT));
         } catch {
             setError(
                 navigator.onLine
@@ -102,12 +104,12 @@ export function PassportClaim({
         <>
             <section
                 id="claim"
-                className="scroll-mt-24 rounded-lg bg-card p-6 shadow-[var(--ring)]"
+                className="scroll-mt-24 bg-card p-6 shadow-[inset_0_0_0_1px_var(--bt-stone-2)] sm:p-7"
             >
                 <div className="eyebrow">
                     {issued ? t.claimedEyebrow : soldOut ? "Certificate" : t.claimEyebrow}
                 </div>
-                <h2 className="mt-3 text-[22px]">
+                <h2 className="mt-3 text-[26px] sm:text-[30px]">
                     {issued
                         ? "It is yours."
                         : soldOut
@@ -190,7 +192,7 @@ export function PassportClaim({
                         {error && (
                             <p
                                 role="alert"
-                                className="mb-4 rounded-md bg-bt-red/6 p-3 text-[15px] text-bt-red shadow-[0_0_0_1px_rgba(174,24,0,.28)]"
+                                className="mb-4 bg-bt-red/6 p-3 text-[15px] text-bt-red shadow-[inset_0_0_0_1px_rgba(174,24,0,.28)]"
                             >
                                 {error}
                             </p>

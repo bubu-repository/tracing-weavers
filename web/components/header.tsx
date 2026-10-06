@@ -5,6 +5,7 @@ import { t } from "@/lib/copy";
 import { Button } from "@/components/ui/button";
 import { BottomNav, NavPills } from "@/components/nav-pills";
 import { SignOutButton } from "@/components/sign-out-button";
+import { BrandMark } from "@/components/motif/brand-mark";
 
 const initials = (name: string) =>
     name
@@ -14,12 +15,9 @@ const initials = (name: string) =>
         .map((part) => part[0]?.toUpperCase() ?? "")
         .join("") || "·";
 
-/* Solid ground, hairline rule, and a selvedge under it — the header's only
-   ornament. No blur, no glass: the cloth is opaque.
-
-   On a phone the header is the name and the account, nothing else: the four
-   sections live in the tab bar at the bottom (components/nav-pills), so the
-   name is never cut short and the row never pushes the page sideways. */
+/* The gallery wall: an ink bar with the four dye pots woven along its lower
+   edge. On a phone it is the mark, the name and the account; the sections
+   live in the tab bar at the bottom. */
 export default async function Header() {
     const identity = await currentIdentity();
 
@@ -27,50 +25,50 @@ export default async function Header() {
         <>
             <a
                 href="#main"
-                className="sr-only z-[80] rounded-md bg-ink px-4 py-2 text-white focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+                className="sr-only z-[80] bg-salmon px-4 py-2 text-ink focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
             >
                 Skip to content
             </a>
 
-            <header className="no-print sticky top-0 z-50 border-b border-border bg-background">
-                <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4 sm:h-16 sm:px-6">
+            <header className="no-print sticky top-0 z-50 bg-ink text-white" data-theme="dark">
+                <div className="container-x flex h-14 items-center justify-between gap-4 md:h-16">
                     <Link
                         href="/"
-                        className="flex min-w-0 items-baseline gap-2.5 py-2 text-bt-red hover:text-bt-red-bright"
+                        className="group flex min-w-0 items-center gap-2.5 text-white hover:text-white"
                     >
-                        <span className="display text-[18px] whitespace-nowrap sm:text-[19px]">
-                            {brand}
-                        </span>
-                        <span className="hidden text-[10px] tracking-[.28em] whitespace-nowrap uppercase lg:inline">
+                        <BrandMark className="h-7 w-7 shrink-0" />
+                        <span className="display text-[19px] whitespace-nowrap">{brand}</span>
+                        <span className="hidden border-l border-white/20 pl-2.5 text-[10px] tracking-[.28em] whitespace-nowrap text-white/50 uppercase xl:inline">
                             {t.brandLine}
                         </span>
                     </Link>
 
-                    <div className="flex shrink-0 items-center gap-2">
-                        <NavPills className="hidden md:flex" />
+                    <div className="flex shrink-0 items-center gap-3">
+                        <NavPills className="hidden md:block" />
 
                         {identity ? (
-                            <>
+                            <div className="flex items-center gap-1">
                                 <Link
                                     href="/profile"
                                     aria-label={`Your profile — ${identity.name}`}
                                     title={identity.name}
-                                    className="pressable grid h-9 w-9 place-items-center rounded-full bg-ink text-[13px] font-medium tracking-[.04em] text-white hover:bg-ink/85 hover:text-white"
+                                    className="pressable grid h-9 w-9 place-items-center rounded-full bg-salmon text-[13px] font-semibold tracking-[.04em] text-ink hover:bg-white hover:text-ink"
                                 >
                                     {initials(identity.name)}
                                 </Link>
-                                <SignOutButton className="hidden md:inline-flex" />
-                            </>
+                                <SignOutButton
+                                    tone="ink"
+                                    className="hidden md:inline-flex"
+                                />
+                            </div>
                         ) : (
-                            <Button asChild size="sm">
-                                <Link href="/login" className="text-white hover:text-white">
-                                    {t.signIn}
-                                </Link>
+                            <Button asChild size="sm" variant="inverse">
+                                <Link href="/login">{t.signIn}</Link>
                             </Button>
                         )}
                     </div>
                 </div>
-                <div className="selvedge" aria-hidden />
+                <div className="selvedge-dye" aria-hidden />
             </header>
 
             <BottomNav />

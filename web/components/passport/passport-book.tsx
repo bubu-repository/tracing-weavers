@@ -62,9 +62,12 @@ export function PassportBook({
     pages,
     insideCover,
     backCover,
+    tone = "paper",
     className,
 }: {
     pages: BookPage[];
+    /** "ink" when the book lies on the gallery wall: light controls */
+    tone?: "paper" | "ink";
     /** Printed on the left-hand page while no sheet has been turned onto it —
         a real passport's inside cover, so the spread is never half empty. */
     insideCover?: ReactNode;
@@ -249,15 +252,16 @@ export function PassportBook({
             <div className="relative">
                 <div
                     aria-hidden
-                    className="pointer-events-none absolute inset-x-2 top-1.5 bottom-0 -z-10 rounded-lg bg-card shadow-[var(--ring),0_18px_44px_rgba(32,30,29,.14)]"
+                    className="pointer-events-none absolute inset-x-2 top-1.5 bottom-0 -z-10 rounded-[3px] bg-card shadow-[var(--ring),0_18px_44px_rgba(32,30,29,.14)]"
                 />
                 <div
                     aria-hidden
-                    className="pointer-events-none absolute inset-x-3.5 top-3 bottom-0 -z-20 rounded-lg bg-card/70 shadow-[var(--ring)]"
+                    className="pointer-events-none absolute inset-x-3.5 top-3 bottom-0 -z-20 rounded-[3px] bg-card/70 shadow-[var(--ring)]"
                 />
 
                 <div
-                    className="relative aspect-[3/4] w-full touch-pan-y overflow-hidden rounded-lg select-none sm:aspect-[3/2]"
+                    data-theme="light"
+                    className="relative aspect-[3/4] w-full touch-pan-y overflow-hidden rounded-[3px] text-ink select-none sm:aspect-[3/2]"
                     onPointerDown={onPointerDown}
                     onPointerMove={onPointerMove}
                     onPointerUp={endPull}
@@ -301,7 +305,7 @@ export function PassportBook({
             {/* the controls, which do exactly what the drag does */}
             <div className="mt-5 flex items-center justify-between gap-3">
                 <Button
-                    variant="ghost"
+                    variant={tone === "ink" ? "inverseGhost" : "ghost"}
                     size="sm"
                     onClick={() => go(-1)}
                     disabled={atStart}
@@ -317,7 +321,13 @@ export function PassportBook({
                     {spreadLabel}
                 </p>
 
-                <Button size="sm" onClick={() => go(1)} disabled={atEnd} aria-label="Next page">
+                <Button
+                    size="sm"
+                    variant={tone === "ink" ? "inverse" : "primary"}
+                    onClick={() => go(1)}
+                    disabled={atEnd}
+                    aria-label="Next page"
+                >
                     Turn →
                 </Button>
             </div>
@@ -333,7 +343,13 @@ export function PassportBook({
                             setHint(false);
                         }}
                         className={`pressable h-1.5 rounded-full transition-[width,background-color] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] ${
-                            i === index ? "w-7 bg-bt-red" : "w-3 bg-stone hover:bg-ink-3"
+                            i === index
+                                ? tone === "ink"
+                                    ? "w-7 bg-salmon"
+                                    : "w-7 bg-bt-red"
+                                : tone === "ink"
+                                  ? "w-3 bg-white/25 hover:bg-white/60"
+                                  : "w-3 bg-stone hover:bg-ink-3"
                         }`}
                     />
                 ))}
@@ -380,7 +396,7 @@ function BookSheet({
             }}
         >
             {/* front: the right-hand page */}
-            <div className="absolute inset-0 overflow-hidden rounded-r-lg [backface-visibility:hidden]">
+            <div className="absolute inset-0 overflow-hidden rounded-r-[3px] [backface-visibility:hidden]">
                 {sheet.front.content}
                 <motion.div
                     aria-hidden
@@ -392,7 +408,7 @@ function BookSheet({
 
             {/* back: what lands on the left-hand page, already mirrored */}
             <div
-                className="absolute inset-0 overflow-hidden rounded-l-lg [backface-visibility:hidden]"
+                className="absolute inset-0 overflow-hidden rounded-l-[3px] [backface-visibility:hidden]"
                 style={{ transform: "rotateY(180deg)" }}
             >
                 {sheet.back?.content ?? <Endpaper side="plain" />}
@@ -439,9 +455,9 @@ function Endpaper({
 }) {
     const place =
         side === "left"
-            ? "absolute inset-y-0 left-0 w-1/2 rounded-l-lg"
+            ? "absolute inset-y-0 left-0 w-1/2 rounded-l-[3px]"
             : side === "right"
-              ? "absolute inset-y-0 right-0 w-1/2 rounded-r-lg"
+              ? "absolute inset-y-0 right-0 w-1/2 rounded-r-[3px]"
               : "absolute inset-0";
     const gutter = side === "right" ? "90deg" : "270deg";
     return (

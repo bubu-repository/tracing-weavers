@@ -1,32 +1,45 @@
 import Link from "next/link";
-import { collections, originCount, records } from "@/lib/records";
+import { collections, getRecord, originCount, records } from "@/lib/records";
 import { passportStore } from "@/lib/store";
 import { currentIdentity } from "@/lib/session";
 import { t } from "@/lib/copy";
 import { RecordGallery } from "@/components/records/record-gallery";
-import { JourneyRail } from "@/components/journey-rail";
-import { ThreadRule, WarpField } from "@/components/motif/marks";
+import { ClothMarquee } from "@/components/home/cloth-marquee";
+import { Origins } from "@/components/home/origins";
+import { PathOfWeave } from "@/components/home/path-of-weave";
+import { PassportLeaf } from "@/components/passport/passport-leaf";
+import { TagLookupForm } from "@/components/nfc/tag-lookup-form";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
 import { RevealText } from "@/components/ui/reveal-text";
+import type { Passport } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-/* The four dyestuffs the weavers actually use — the brand's reserved dye
-   colours, so each swatch is a material, not a decoration. */
-const DYES = [
-    { name: "Indigo", hex: "#2B3A67", note: "indigo leaf, steeped for days" },
-    { name: "Morinda", hex: "#AE1800", note: "morinda root, a red that lasts" },
-    { name: "Turmeric", hex: "#ECA406", note: "turmeric, a warm yellow" },
-    { name: "Clay", hex: "#F29A6A", note: "clay and tree bark" },
-];
+/* Three columns of cloth for the hero wall, dealt out like cards so no two
+   neighbours are the same and each column drifts at its own pace. */
+const deal = (n: number) =>
+    Array.from({ length: n }, (_, col) => records.filter((_, i) => i % n === col));
+
+/* The specimen in the certificate section: a real cloth, a placeholder
+   holder, and SPECIMEN where the id would be — so it cannot pass for one. */
+const specimenRecord = getRecord("07/TM") ?? records[0];
+const specimen: Passport = {
+    id: "SPECIMEN",
+    code: specimenRecord.code,
+    holder: "Your name here",
+    issuedAt: "2026-09-24T09:00:00+07:00",
+    serial: 1,
+    status: "issued",
+};
 
 /**
- * Explore surface, written for a phone held in one hand.
+ * The cover of the catalogue, then the catalogue.
  *
- * The promise, three real numbers, then the catalogue — searchable, because a
- * visitor in the exhibition is usually looking for one cloth whose label they
- * have just read. The programme's story comes after the cloths, not before.
+ * A visitor in the exhibition usually has one cloth's label in front of them,
+ * so the first thing they can do is type its code; the second is to browse.
+ * The programme's story — where the threads come from, the path a weave
+ * follows, what a certificate is — comes after the cloths, not before them.
  */
 export default async function Home() {
     const identity = await currentIdentity();
@@ -38,174 +51,210 @@ export default async function Home() {
         .issuableCounts(records.map((r) => r.code))
         .catch(() => null);
 
+    const [colA, colB, colC] = deal(3);
+
     return (
         <>
-            {/* masthead — a photo band with a scrim */}
-            <section
-                className="relative overflow-hidden rounded-xl bg-ink"
-                data-theme="dark"
-            >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                    src="/imagery/weaving-hands-loom.jpg"
-                    alt=""
-                    aria-hidden
-                    fetchPriority="high"
-                    className="absolute inset-0 h-full w-full object-cover"
-                    draggable={false}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/80 to-ink/35 sm:bg-gradient-to-r sm:from-ink sm:via-ink/75 sm:to-ink/10" />
-                <WarpField className="pointer-events-none absolute inset-0 h-full w-full text-white/8" />
-
-                <div className="relative px-5 pt-28 pb-7 sm:px-10 sm:py-16 lg:py-20">
-                    <div className="max-w-2xl">
-                        <div className="eyebrow leading-relaxed">{t.homeEyebrow}</div>
+            {/* ── the cover ─────────────────────────────────────────────── */}
+            <section className="relative overflow-hidden bg-ink text-white" data-theme="dark">
+                <div className="container-x grid grid-cols-1 gap-10 pt-10 pb-12 sm:pt-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-12 lg:py-0">
+                    <div className="flex flex-col justify-center lg:min-h-[calc(100svh-68px)] lg:py-20">
+                        <div className="eyebrow">{t.homeEyebrow}</div>
                         <RevealText
                             as="h1"
-                            className="mt-3 text-[clamp(2.2rem,8vw,3.6rem)] text-white"
+                            className="t-hero mt-5 text-white"
                             text={`${t.homeTitleA} ${t.homeTitleB}.`}
                             accentFrom={2}
                             accentClass="text-salmon"
                         />
-                        <p className="mt-4 max-w-[46ch] text-[16px] leading-relaxed text-white/80 sm:text-[17px]">
+                        <p className="mt-6 max-w-[44ch] text-[17px] leading-relaxed text-white/72 sm:text-[19px]">
                             {t.homeLead}
                         </p>
-                        <div className="mt-6 flex flex-wrap items-center gap-3">
-                            <Button asChild variant="inverse" size="lg">
-                                <a href="#records" className="text-ink hover:text-ink">
-                                    {t.exploreCloths}
-                                </a>
-                            </Button>
-                            <Button asChild variant="inverseGhost" size="lg">
-                                <Link href="/scan" className="text-white hover:text-white">
-                                    {t.howItWorks}
-                                </Link>
-                            </Button>
+
+                        <div className="mt-8 max-w-md border-t border-white/16 pt-6">
+                            <TagLookupForm tone="ink" label="Have a label in front of you? Type its code" />
                         </div>
-                        {identity && (
-                            <Link
-                                href="/collection"
-                                className="mt-4 inline-block text-[15px] text-white/75 underline decoration-white/30 underline-offset-4 hover:text-white"
+
+                        <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
+                            <a
+                                href="#collection"
+                                className="group inline-flex items-center gap-2 text-[16px] text-white hover:text-salmon"
                             >
-                                {t.openPassport} →
+                                {t.exploreCloths}
+                                <span aria-hidden className="transition-transform duration-200 group-hover:translate-y-0.5">
+                                    ↓
+                                </span>
+                            </a>
+                            <Link href="/scan" className="text-[16px] text-white/60 hover:text-white">
+                                {t.howItWorks}
                             </Link>
-                        )}
+                            {identity && (
+                                <Link href="/collection" className="text-[16px] text-white/60 hover:text-white">
+                                    {t.openPassport} →
+                                </Link>
+                            )}
+                        </div>
+
+                        <dl className="mt-10 grid max-w-md grid-cols-3 gap-4">
+                            {[
+                                { value: records.length, label: "Cloths" },
+                                { value: collections.length, label: "Collections" },
+                                { value: originCount, label: "Origins" },
+                            ].map((stat) => (
+                                <div key={stat.label} className="flex flex-col-reverse border-l border-white/16 pl-3">
+                                    <dt className="mt-1 text-[11px] tracking-[.2em] uppercase text-white/50">
+                                        {stat.label}
+                                    </dt>
+                                    <dd className="numeral text-[44px] text-white sm:text-[52px]">{stat.value}</dd>
+                                </div>
+                            ))}
+                        </dl>
                     </div>
 
-                    <dl className="mt-9 grid max-w-md grid-cols-3 gap-4 border-t border-white/18 pt-5">
-                        {[
-                            { value: records.length, label: "Cloths" },
-                            { value: collections.length, label: "Collections" },
-                            { value: originCount, label: "Origins" },
-                        ].map((stat) => (
-                            <div key={stat.label}>
-                                <dt className="text-[11px] tracking-[.16em] uppercase text-white/55">
-                                    {stat.label}
-                                </dt>
-                                <dd className="display num mt-1 text-[28px] text-white sm:text-[34px]">
-                                    {stat.value}
-                                </dd>
-                            </div>
-                        ))}
-                    </dl>
+                    {/* the wall of cloth: three drifting columns on a desk… */}
+                    <div className="relative hidden h-[calc(100svh-68px)] min-h-[560px] grid-cols-3 gap-3 lg:grid">
+                        <ClothMarquee records={colA} direction="y" duration={90} tileClassName="aspect-[3/4]" />
+                        <ClothMarquee records={colB} direction="y" reverse duration={110} className="-mt-28 h-[calc(100%+7rem)]" tileClassName="aspect-[3/4]" />
+                        <ClothMarquee records={colC} direction="y" duration={100} tileClassName="aspect-[3/4]" />
+                    </div>
+                </div>
+
+                {/* …and two drifting rows on a phone */}
+                <div className="space-y-2 pb-10 lg:hidden">
+                    <ClothMarquee records={[...colA, ...colB]} duration={80} tileClassName="h-28 w-24 sm:h-36 sm:w-32" />
+                    <ClothMarquee records={[...colC, ...colA]} reverse duration={95} tileClassName="h-28 w-24 sm:h-36 sm:w-32" />
                 </div>
             </section>
 
-            {/* the catalogue */}
-            <section id="records" className="mt-10 scroll-mt-20 sm:mt-14">
-                <div className="mb-5 border-b border-border pb-4">
-                    <div className="eyebrow">{t.recordsEyebrow}</div>
-                    <h2 className="mt-2">{t.recordsTitle}</h2>
-                    <p className="mt-2 max-w-[56ch] text-[15px] text-muted-foreground">
+            {/* ── the catalogue ─────────────────────────────────────────── */}
+            <section id="collection" className="container-x scroll-mt-16 pt-16 sm:pt-24">
+                <div className="grid grid-cols-1 gap-6 pb-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end">
+                    <div>
+                        <div className="eyebrow">{t.recordsEyebrow}</div>
+                        <h2 className="mt-3 text-[clamp(2.4rem,7vw,4.5rem)]">{t.recordsTitle}</h2>
+                    </div>
+                    <p className="max-w-[48ch] text-[17px] leading-relaxed text-muted-foreground lg:justify-self-end">
                         {t.recordsLead}
                     </p>
                 </div>
                 <RecordGallery records={records} issued={issued} />
             </section>
 
-            {/* the dyes — one line of materials, not a section */}
-            <section className="mt-12 border-t border-border pt-4">
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-                    <div className="eyebrow shrink-0">{t.dyeEyebrow}</div>
-                    <ul className="flex flex-wrap items-center gap-x-5 gap-y-3">
-                        {DYES.map((dye) => (
-                            <li
-                                key={dye.name}
-                                className="flex items-center gap-2"
-                                title={dye.note}
-                            >
-                                <span
-                                    aria-hidden
-                                    className="h-5 w-5 shrink-0 rounded-sm shadow-[var(--ring)]"
-                                    style={{ background: dye.hex }}
-                                />
-                                <span className="text-[15px]">{dye.name}</span>
-                            </li>
-                        ))}
-                    </ul>
+            {/* ── where the threads come from ──────────────────────────── */}
+            <section className="container-x pt-24 sm:pt-32">
+                <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
+                    <div className="lg:sticky lg:top-28 lg:self-start">
+                        <div className="eyebrow">Origins</div>
+                        <h2 className="mt-3">Where the threads come from.</h2>
+                        <p className="mt-4 max-w-[42ch] text-[17px] leading-relaxed text-muted-foreground">
+                            {originCount} places across Indonesia, from Bali to Sulawesi.
+                            Each square is one cloth, in its own main colour. Point at a
+                            square to see the cloth; choose a place to see its cloths.
+                        </p>
+                    </div>
+                    <Origins />
                 </div>
             </section>
 
-            {/* one chapter: what a certificate is, and the path it follows */}
-            <section
-                className="ink-band cloth mt-10 rounded-xl px-5 py-9 sm:mt-14 sm:px-10 sm:py-12"
-                data-theme="dark"
-            >
-                <div className="eyebrow">{t.journeyEyebrow}</div>
-                <RevealText
-                    as="h2"
-                    className="mt-3 max-w-[24ch] text-white"
-                    text={t.journeyTitle}
-                />
-                <p className="mt-2 max-w-[48ch] text-[15px] text-white/70">
-                    {t.journeyLead}
-                </p>
-
-                <JourneyRail className="mt-5" tone="ink" autoPlay />
-
-                <dl className="mt-8 grid gap-x-10 gap-y-4 sm:grid-cols-3">
-                    {t.explain.map((item) => (
-                        <div key={item.title} className="border-t border-white/18 pt-3">
-                            <dt className="text-[11px] tracking-[.2em] uppercase text-salmon">
-                                {item.title}
-                            </dt>
-                            <dd className="mt-1.5 text-[15px] leading-snug text-white/72">
-                                {item.body}
-                            </dd>
+            {/* ── the path of a weave ──────────────────────────────────── */}
+            <section className="mt-24 bg-ink py-16 text-white sm:mt-32 sm:py-24" data-theme="dark">
+                <div className="container-x">
+                    <div className="grid grid-cols-1 gap-6 pb-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end">
+                        <div>
+                            <div className="eyebrow">{t.journeyEyebrow}</div>
+                            <h2 className="mt-3 text-white">{t.journeyTitle}</h2>
                         </div>
-                    ))}
-                </dl>
-
-                {/* the story earns its length, so it is offered, not imposed */}
-                <Reveal tone="ink" summary="Why this matters" className="mt-7">
-                    <p>
-                        In Adonara a weaver&apos;s name rarely appears anywhere: the
-                        cloth is sold, the motifs are photographed, the price is noted,
-                        the name is not. Yet one length can mean eleven weeks of work,
-                        three dye baths, and a motif only certain families may wear.
-                    </p>
-                    <p>
-                        This record writes the name down. Every cloth that leaves the
-                        garden and the loom carries one page: who made it, from what,
-                        for how long. That page goes wherever the cloth goes.
-                    </p>
-                </Reveal>
-
-                {!identity && (
-                    <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-white/18 pt-6">
-                        <p className="max-w-[44ch] text-[15px] text-white/75">
-                            {t.joinLead}
+                        <p className="max-w-[46ch] text-[17px] leading-relaxed text-white/68 lg:justify-self-end">
+                            {t.journeyLead}
                         </p>
-                        <Button asChild variant="inverse">
-                            <Link href="/login?mode=register" className="text-ink hover:text-ink">
-                                {t.joinButton}
-                            </Link>
-                        </Button>
                     </div>
-                )}
+
+                    <PathOfWeave />
+
+                    <dl className="mt-14 grid grid-cols-1 gap-x-10 gap-y-6 border-t border-white/16 pt-8 sm:grid-cols-3">
+                        {t.explain.map((item) => (
+                            <div key={item.title}>
+                                <dt className="text-[11px] tracking-[.22em] uppercase text-salmon">
+                                    {item.title}
+                                </dt>
+                                <dd className="mt-2 text-[16px] leading-snug text-white/72">{item.body}</dd>
+                            </div>
+                        ))}
+                    </dl>
+
+                    <Reveal tone="ink" summary="Why this matters" className="mt-10">
+                        <p>
+                            In Adonara a weaver&apos;s name rarely appears anywhere: the
+                            cloth is sold, the motifs are photographed, the price is noted,
+                            the name is not. Yet one length can mean eleven weeks of work,
+                            three dye baths, and a motif only certain families may wear.
+                        </p>
+                        <p>
+                            This record writes the name down. Every cloth that leaves the
+                            garden and the loom carries one page: who made it, from what,
+                            for how long. That page goes wherever the cloth goes.
+                        </p>
+                    </Reveal>
+                </div>
             </section>
 
-            <ThreadRule className="mt-10 h-2 w-full text-stone" aria-hidden />
+            {/* ── the certificate ──────────────────────────────────────── */}
+            <section className="container-x pt-24 sm:pt-32">
+                <div className="grid grid-cols-1 items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:gap-20">
+                    <div>
+                        <div className="eyebrow">Your certificate</div>
+                        <h2 className="mt-3">Put your name to a cloth.</h2>
+                        <p className="mt-4 max-w-[46ch] text-[17px] leading-relaxed text-muted-foreground">
+                            Each cloth has one certificate. Claim it, and it is issued in
+                            your name — a page in your own book of traces, which anyone
+                            can check by its link. The cloth and its motifs stay with
+                            the weaver and their community.
+                        </p>
+
+                        <ol className="mt-8 border-t border-ink">
+                            {[
+                                ["Create an account", "A name, an email and a password. No app, no wallet."],
+                                ["Open a cloth and claim it", "One certificate per cloth — first come, first named."],
+                                ["Keep it in your book", "Every certificate is a page you can turn, on any device."],
+                            ].map(([title, body], i) => (
+                                <li key={title} className="flex gap-5 border-b border-border py-4">
+                                    <span className="numeral w-10 shrink-0 text-[34px] text-bt-red">
+                                        {String(i + 1).padStart(2, "0")}
+                                    </span>
+                                    <span>
+                                        <span className="block text-[18px] text-ink">{title}</span>
+                                        <span className="mt-0.5 block text-[15px] text-muted-foreground">{body}</span>
+                                    </span>
+                                </li>
+                            ))}
+                        </ol>
+
+                        <div className="mt-8 flex flex-wrap gap-3">
+                            {identity ? (
+                                <Button asChild size="lg">
+                                    <Link href="/collection">Open your traces</Link>
+                                </Button>
+                            ) : (
+                                <Button asChild size="lg">
+                                    <Link href="/login?mode=register">{t.joinButton}</Link>
+                                </Button>
+                            )}
+                            <Button asChild size="lg" variant="outline">
+                                <a href="#collection">Choose a cloth</a>
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* a specimen, on a small stack of pages */}
+                    <div className="relative mx-auto w-full max-w-[22rem]">
+                        <div aria-hidden className="absolute inset-0 translate-x-4 translate-y-4 bg-card shadow-[var(--ring)]" />
+                        <div aria-hidden className="absolute inset-0 translate-x-2 translate-y-2 bg-card shadow-[var(--ring)]" />
+                        <div className="relative">
+                            <PassportLeaf passport={specimen} record={specimenRecord} specimen />
+                        </div>
+                    </div>
+                </div>
+            </section>
         </>
     );
 }

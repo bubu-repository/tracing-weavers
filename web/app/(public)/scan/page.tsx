@@ -2,8 +2,9 @@ import Link from "next/link";
 import { collections, originCount, records } from "@/lib/records";
 import { t } from "@/lib/copy";
 import { TagLookupForm } from "@/components/nfc/tag-lookup-form";
+import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
-import { ThreadRule, WarpField, WeftCrossing } from "@/components/motif/marks";
+import { WarpField } from "@/components/motif/marks";
 
 export const metadata = { title: "How it works" };
 
@@ -14,93 +15,149 @@ const STEPS = [
     },
     {
         title: "Open its record",
-        body: "Scan the label, type its code above, or browse the gallery. No app to install, no account needed.",
+        body: "Scan the label, type its code, or browse the collection. No app to install, no account needed.",
     },
     {
         title: "Read its story",
-        body: "Where it was woven, in which technique, from what — and where it hangs in the room.",
+        body: "Where it was woven, in which technique, from what, its colours — and where it hangs in the room.",
     },
     {
         title: "Claim the certificate",
-        body: "Create an account and put your name on a cloth's certificate. It is kept as a page in your book of traces.",
+        body: "Create an account and put your name on a cloth's certificate. It becomes a page in your book of traces.",
     },
 ];
 
-/* How to explore the collection — a guide plus the one tool a visitor with a
-   label in front of them actually needs: the code box. */
+/* Answers drawn from how the app actually behaves — nothing promised here
+   that the code does not do. */
+const FAQ = [
+    {
+        q: "Do I need an app or an account to read a cloth?",
+        a: "No. Every record is a public web page. Scan the label or type its code and it opens in your browser. An account is only needed to claim a certificate.",
+    },
+    {
+        q: "What does claiming a certificate mean?",
+        a: "A certificate is issued in your name for one cloth and kept under your account, where it appears as a page in your book of traces. Anyone can check it through its link. It records the cloth and your name; the cloth and its motifs stay with the weaver and their community.",
+    },
+    {
+        q: "How many certificates does a cloth have?",
+        a: "One. The first person to claim it is named on it; after that, the record stays open for anyone to read, but the certificate is held.",
+    },
+    {
+        q: "Is this a token, an NFT, or crypto?",
+        a: "No. There is no blockchain, no wallet and nothing to trade. A certificate is an entry in the programme's register, signed so that it can be checked.",
+    },
+    {
+        q: "What are the colours on each record?",
+        a: "The main colours of the cloth, measured from its photograph. Light and camera shift them a little, so they are a guide to the cloth, not a dye recipe.",
+    },
+    {
+        q: "Why are some motifs not explained?",
+        a: "Communities decide how much of a motif may be recorded and shown. What it means stays with the weaver and their family.",
+    },
+];
+
+/* How to explore the collection: the code box first — someone here usually
+   has a label in front of them — then the four steps and the questions. */
 export default function ScanPage() {
     return (
-        <div className="mx-auto max-w-3xl">
-            <header>
-                <div className="eyebrow">{t.scanEyebrow}</div>
-                <h1 className="mt-4">
-                    {t.scanTitleA} <span className="text-bt-red">{t.scanTitleB}</span>
-                </h1>
-                <p className="mt-4 max-w-[54ch] text-[17px] text-muted-foreground">
-                    {records.length} cloths across {collections.length} collections,
-                    woven in {originCount} places across Indonesia. One page per weave.
-                </p>
-            </header>
+        <>
+            <PageHeader
+                eyebrow={t.scanEyebrow}
+                title={
+                    <>
+                        {t.scanTitleA} <span className="text-bt-red">{t.scanTitleB}</span>
+                    </>
+                }
+                lead={`${records.length} cloths across ${collections.length} collections, woven in ${originCount} places across Indonesia. One page per weave.`}
+            />
 
-            {/* the tool first: someone here usually has a label in front of them */}
-            <section
-                aria-labelledby="lookup"
-                className="ink-band cloth relative mt-8 overflow-hidden rounded-xl p-5 sm:p-7"
-                data-theme="dark"
-            >
-                <WarpField className="pointer-events-none absolute inset-0 h-full w-full text-white/8" />
-                <div className="relative max-w-md">
-                    <h2 id="lookup" className="text-[22px] text-white">
-                        Have a code from a label?
-                    </h2>
-                    <p className="mt-2 text-[15px] text-white/70">
-                        Type it as printed — <span className="font-mono">07/TM</span>,{" "}
-                        <span className="font-mono">07tm</span> or just{" "}
-                        <span className="font-mono">7</span> all work.
-                    </p>
-                    <TagLookupForm className="mt-5" tone="ink" />
+            {/* the tool first */}
+            <section className="container-x mt-10">
+                <div
+                    className="ink-band cloth relative overflow-hidden p-6 sm:p-10"
+                    data-theme="dark"
+                >
+                    <WarpField className="pointer-events-none absolute inset-0 h-full w-full text-white/7" />
+                    <div className="relative grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end">
+                        <div>
+                            <h2 className="text-[clamp(1.8rem,5vw,3rem)] text-white">
+                                Have a code from a label?
+                            </h2>
+                            <p className="mt-3 max-w-[40ch] text-[16px] text-white/70">
+                                Type it as printed — <span className="font-mono">07/TM</span>,{" "}
+                                <span className="font-mono">07tm</span> or just{" "}
+                                <span className="font-mono">7</span> all open the same cloth.
+                            </p>
+                        </div>
+                        <TagLookupForm tone="ink" />
+                    </div>
                 </div>
             </section>
 
-            <WeftCrossing className="mt-10 h-12 w-full text-stone" aria-hidden />
-
-            <ol className="mt-6">
-                {STEPS.map((step, i) => (
-                    <li key={step.title} className="flex gap-5 border-t border-border py-5">
-                        <span className="data w-6 shrink-0 pt-1 text-bt-red">
-                            {String(i + 1).padStart(2, "0")}
-                        </span>
-                        <span>
-                            <span className="block text-[19px] leading-tight text-ink">
-                                {step.title}
+            {/* the four steps */}
+            <section className="container-x mt-20" aria-labelledby="steps">
+                <h2 id="steps" className="eyebrow">
+                    Four steps
+                </h2>
+                <ol className="mt-5 grid grid-cols-1 border-t border-ink sm:grid-cols-2 lg:grid-cols-4">
+                    {STEPS.map((step, i) => (
+                        <li
+                            key={step.title}
+                            className="border-b border-border py-6 sm:pr-6 lg:border-r lg:px-6 lg:first:pl-0 lg:last:border-r-0"
+                        >
+                            <span className="numeral text-[64px] text-bt-red">
+                                {String(i + 1).padStart(2, "0")}
                             </span>
-                            <span className="mt-1.5 block text-[16px] text-muted-foreground">
-                                {step.body}
-                            </span>
-                        </span>
-                    </li>
-                ))}
-            </ol>
+                            <h3 className="mt-4 text-[24px]">{step.title}</h3>
+                            <p className="mt-2 text-[16px] leading-relaxed text-muted-foreground">{step.body}</p>
+                        </li>
+                    ))}
+                </ol>
+            </section>
 
-            <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-border pt-8">
-                <Button asChild size="lg">
-                    <Link href="/#records" className="text-white hover:text-white">
-                        Browse all {records.length} cloths
-                    </Link>
-                </Button>
-                <Button asChild size="lg" variant="outline">
-                    <Link href="/login?mode=register" className="text-ink hover:text-ink">
-                        Create an account
-                    </Link>
-                </Button>
-            </div>
+            {/* the questions */}
+            <section className="container-x mt-20" aria-labelledby="faq">
+                <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)] lg:gap-16">
+                    <div>
+                        <div className="eyebrow">Questions</div>
+                        <h2 id="faq" className="mt-3">What people ask.</h2>
+                    </div>
+                    <div className="border-t border-ink">
+                        {FAQ.map((item) => (
+                            <details key={item.q} className="group border-b border-border">
+                                <summary className="flex cursor-pointer list-none items-start justify-between gap-6 py-5 text-[19px] leading-snug text-ink transition-colors hover:text-bt-red [&::-webkit-details-marker]:hidden">
+                                    {item.q}
+                                    <span
+                                        aria-hidden
+                                        className="mt-1 grid h-6 w-6 shrink-0 place-items-center text-[20px] leading-none text-ink-3 transition-transform duration-200 group-open:rotate-45"
+                                    >
+                                        +
+                                    </span>
+                                </summary>
+                                <p className="max-w-[60ch] pb-6 text-[16px] leading-relaxed text-muted-foreground">
+                                    {item.a}
+                                </p>
+                            </details>
+                        ))}
+                    </div>
+                </div>
+            </section>
 
-            <p className="mt-8 max-w-[60ch] text-[15px] text-muted-foreground">
-                Anyone can read a record — no sign-in required. If the cloth changes
-                hands, its record travels with it.
-            </p>
-
-            <ThreadRule className="mt-12 h-2 w-full text-stone" aria-hidden />
-        </div>
+            <section className="container-x mt-20">
+                <div className="flex flex-col gap-6 border-y border-ink py-10 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="display max-w-[22ch] text-[clamp(1.8rem,4vw,2.6rem)]">
+                        {records.length} cloths are waiting to be read.
+                    </p>
+                    <div className="flex flex-wrap gap-3">
+                        <Button asChild size="lg">
+                            <Link href="/#collection">Browse the collection</Link>
+                        </Button>
+                        <Button asChild size="lg" variant="outline">
+                            <Link href="/login?mode=register">Create an account</Link>
+                        </Button>
+                    </div>
+                </div>
+            </section>
+        </>
     );
 }

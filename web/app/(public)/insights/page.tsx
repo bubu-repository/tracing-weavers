@@ -48,7 +48,7 @@ export default async function InsightsPage({
     const peak = Math.max(...days.value.map((entry) => entry.visitors), 1);
 
     return (
-        <div className="mx-auto max-w-3xl space-y-10">
+        <div className="container-x max-w-4xl space-y-10 py-10 sm:py-14">
             <header>
                 <div className="eyebrow">Insights · Vercel Web Analytics</div>
                 <h1 className="mt-3">How many people read the cloth.</h1>
@@ -136,7 +136,7 @@ export default async function InsightsPage({
 
 function Page({ eyebrow, title, children }: { eyebrow: string; title: string; children: React.ReactNode }) {
     return (
-        <div className="mx-auto max-w-2xl">
+        <div className="container-x max-w-3xl py-10 sm:py-14">
             <div className="eyebrow">{eyebrow}</div>
             <h1 className="mt-4">{title}</h1>
             <div className="mt-4 space-y-4 text-[17px] text-muted-foreground">{children}</div>

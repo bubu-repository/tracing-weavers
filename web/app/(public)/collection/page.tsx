@@ -4,6 +4,7 @@ import { currentIdentity, heldIds } from "@/lib/session";
 import { records } from "@/lib/records";
 import { PassportShelf } from "@/components/passport/PassportShelf";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/page-header";
 import type { Passport } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -51,79 +52,68 @@ export default async function CollectionPage() {
 
     if (!identity) {
         return (
-            <div className="mx-auto max-w-lg">
-                <header className="border-b border-border pb-5">
-                    <div className="eyebrow">Traces</div>
-                    <h1 className="mt-3">Your certificates</h1>
-                </header>
-                <div className="mt-6 rounded-lg bg-card p-6 shadow-[var(--ring)]">
-                    <p className="text-[16px] text-muted-foreground">
-                        Every cloth you claim becomes a page in your book of
-                        traces — the photograph, the cloth&apos;s data, and a
-                        certificate in your name that anyone can check.
-                    </p>
-                    <div className="mt-6 flex flex-wrap gap-3">
+            <>
+                <PageHeader
+                    eyebrow="Traces"
+                    title="Your book of traces."
+                    lead="Every cloth you claim becomes a page in it — the photograph, the cloth's data, and a certificate in your name that anyone can check."
+                />
+                <div className="container-x mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center">
+                    <div className="flex flex-wrap gap-3">
                         <Button asChild size="lg">
-                            <Link
-                                href={`/login?next=${encodeURIComponent("/collection")}`}
-                                className="text-white hover:text-white"
-                            >
-                                Sign in
-                            </Link>
+                            <Link href={`/login?next=${encodeURIComponent("/collection")}`}>Sign in</Link>
                         </Button>
                         <Button asChild size="lg" variant="outline">
-                            <Link
-                                href={`/login?mode=register&next=${encodeURIComponent("/collection")}`}
-                                className="text-ink hover:text-ink"
-                            >
+                            <Link href={`/login?mode=register&next=${encodeURIComponent("/collection")}`}>
                                 Create an account
                             </Link>
                         </Button>
                     </div>
+                    <Link
+                        href="/#collection"
+                        className="text-[16px] text-ink-2 hover:text-bt-red lg:justify-self-end"
+                    >
+                        Or browse the cloths first →
+                    </Link>
                 </div>
-                <Link
-                    href="/#records"
-                    className="mt-6 inline-block text-[15px] text-muted-foreground hover:text-ink"
-                >
-                    Browse the cloths first →
-                </Link>
-            </div>
+            </>
         );
     }
 
     const emptyState = (
-        <div className="rounded-lg px-6 py-14 text-center shadow-[var(--ring)]">
-            <p className="display text-2xl">No certificates yet</p>
-            <p className="mx-auto mt-3 max-w-[48ch] text-[15px] text-muted-foreground">
-                Claim a cloth and its certificate appears here — one page per
-                weave, kept under {identity.email}.
-            </p>
-            <Button asChild size="lg" className="mt-6">
-                <Link href="/#records" className="text-white hover:text-white">
-                    Browse the cloths
-                </Link>
-            </Button>
+        <div className="container-x mt-10">
+            <div className="px-6 py-16 text-center shadow-[inset_0_0_0_1px_var(--bt-stone-2)]">
+                <p className="display text-[30px]">Your book is empty — for now.</p>
+                <p className="mx-auto mt-3 max-w-[48ch] text-[16px] text-muted-foreground">
+                    Claim a cloth and its certificate is bound in here — one page per
+                    weave, kept under {identity.email}.
+                </p>
+                <Button asChild size="lg" className="mt-7">
+                    <Link href="/#collection">Choose a cloth</Link>
+                </Button>
+            </div>
         </div>
     );
 
     return (
-        <div className="space-y-9">
-            <header className="border-b border-border pb-5">
-                <div className="eyebrow">Traces</div>
-                <h1 className="mt-3">Your certificates</h1>
-                <p className="mt-3 max-w-[52ch] text-[15px] text-muted-foreground">
-                    {issued.length === 0
+        <>
+            <PageHeader
+                eyebrow="Traces"
+                title="Your book of traces."
+                lead={
+                    issued.length === 0
                         ? `Kept under ${identity.email}.`
                         : `${issued.length} certificate${
                               issued.length === 1 ? "" : "s"
-                          } kept under ${identity.email}. Drag a page, or use the arrows, to turn the book.`}
-                </p>
-            </header>
+                          } kept under ${identity.email}. Drag a page, or use the arrows, to turn it.`
+                }
+                rule={issued.length === 0}
+            />
 
             <PassportShelf issued={issued} records={records} emptyState={emptyState} />
 
             {issued.length > 0 && (
-                <p className="max-w-[56ch] text-[14px] text-muted-foreground">
+                <p className="container-x mt-8 max-w-[56ch] text-[15px] text-muted-foreground">
                     Your certificates follow your account: sign in on any device
                     and this book is there.{" "}
                     <Link
@@ -134,6 +124,6 @@ export default async function CollectionPage() {
                     </Link>
                 </p>
             )}
-        </div>
+        </>
     );
 }

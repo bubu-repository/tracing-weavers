@@ -6,7 +6,10 @@ import { ProfileForms } from "@/components/profile-forms";
 import { SignOutButton } from "@/components/sign-out-button";
 import { Button } from "@/components/ui/button";
 import { brand } from "@/lib/brand";
-import { ThreadRule, WarpField } from "@/components/motif/marks";
+import { WarpField } from "@/components/motif/marks";
+import { BrandMark } from "@/components/motif/brand-mark";
+import { PageHeader } from "@/components/page-header";
+import { getRecord, paletteFor } from "@/lib/records";
 import type { Passport } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -35,36 +38,23 @@ export default async function ProfilePage() {
 
     if (!identity) {
         return (
-            <div className="mx-auto max-w-lg">
-                <header className="border-b border-border pb-5">
-                    <div className="eyebrow">Profile</div>
-                    <h1 className="mt-3">Not signed in</h1>
-                </header>
-                <div className="mt-6 rounded-lg bg-card p-6 shadow-[var(--ring)]">
-                    <p className="text-[15px] text-muted-foreground">
-                        Sign in to see your member card and manage the account
-                        your certificates are kept under.
-                    </p>
-                    <div className="mt-5 flex flex-wrap gap-3">
-                        <Button asChild size="lg">
-                            <Link
-                                href={`/login?next=${encodeURIComponent("/profile")}`}
-                                className="text-white hover:text-white"
-                            >
-                                Sign in
-                            </Link>
-                        </Button>
-                        <Button asChild size="lg" variant="outline">
-                            <Link
-                                href={`/login?mode=register&next=${encodeURIComponent("/profile")}`}
-                                className="text-ink hover:text-ink"
-                            >
-                                Create an account
-                            </Link>
-                        </Button>
-                    </div>
+            <>
+                <PageHeader
+                    eyebrow="Profile"
+                    title="Your membership."
+                    lead="Sign in to see your member card and manage the account your certificates are kept under."
+                />
+                <div className="container-x mt-10 flex flex-wrap gap-3">
+                    <Button asChild size="lg">
+                        <Link href={`/login?next=${encodeURIComponent("/profile")}`}>Sign in</Link>
+                    </Button>
+                    <Button asChild size="lg" variant="outline">
+                        <Link href={`/login?mode=register&next=${encodeURIComponent("/profile")}`}>
+                            Create an account
+                        </Link>
+                    </Button>
                 </div>
-            </div>
+            </>
         );
     }
 
@@ -93,110 +83,109 @@ export default async function ProfilePage() {
         Promise.all(ids.map((id) => passports.get(id).catch(() => null))),
         passports.listByHolder(identity.email).catch(() => [] as Passport[]),
     ]);
-    const owned = new Set(
-        [...held, ...byAccount]
-            .filter(
-                (p): p is Passport =>
-                    p !== null &&
-                    (p.email ?? "").trim().toLowerCase() === identity.email,
-            )
-            .map((p) => p.id),
-    );
+    const ownedById = new Map<string, Passport>();
+    for (const p of [...held, ...byAccount]) {
+        if (p && (p.email ?? "").trim().toLowerCase() === identity.email) ownedById.set(p.id, p);
+    }
+    const owned = [...ownedById.values()].sort((a, b) => (a.issuedAt < b.issuedAt ? -1 : 1));
+
+    /* The card's edge gains a band for every cloth claimed, in that cloth's
+       main colour; a new member's card wears the four dye pots. */
+    const bands = owned
+        .map((p) => {
+            const record = getRecord(p.code);
+            return record ? paletteFor(record)?.colors[0]?.hex : undefined;
+        })
+        .filter((hex): hex is string => Boolean(hex));
 
     return (
-        <div className="mx-auto max-w-3xl space-y-8">
-            <header className="border-b border-border pb-5">
-                <div className="eyebrow">Profile</div>
-                <h1 className="mt-3">Your membership</h1>
-                <p className="mt-2 max-w-[52ch] text-[15px] text-muted-foreground">
-                    A certificate is issued to a member and kept under this
-                    account. Everything below is what identifies you.
-                </p>
-            </header>
+        <>
+            <PageHeader
+                eyebrow="Profile"
+                title="Your membership."
+                lead="A certificate is issued to a member and kept under this account. Everything here is what identifies you."
+            />
 
-            {/* ── the member card ── */}
-            <section
-                className="ink-band cloth relative overflow-hidden rounded-xl"
-                data-theme="dark"
-            >
-                <WarpField className="pointer-events-none absolute inset-0 h-full w-full text-white/10" />
-
-                <div className="relative flex flex-col gap-7 p-6 sm:flex-row sm:items-stretch sm:justify-between sm:p-8">
-                    <div className="min-w-0">
-                        <div className="eyebrow">{brand}</div>
-                        <p className="display mt-3 text-[clamp(1.6rem,5vw,2.2rem)] leading-tight text-white">
-                            {identity.name}
-                        </p>
-                        <p className="mt-1.5 truncate text-[15px] text-white/70">
-                            {identity.email}
-                        </p>
-                        {identity.outlet && (
-                            <p className="mt-0.5 truncate text-[14px] text-white/50">
-                                {identity.outlet}
-                            </p>
-                        )}
-
-                        {since && (
-                            <p className="mt-4 text-[12px] tracking-[.14em] uppercase text-white/45">
-                                Member since {since}
-                            </p>
-                        )}
-                    </div>
-
-                    <div className="flex shrink-0 flex-col justify-between gap-5 border-t border-white/18 pt-5 sm:items-end sm:border-t-0 sm:border-l sm:border-white/18 sm:pt-0 sm:pl-8 sm:text-right">
-                        <div>
-                            <div className="text-[11px] tracking-[.2em] uppercase text-salmon">
-                                Member no.
+            <div className="container-x mt-10 grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+                {/* ── the member card, as a card ── */}
+                <section aria-label="Member card" className="lg:sticky lg:top-28 lg:self-start">
+                    <div
+                        className="ink-band cloth relative mx-auto flex aspect-[1.586] w-full max-w-[30rem] flex-col justify-between overflow-hidden p-5 shadow-[0_30px_60px_-30px_rgba(32,30,29,.7)] sm:p-7"
+                        data-theme="dark"
+                    >
+                        <WarpField className="pointer-events-none absolute inset-0 h-full w-full text-white/7" />
+                        <div className="relative flex items-start justify-between gap-4">
+                            <div className="flex items-center gap-2.5">
+                                <BrandMark className="h-6 w-6" />
+                                <span className="display text-[16px] text-white">{brand}</span>
                             </div>
-                            <p className="num mt-2 text-[clamp(1.6rem,5vw,2rem)] leading-none text-white">
+                            <span className="text-[10px] tracking-[.22em] text-white/50 uppercase">Member</span>
+                        </div>
+
+                        <div className="relative">
+                            <p className="data text-[clamp(1.3rem,5vw,1.9rem)] tracking-[.12em] text-salmon">
                                 {memberNo}
                             </p>
+                            <p className="display mt-2 truncate text-[clamp(1.4rem,5vw,2rem)] leading-tight text-white">
+                                {identity.name}
+                            </p>
+                            <div className="mt-1 flex items-center justify-between gap-4 text-[12px] tracking-[.12em] text-white/50 uppercase">
+                                <span className="truncate">{identity.outlet ?? identity.email}</span>
+                                {since && <span className="shrink-0">Since {since}</span>}
+                            </div>
                         </div>
 
-                        <div>
-                            <div className="text-[11px] tracking-[.2em] uppercase text-white/45">
-                                Certificates
-                            </div>
-                            <p className="num mt-1.5 text-[19px] leading-none text-white">
-                                {owned.size}
-                            </p>
-                            <Link
-                                href="/collection"
-                                className="mt-2 inline-block text-[13px] text-salmon underline decoration-salmon/40 underline-offset-2 hover:text-white"
-                            >
-                                See them →
-                            </Link>
+                        <div aria-hidden className="absolute inset-x-0 bottom-0 flex h-2">
+                            {bands.length ? (
+                                bands.map((hex, i) => <span key={i} className="flex-1" style={{ background: hex }} />)
+                            ) : (
+                                <span className="selvedge-dye h-full w-full" />
+                            )}
                         </div>
                     </div>
-                </div>
-            </section>
 
-            {/* ── what can be changed ── */}
-            <section>
-                <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-                    <h2 className="eyebrow">Account details</h2>
-                    <p className="text-[13px] text-muted-foreground">
-                        Each change asks for your password
+                    <dl className="mx-auto mt-6 grid max-w-[30rem] grid-cols-2 border-t border-ink">
+                        <div className="border-b border-border py-4 pr-4">
+                            <dt className="label">Certificates</dt>
+                            <dd className="numeral mt-1 text-[44px]">{owned.length}</dd>
+                        </div>
+                        <div className="border-b border-l border-border py-4 pl-4">
+                            <dt className="label">Member since</dt>
+                            <dd className="mt-2 text-[18px] text-ink">{since ?? "—"}</dd>
+                        </div>
+                    </dl>
+                    <p className="mx-auto mt-3 max-w-[30rem] text-[14px] text-muted-foreground">
+                        The card&apos;s edge takes a band of colour from every cloth you
+                        claim.{" "}
+                        <Link href="/collection" className="text-ink underline underline-offset-2 hover:text-bt-red">
+                            Open your book →
+                        </Link>
                     </p>
+                </section>
+
+                {/* ── what can be changed ── */}
+                <div className="space-y-10">
+                    <section>
+                        <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+                            <h2 className="eyebrow">Account details</h2>
+                            <p className="text-[13px] text-muted-foreground">Each change asks for your password</p>
+                        </div>
+                        <ProfileForms name={identity.name} email={identity.email} />
+                        <p className="mt-3 text-[13px] text-muted-foreground">
+                            Your member number {memberNo} never changes — it is the one
+                            thing here you cannot edit.
+                        </p>
+                    </section>
+
+                    <section className="flex flex-wrap items-center justify-between gap-4 border-t border-ink pt-6">
+                        <p className="max-w-[40ch] text-[14px] text-muted-foreground">
+                            Signing out clears this device: the session and the local copy
+                            of your certificates. They stay safe under your account.
+                        </p>
+                        <SignOutButton variant="outline" />
+                    </section>
                 </div>
-
-                <ProfileForms name={identity.name} email={identity.email} />
-
-                <p className="mt-3 text-[13px] text-muted-foreground">
-                    Your member number {memberNo} never changes — it is the one
-                    thing on this page you cannot edit.
-                </p>
-            </section>
-
-            <section className="flex flex-wrap items-center justify-between gap-4 border-t border-border pt-6">
-                <p className="max-w-[44ch] text-[14px] text-muted-foreground">
-                    Signing out clears this device: the session and the local copy
-                    of your certificates. They stay safe under your account.
-                </p>
-                <SignOutButton variant="outline" />
-            </section>
-
-            <ThreadRule className="h-2 w-full text-stone" aria-hidden />
-        </div>
+            </div>
+        </>
     );
 }

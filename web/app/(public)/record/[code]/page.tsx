@@ -8,7 +8,11 @@ import {
     getRecord,
     isPlaceholder,
     neighbours,
+    paletteFor,
+    recordSwatch,
+    recordThumb,
     recordVisual,
+    sameCollection,
     type ProductRecord,
 } from "@/lib/records";
 import { passportStore } from "@/lib/store";
@@ -17,9 +21,13 @@ import { t } from "@/lib/copy";
 import { PassportClaim } from "@/components/passport/PassportClaim";
 import { PassportLeaf } from "@/components/passport/passport-leaf";
 import { RecordTraits } from "@/components/records/RecordTraits";
+import { ClothViewer } from "@/components/records/cloth-viewer";
+import { ClaimBar } from "@/components/records/claim-bar";
+import { RelatedRail } from "@/components/records/related-rail";
+import { PaletteSwatches, Selvedge } from "@/components/records/selvedge";
+import { catalogueNumber } from "@/components/records/RecordCard";
 import { JourneyRail } from "@/components/journey-rail";
 import { ShareButton } from "@/components/share-button";
-import { ThreadRule } from "@/components/motif/marks";
 
 export const dynamic = "force-dynamic";
 
@@ -44,13 +52,14 @@ export async function generateMetadata({
 }
 
 /**
- * LEARN surface with one Configure action: where a tap or a scan lands, on a
- * phone, one-handed.
+ * The object page: where a tap or a scan lands, on a phone, one-handed.
  *
- * The photograph leads (it is the object), then the name — once, not three
- * times — what it is, the facts, and the claim. On a desk the photograph stays
- * put while the story scrolls beside it. At the foot, the cloths hung either
- * side of this one, so a visitor can walk the exhibition from their phone.
+ * It wears the cloth's own colours — a selvedge measured from the photograph
+ * runs under the header — and leads with the photograph, edge to edge on a
+ * phone, in a dark vitrine on a desk, with a viewer for looking closer. Then
+ * the catalogue entry: number, name, place, what it is, its colours, its
+ * specification, and the claim. At the foot, the cloths either side of it
+ * and the rest of its collection, so the exhibition can be walked from here.
  */
 export default async function RecordPage({
     params,
@@ -84,58 +93,75 @@ export default async function RecordPage({
     const step = attr(record, "Journey step");
     const origin = formatPlace(attr(record, "Origin"));
     const name = clothName(record);
+    const palette = paletteFor(record);
     const { previous, next } = neighbours(record.code);
+    const related = sameCollection(record, 8);
+    const status =
+        remaining <= 0
+            ? "Claimed"
+            : record.supply > 1
+              ? `${remaining} of ${record.supply} left`
+              : "Available";
 
     return (
-        <div>
-            <div className="flex items-center justify-between gap-3">
-                <Link
-                    href="/#records"
-                    className="inline-flex min-h-9 items-center gap-1.5 text-[14px] text-muted-foreground hover:text-ink"
-                >
-                    <span aria-hidden>←</span> {t.backToRecords}
-                </Link>
+        <article>
+            {/* the cloth's own selvedge, under the brand's */}
+            <Selvedge palette={palette} className="h-2" />
+
+            <div className="container-x flex items-center justify-between gap-3 py-4 lg:py-5">
+                <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-2 text-[14px] text-muted-foreground">
+                    <Link href="/#collection" className="shrink-0 text-ink-2 hover:text-ink">
+                        ← The collection
+                    </Link>
+                    <span aria-hidden className="text-stone">/</span>
+                    <span className="truncate">{record.collection}</span>
+                </nav>
                 <ShareButton title={`${name} · ${record.code}`} text={record.description} />
             </div>
 
-            <div className="mt-5 grid gap-8 lg:mt-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-14">
-                {/* the cloth */}
-                <div className="lg:sticky lg:top-24 lg:self-start">
-                    <figure className="relative overflow-hidden rounded-xl bg-ink shadow-[var(--ring)]">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                            src={recordVisual(record)}
-                            alt={`${name}, handwoven cloth from ${origin}`}
-                            fetchPriority="high"
-                            className="aspect-4/5 w-full object-cover"
-                            draggable={false}
-                        />
-                        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between gap-2 p-3 sm:p-4">
-                            <span className="rounded-[4px] bg-ink/75 px-2 py-1 font-mono text-[13px] tracking-[.04em] text-white">
-                                {record.code}
-                            </span>
-                            <span className="rounded-full bg-paper/95 px-2.5 py-1 text-[11px] tracking-[.12em] text-ink uppercase">
-                                {remaining <= 0
-                                    ? "Claimed"
-                                    : record.supply > 1
-                                      ? `${remaining} of ${record.supply} left`
-                                      : "Available"}
-                            </span>
-                        </div>
-                    </figure>
+            <div className="container-x grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-16">
+                {/* the photograph: edge to edge on a phone, a vitrine on a desk */}
+                <div className="-mx-4 sm:mx-0 lg:sticky lg:top-[92px] lg:self-start">
+                    <ClothViewer
+                        src={recordVisual(record)}
+                        alt={`${name}, handwoven cloth from ${origin}`}
+                        title={`${catalogueNumber(record.code)} · ${name}`}
+                        className="bg-ink"
+                        style={palette ? { background: palette.colors[0]?.hex } : undefined}
+                        imgClassName="aspect-4/5 w-full object-cover lg:aspect-auto lg:h-[calc(100svh-150px)] lg:max-h-[860px] lg:min-h-[480px] lg:object-contain lg:bg-[#1a1918]"
+                    >
+                        <span className="pointer-events-none absolute top-3 left-3 bg-ink/80 px-2 py-1 font-mono text-[13px] tracking-[.04em] text-white sm:top-4 sm:left-4">
+                            {record.code}
+                        </span>
+                        <span
+                            className={`pointer-events-none absolute top-3 right-3 px-2.5 py-1 text-[11px] tracking-[.16em] uppercase sm:top-4 sm:right-4 ${
+                                remaining <= 0 ? "bg-ink text-white" : "bg-salmon text-ink"
+                            }`}
+                        >
+                            {status}
+                        </span>
+                    </ClothViewer>
                     {!isPlaceholder(record.photoCredit) && (
-                        <p className="mt-2.5 text-[13px] text-ink-2">
+                        <p className="mt-2.5 px-4 text-[13px] text-ink-2 sm:px-0">
                             Photo: {record.photoCredit}
                         </p>
                     )}
                 </div>
 
-                {/* the story, the facts, the action */}
-                <div className="space-y-8">
+                {/* the entry */}
+                <div className="min-w-0 space-y-10 lg:pt-2">
                     <header>
-                        <div className="eyebrow">{record.collection ?? t.recordEyebrow}</div>
-                        <h1 className="mt-3">{name}</h1>
-                        <p className="mt-2 text-[15px] text-ink-2">
+                        <div className="flex items-end gap-4">
+                            <span className="numeral text-[84px] text-ink/18 sm:text-[112px]">
+                                {catalogueNumber(record.code)}
+                            </span>
+                            <div className="pb-2">
+                                <div className="eyebrow">{record.collection ?? t.recordEyebrow}</div>
+                                <div className="data mt-1.5 text-ink-2">{record.code}</div>
+                            </div>
+                        </div>
+                        <h1 className="mt-3 text-[clamp(2.6rem,7vw,4.75rem)] leading-[.92]">{name}</h1>
+                        <p className="mt-4 text-[17px] text-ink-2">
                             {origin}
                             <span className="text-ink-3">
                                 {" · "}
@@ -144,14 +170,16 @@ export default async function RecordPage({
                                     : t.supplyUnique}
                             </span>
                         </p>
-                        <p className="mt-4 max-w-[58ch] text-[17px] leading-relaxed text-muted-foreground">
+                        <p className="mt-6 max-w-[52ch] border-l-2 border-bt-red pl-4 text-[19px] leading-relaxed text-ink sm:text-[21px]">
                             {record.description}
                         </p>
                     </header>
 
+                    <PaletteSwatches palette={palette} />
+
                     <RecordTraits record={record} />
 
-                    <div className="max-w-[58ch] border-l-2 border-bt-red/40 pl-4">
+                    <div className="max-w-[56ch]">
                         <div className="text-[11px] tracking-[.2em] uppercase text-bt-red">The motif</div>
                         <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">
                             The community decides how much of a motif may be recorded
@@ -161,7 +189,7 @@ export default async function RecordPage({
                     </div>
 
                     {mine ? (
-                        <section aria-labelledby="your-certificate" className="space-y-4">
+                        <section id="claim" aria-labelledby="your-certificate" className="scroll-mt-24 space-y-4">
                             <h2 id="your-certificate" className="eyebrow">
                                 {t.yourPassport}
                             </h2>
@@ -181,34 +209,49 @@ export default async function RecordPage({
 
             {/* walk the exhibition */}
             {(previous || next) && (
-                <nav
-                    aria-label="More cloths"
-                    className="mt-14 grid grid-cols-2 gap-3 border-t border-border pt-6 sm:gap-6"
-                >
-                    {previous ? <Neighbour record={previous} direction="previous" /> : <span />}
-                    {next ? <Neighbour record={next} direction="next" /> : <span />}
+                <nav aria-label="Next and previous cloths" className="container-x mt-20">
+                    <div className="grid grid-cols-2 border-y border-ink">
+                        {previous ? <Neighbour record={previous} direction="previous" /> : <span />}
+                        {next ? <Neighbour record={next} direction="next" /> : <span />}
+                    </div>
                 </nav>
             )}
 
-            {/* Where this piece sits in the three-year path. */}
-            <section className="mt-12">
-                <ThreadRule className="h-2 w-full text-stone" aria-hidden />
-                <div className="mt-6">
+            {related.length > 0 && (
+                <section className="container-x mt-16" aria-labelledby="more-from">
+                    <div className="mb-6 flex items-end justify-between gap-4">
+                        <div>
+                            <div className="eyebrow">More from the collection</div>
+                            <h2 id="more-from" className="mt-2 text-[clamp(1.6rem,4vw,2.4rem)]">
+                                {record.collection}
+                            </h2>
+                        </div>
+                        <Link
+                            href={`/?c=${encodeURIComponent(record.collection ?? "")}#collection`}
+                            className="shrink-0 pb-1 text-[15px] text-ink-2 hover:text-bt-red"
+                        >
+                            See all →
+                        </Link>
+                    </div>
+                    <RelatedRail records={related} />
+                </section>
+            )}
+
+            {/* where this piece sits in the three-year path */}
+            <section className="container-x mt-16">
+                <div className="border-t border-border pt-8">
                     <div className="eyebrow">{t.journeyEyebrow}</div>
-                    <h2 className="mt-2 text-[clamp(1.3rem,4vw,1.7rem)]">
-                        {t.journeyTitle}
-                    </h2>
-                    {/* Same self-running rail as the home page. `activeStep`
-                        keeps the stage this cloth sits at marked "this
-                        record" while the journey animates. */}
-                    <JourneyRail
-                        activeStep={step ? String(step) : undefined}
-                        autoPlay
-                        className="mt-3"
-                    />
+                    <h2 className="mt-2 text-[clamp(1.6rem,4vw,2.4rem)]">{t.journeyTitle}</h2>
+                    {/* `activeStep` keeps the stage this cloth sits at marked
+                        "this record" while the rail walks itself. */}
+                    <JourneyRail activeStep={step ? String(step) : undefined} autoPlay className="mt-4" />
                 </div>
             </section>
-        </div>
+
+            {!mine && remaining > 0 && (
+                <ClaimBar swatch={recordSwatch(record)} name={name} status={status} />
+            )}
+        </article>
     );
 }
 
@@ -223,26 +266,26 @@ function Neighbour({
     return (
         <Link
             href={`/record/${encodeURIComponent(record.code)}`}
-            className={`group flex min-w-0 items-center gap-3 rounded-lg p-2 text-ink hover:bg-card hover:text-ink sm:gap-4 ${
-                forward ? "flex-row-reverse text-right" : ""
+            className={`group flex min-w-0 items-center gap-3 py-5 text-ink hover:text-ink sm:gap-5 ${
+                forward ? "flex-row-reverse border-l border-border pl-3 text-right sm:pl-6" : "pr-3 sm:pr-6"
             }`}
         >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-                src={recordVisual(record)}
+                src={recordThumb(record)}
                 alt=""
                 loading="lazy"
-                className="h-16 w-13 shrink-0 rounded-md object-cover shadow-[var(--ring)] sm:h-20 sm:w-16"
+                className="h-20 w-16 shrink-0 object-cover transition-transform duration-500 group-hover:scale-[1.04] sm:h-28 sm:w-22"
                 draggable={false}
             />
             <span className="min-w-0">
-                <span className="label block">
-                    {forward ? "Next →" : "← Previous"}
+                <span className="label block">{forward ? "Next →" : "← Previous"}</span>
+                <span className="numeral mt-1 block text-[30px] text-ink-3 group-hover:text-bt-red sm:text-[40px]">
+                    {catalogueNumber(record.code)}
                 </span>
-                <span className="mt-1 block truncate text-[15px] leading-tight group-hover:text-bt-red sm:text-[17px]">
+                <span className="mt-1 block truncate text-[15px] leading-tight sm:text-[19px]">
                     {clothName(record)}
                 </span>
-                <span className="data mt-0.5 block text-muted-foreground">{record.code}</span>
             </span>
         </Link>
     );

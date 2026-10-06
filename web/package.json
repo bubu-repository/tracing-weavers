@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "record:svg": "node scripts/render-record.mjs",
     "publish": "tsx scripts/publish-record.mts",
-    "nfc:urls": "node scripts/nfc-urls.mjs"
+    "nfc:urls": "node scripts/nfc-urls.mjs",
+    "images": "node scripts/images.mjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",

@@ -46,7 +46,7 @@ export function ShareButton({
             type="button"
             onClick={share}
             className={cn(
-                "pressable inline-flex min-h-9 items-center gap-2 rounded-full px-3.5 text-[14px] text-ink-2 shadow-[var(--ring)] hover:text-ink hover:shadow-[var(--ring-hover)]",
+                "pressable inline-flex min-h-10 items-center gap-2 px-4 text-[14px] text-ink shadow-[inset_0_0_0_1px_var(--bt-stone)] hover:bg-ink hover:text-white hover:shadow-none",
                 className,
             )}
         >

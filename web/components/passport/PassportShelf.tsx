@@ -8,7 +8,7 @@ import { readLocalPassports } from "@/lib/local-passports";
 import { WarpField } from "@/components/motif/marks";
 import { brand } from "@/lib/brand";
 import type { Passport } from "@/lib/types";
-import { recordVisual, type ProductRecord } from "@/lib/records";
+import { recordSwatch, type ProductRecord } from "@/lib/records";
 
 const issuedOn = (iso: string) =>
     new Date(iso).toLocaleDateString("en-GB", {
@@ -194,22 +194,28 @@ export function PassportShelf({
 
     return (
         <div className="space-y-12">
-            <div className="mx-auto max-w-sm sm:max-w-3xl">
-                <PassportBook
-                    pages={pages}
-                    insideCover={insideCover}
-                    backCover={backCover}
-                />
+            {/* the book lies on the gallery wall */}
+            <div className="bg-ink py-10 sm:py-14" data-theme="dark">
+                <div className="container-x">
+                    <div className="mx-auto max-w-sm sm:max-w-3xl">
+                        <PassportBook
+                            pages={pages}
+                            insideCover={insideCover}
+                            backCover={backCover}
+                            tone="ink"
+                        />
+                    </div>
+                </div>
             </div>
 
             {/* The same certificates as a plain list: quicker than turning
                 pages to find one, and the book's pages are hidden from screen
                 readers except the spread that is open. */}
-            <section aria-labelledby="all-certificates">
+            <section aria-labelledby="all-certificates" className="container-x">
                 <h2 id="all-certificates" className="eyebrow">
                     Every certificate
                 </h2>
-                <ul className="mt-3 divide-y divide-border border-y border-border">
+                <ul className="mt-4 divide-y divide-border border-y border-ink">
                     {merged.map((passport) => {
                         const record = records.find((r) => r.code === passport.code);
                         return (
@@ -220,17 +226,17 @@ export function PassportShelf({
                                 {record && (
                                     /* eslint-disable-next-line @next/next/no-img-element */
                                     <img
-                                        src={recordVisual(record)}
+                                        src={recordSwatch(record)}
                                         alt=""
                                         loading="lazy"
-                                        className="h-14 w-11 shrink-0 rounded-md object-cover shadow-[var(--ring)]"
+                                        className="h-16 w-13 shrink-0 object-cover"
                                         draggable={false}
                                     />
                                 )}
                                 <div className="min-w-0 flex-1">
                                     <Link
                                         href={`/record/${encodeURIComponent(passport.code)}`}
-                                        className="block truncate text-[16px] text-ink hover:text-bt-red"
+                                        className="block truncate text-[18px] text-ink hover:text-bt-red"
                                     >
                                         {record?.title.split(" · ")[0] ?? passport.code}
                                     </Link>
@@ -241,7 +247,7 @@ export function PassportShelf({
                                 </div>
                                 <Link
                                     href={`/verify/${encodeURIComponent(passport.id)}`}
-                                    className="shrink-0 rounded-full px-3 py-1.5 text-[13px] text-ink-2 shadow-[var(--ring)] hover:text-ink hover:shadow-[var(--ring-hover)]"
+                                    className="shrink-0 px-3.5 py-2 text-[13px] text-ink shadow-[inset_0_0_0_1px_var(--bt-stone)] hover:bg-ink hover:text-white hover:shadow-none"
                                 >
                                     Check
                                 </Link>

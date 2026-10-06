@@ -102,7 +102,7 @@ export default function LoginForm({
             <div
                 role="group"
                 aria-label="Sign in or create an account"
-                className="grid grid-cols-2 gap-1 rounded-full bg-muted p-1"
+                className="grid grid-cols-2 gap-1 bg-muted p-1"
             >
                 {(
                     [
@@ -117,17 +117,17 @@ export default function LoginForm({
                             type="button"
                             aria-pressed={on}
                             onClick={() => switchTo(value)}
-                            className="pressable relative h-10 rounded-full text-[15px]"
+                            className="pressable relative h-11 text-[15px]"
                         >
                             {on && (
                                 <motion.span
                                     layoutId="auth-mode"
                                     aria-hidden
-                                    className="absolute inset-0 rounded-full bg-card shadow-[var(--ring)]"
+                                    className="absolute inset-0 bg-ink"
                                     transition={{ type: "spring", duration: 0.3, bounce: 0.12 }}
                                 />
                             )}
-                            <span className={`relative ${on ? "text-ink" : "text-ink-3 hover:text-ink"}`}>
+                            <span className={`relative ${on ? "text-white" : "text-ink-2 hover:text-ink"}`}>
                                 {label}
                             </span>
                         </button>
@@ -183,7 +183,7 @@ export default function LoginForm({
                 {error && (
                     <p
                         role="alert"
-                        className="rounded-md bg-bt-red/6 p-3 text-[15px] text-bt-red shadow-[0_0_0_1px_rgba(174,24,0,.28)]"
+                        className="bg-bt-red/6 p-3 text-[15px] text-bt-red shadow-[inset_0_0_0_1px_rgba(174,24,0,.28)]"
                     >
                         {error}
                     </p>
@@ -261,7 +261,7 @@ export function Field({
                     minLength={minLength}
                     aria-describedby={hint ? `${id}-hint` : undefined}
                     onChange={(e) => onChange(e.target.value)}
-                    className={`h-12 w-full rounded-md bg-white px-3.5 text-[16px] shadow-[var(--ring)] transition-shadow duration-[160ms] ease-[cubic-bezier(0.23,1,0.32,1)] placeholder:text-ink-3 focus-visible:shadow-[0_0_0_2px_var(--bt-red)] ${
+                    className={`h-12 w-full bg-white px-3.5 text-[16px] shadow-[inset_0_0_0_1px_var(--bt-stone)] transition-shadow duration-[160ms] ease-[cubic-bezier(0.23,1,0.32,1)] placeholder:text-ink-3 focus-visible:shadow-[inset_0_0_0_2px_var(--bt-ink)] focus-visible:outline-none ${
                         secret ? "pr-12" : ""
                     }`}
                 />
@@ -271,7 +271,7 @@ export function Field({
                         onClick={() => setShown((v) => !v)}
                         aria-label={shown ? "Hide password" : "Show password"}
                         aria-pressed={shown}
-                        className="absolute top-1/2 right-1.5 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-md text-ink-3 hover:bg-ink/5 hover:text-ink"
+                        className="absolute top-1/2 right-1.5 grid h-9 w-9 -translate-y-1/2 place-items-center text-ink-3 hover:bg-ink/5 hover:text-ink"
                     >
                         {shown ? (
                             <EyeOff aria-hidden className="h-[18px] w-[18px]" strokeWidth={1.5} />

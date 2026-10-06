@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -15,17 +15,24 @@ import { cn } from "@/lib/utils";
 export function TagLookupForm({
     className,
     tone = "paper",
+    label = "Code on the label",
+    id = "label-code",
 }: {
     className?: string;
     tone?: "paper" | "ink";
+    label?: string;
+    /** fixed rather than useId(): one box per page, and a generated id
+        drifted between server and client on a cold load */
+    id?: string;
 }) {
     const [code, setCode] = useState("");
     const [pending, startTransition] = useTransition();
     const router = useRouter();
+    const ink = tone === "ink";
 
     return (
         <form
-            className={className}
+            className={cn("min-w-0", className)}
             onSubmit={(e) => {
                 e.preventDefault();
                 const trimmed = code.trim();
@@ -33,15 +40,12 @@ export function TagLookupForm({
                 startTransition(() => router.push(`/t/${encodeURIComponent(trimmed)}`));
             }}
         >
-            <label
-                htmlFor="label-code"
-                className={cn("label", tone === "ink" && "text-white/60")}
-            >
-                Code on the label
+            <label htmlFor={id} className={cn("label block", ink && "text-white/60")}>
+                {label}
             </label>
-            <div className="mt-1.5 flex gap-2">
+            <div className="mt-2 flex">
                 <input
-                    id="label-code"
+                    id={id}
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                     placeholder="07/TM"
@@ -50,17 +54,26 @@ export function TagLookupForm({
                     spellCheck={false}
                     enterKeyHint="go"
                     required
-                    className="h-12 min-w-0 flex-1 rounded-md bg-white px-3.5 font-mono text-[16px] tracking-[.04em] text-ink uppercase shadow-[var(--ring)] transition-shadow duration-[160ms] ease-[cubic-bezier(0.23,1,0.32,1)] placeholder:text-ink-3 placeholder:normal-case focus-visible:shadow-[0_0_0_2px_var(--bt-red)]"
+                    className={cn(
+                        "h-13 w-0 min-w-0 flex-1 px-4 font-mono text-[18px] tracking-[.06em] uppercase transition-shadow duration-[160ms] placeholder:normal-case focus-visible:outline-none",
+                        ink
+                            ? "bg-white/8 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,.28)] placeholder:text-white/35 focus-visible:shadow-[inset_0_0_0_2px_var(--bt-salmon)]"
+                            : "bg-white text-ink shadow-[inset_0_0_0_1px_var(--bt-stone)] placeholder:text-ink-3 focus-visible:shadow-[inset_0_0_0_2px_var(--bt-ink)]",
+                    )}
                 />
-                <Button
+                <button
                     type="submit"
-                    size="lg"
-                    variant={tone === "ink" ? "inverse" : "primary"}
-                    className="h-12 shrink-0"
                     disabled={pending}
+                    className={cn(
+                        "pressable inline-flex h-13 shrink-0 items-center gap-2 px-5 text-[16px] font-medium disabled:opacity-50",
+                        ink
+                            ? "bg-salmon text-ink hover:bg-white"
+                            : "bg-bt-red text-white hover:bg-bt-red-bright",
+                    )}
                 >
                     {pending ? "Opening…" : "Open"}
-                </Button>
+                    <ArrowRight aria-hidden className="h-4 w-4" strokeWidth={2} />
+                </button>
             </div>
         </form>
     );

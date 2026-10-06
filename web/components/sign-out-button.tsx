@@ -18,9 +18,12 @@ import { cn } from "@/lib/utils";
 export function SignOutButton({
     className,
     variant = "ghost",
+    tone = "paper",
 }: {
     className?: string;
     variant?: "ghost" | "outline";
+    /** "ink" for the header: an icon-and-word on the dark bar */
+    tone?: "paper" | "ink";
 }) {
     const router = useRouter();
     const [busy, setBusy] = useState(false);
@@ -46,7 +49,12 @@ export function SignOutButton({
         <Button
             variant={variant}
             size="sm"
-            className={cn("gap-2", variant === "ghost" && "text-ink-2", className)}
+            className={cn(
+                "gap-2",
+                variant === "ghost" && tone === "paper" && "text-ink-2",
+                tone === "ink" && "text-white/60 hover:bg-white/10 hover:text-white",
+                className,
+            )}
             onClick={signOut}
             disabled={busy}
             title={failed ? "Could not sign out — try again" : undefined}

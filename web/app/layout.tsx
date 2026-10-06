@@ -49,7 +49,7 @@ export const metadata: Metadata = {
 /* `viewport-fit=cover` is what makes env(safe-area-inset-bottom) non-zero, so
    the phone tab bar clears the home indicator instead of sitting under it. */
 export const viewport: Viewport = {
-    themeColor: "#F3F2F2",
+    themeColor: "#201E1D",
     viewportFit: "cover",
 };
 

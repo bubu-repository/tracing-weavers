@@ -4,7 +4,6 @@ import { resolveTag } from "@/lib/tags";
 import { findRecord } from "@/lib/records";
 import { safeDecode } from "@/lib/safe";
 import { TagLookupForm } from "@/components/nfc/tag-lookup-form";
-import { ThreadRule } from "@/components/motif/marks";
 
 export const dynamic = "force-dynamic";
 
@@ -37,29 +36,25 @@ export default async function TagPage({
     const shown = safeDecode(tag);
 
     return (
-        <div className="mx-auto max-w-xl">
+        <div className="container-x max-w-3xl py-14 sm:py-20">
             <div className="eyebrow">Code not found</div>
-            <h1 className="mt-4">No cloth answers to that code.</h1>
+            <h1 className="mt-4 text-[clamp(2.4rem,6vw,4rem)]">No cloth answers to that code.</h1>
             <p className="mt-4 max-w-[52ch] text-[17px] text-muted-foreground">
                 We looked for <span className="data text-[15px] text-ink">{shown}</span>{" "}
                 and found nothing. Check the label beside the cloth and try again —
                 the code looks like <span className="data text-[15px] text-ink">07/TM</span>.
             </p>
 
-            <div className="mt-8 rounded-lg bg-card p-5 shadow-[var(--ring)] sm:p-6">
-                <TagLookupForm />
-            </div>
+            <TagLookupForm className="mt-8 max-w-md" label="Try the code again" />
 
             <Link
-                href="/#records"
+                href="/#collection"
                 className="mt-6 inline-flex min-h-9 items-center text-[15px] font-medium text-ink hover:text-bt-red"
             >
                 Browse all the cloths instead →
             </Link>
 
-            <ThreadRule className="mt-10 h-2 w-full text-stone" aria-hidden />
-
-            <p className="mt-4 text-[13px] text-muted-foreground">
+            <p className="mt-12 border-t border-border pt-4 text-[13px] text-muted-foreground">
                 Field team: a tag that should open a record needs its code in{" "}
                 <span className="data text-ink">data/tags.json</span>, pointing at that
                 record, then a redeploy.

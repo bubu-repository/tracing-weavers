@@ -98,7 +98,7 @@ export function ProfileForms({
     }
 
     return (
-        <div className="overflow-hidden rounded-lg bg-card shadow-[var(--ring)]">
+        <div className="overflow-hidden border-t border-ink bg-card">
             {/* ── name ── */}
             <Row label="Name" value={name}>
                 <form
@@ -281,8 +281,8 @@ function Notice({ state }: { state: State }) {
             role={state.error ? "alert" : "status"}
             className={
                 state.error
-                    ? "rounded-md bg-bt-red/6 p-3 text-[15px] text-bt-red shadow-[0_0_0_1px_rgba(174,24,0,.28)]"
-                    : "rounded-md bg-success/8 p-3 text-[15px] text-success shadow-[0_0_0_1px_rgba(62,107,46,.25)]"
+                    ? "bg-bt-red/6 p-3 text-[15px] text-bt-red shadow-[inset_0_0_0_1px_rgba(174,24,0,.28)]"
+                    : "bg-success/8 p-3 text-[15px] text-success shadow-[inset_0_0_0_1px_rgba(62,107,46,.25)]"
             }
         >
             {state.error ?? state.done}

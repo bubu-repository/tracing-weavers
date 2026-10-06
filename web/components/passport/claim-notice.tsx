@@ -53,13 +53,13 @@ export function ClaimNotice({
                     transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
                     role="status"
                     aria-live="polite"
-                    className="fixed right-4 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] left-4 z-[55] mx-auto max-w-md overflow-hidden rounded-xl bg-ink text-white shadow-[0_18px_44px_rgba(32,30,29,.4)] sm:right-6 sm:left-auto sm:w-[26rem] md:bottom-6"
+                    className="fixed right-4 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] left-4 z-[55] mx-auto max-w-md overflow-hidden bg-ink text-white shadow-[0_18px_44px_rgba(32,30,29,.4)] sm:right-6 sm:left-auto sm:w-[26rem] md:bottom-6"
                     data-theme="dark"
                 >
                     {/* the finished edge of the weave, across the top */}
                     <div
                         aria-hidden
-                        className="selvedge absolute inset-x-0 top-0 opacity-70"
+                        className="selvedge-dye absolute inset-x-0 top-0"
                     />
 
                     <div className="p-5">
@@ -93,14 +93,14 @@ export function ClaimNotice({
                             <Link
                                 href="/collection"
                                 onClick={close}
-                                className="pressable inline-flex h-10 flex-1 items-center justify-center rounded-md bg-salmon px-4 text-[15px] font-medium text-ink hover:bg-[#FFB3A4]"
+                                className="pressable inline-flex h-11 flex-1 items-center justify-center bg-salmon px-4 text-[15px] font-medium text-ink hover:bg-white hover:text-ink"
                             >
                                 See it in your traces
                             </Link>
                             <Link
                                 href={`/verify/${passportId}`}
                                 onClick={close}
-                                className="inline-flex h-10 items-center justify-center rounded-md px-3 text-[14px] text-white/70 shadow-[0_0_0_1px_rgba(255,255,255,.25)] hover:bg-white/10 hover:text-white"
+                                className="inline-flex h-11 items-center justify-center px-4 text-[14px] text-white/80 shadow-[inset_0_0_0_1px_rgba(255,255,255,.3)] hover:bg-white hover:text-ink"
                             >
                                 Check it
                             </Link>

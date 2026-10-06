@@ -28,7 +28,7 @@ export default async function AdminPage() {
     const all: Passport[] = await store.all().catch(() => []) ?? [];
 
     return (
-        <div className="mx-auto max-w-5xl">
+        <div className="container-x py-10 sm:py-14">
             <header className="border-b border-border pb-5">
                 <div className="eyebrow">Admin</div>
                 <h1 className="mt-3">Issued passports</h1>
