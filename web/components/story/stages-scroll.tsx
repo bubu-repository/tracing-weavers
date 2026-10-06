@@ -59,7 +59,7 @@ export function StagesScroll({ id = "chapter-path" }: { id?: string }) {
             data-theme="dark"
             className="grain relative scroll-mt-16 bg-ink text-white lg:h-[480vh] motion-reduce:lg:h-auto"
         >
-            <div className="py-20 lg:sticky lg:top-[68px] lg:flex lg:h-[calc(100svh-68px)] lg:flex-col lg:justify-center lg:overflow-hidden lg:py-0 motion-reduce:lg:static motion-reduce:lg:h-auto motion-reduce:lg:py-24">
+            <div className="gallery-light py-20 lg:sticky lg:top-[68px] lg:flex lg:h-[calc(100svh-68px)] lg:flex-col lg:justify-center lg:overflow-hidden lg:py-0 motion-reduce:lg:static motion-reduce:lg:h-auto motion-reduce:lg:py-24">
                 <div className="container-x flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                     <ChapterHead
                         numeral="II"
@@ -104,7 +104,7 @@ export function StagesScroll({ id = "chapter-path" }: { id?: string }) {
                             key={step.id}
                             className="shrink-0 lg:w-[min(56vw,560px)] lg:last:mr-[max(2.5rem,calc((100vw-1280px)/2+2.5rem))]"
                         >
-                            <figure className="relative aspect-[4/3] overflow-hidden bg-white/5 lg:aspect-[16/11]">
+                            <figure className="relative aspect-[4/3] overflow-hidden bg-white/5 shadow-[0_34px_60px_-30px_rgba(0,0,0,.9)] lg:aspect-[16/11]">
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                     src={PHOTOS[step.id]}

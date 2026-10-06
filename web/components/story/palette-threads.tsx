@@ -18,8 +18,8 @@ export function PaletteThreads({ colors }: { colors: { hex: string; share: numbe
                     <div key={color.hex} className="flex h-full flex-1 flex-col">
                         <motion.span
                             aria-hidden
-                            className="story-motion block w-full origin-top"
-                            style={{ background: color.hex, height: `${Math.max((color.share / max) * 100, 12)}%` }}
+                            className="story-motion thread-round block w-full origin-top"
+                            style={{ backgroundColor: color.hex, height: `${Math.max((color.share / max) * 100, 12)}%` }}
                             initial={{ scaleY: 0 }}
                             whileInView={{ scaleY: 1 }}
                             viewport={{ once: true, margin: "0px 0px -15% 0px" }}

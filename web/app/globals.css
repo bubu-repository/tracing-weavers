@@ -12,6 +12,10 @@
    · Beyond Tenun underneath: ink #201E1D, paper #F3F2F2, morinda #AE1800
      (salmon #FF9783 on ink), letterspaced eyebrows, Hanken Grotesk 900 for
      display, Archivo Narrow for reading, square corners, hairline rules.
+   · Material over Beyond Tenun's flat: the same two grounds and square
+     corners, but paper with fibre in it, card stock that rests on the page
+     and lifts toward the hand, buttons with an edge, round threads, and
+     gallery light on the ink walls (see "Material" below).
    · Each cloth brings its own palette (data/palettes.json, measured from its
      photograph): its selvedge stripe, its swatches, its colour filter.
    · Catalogue devices: large numerals ("No. 07"), museum-label captions,
@@ -37,9 +41,17 @@
   --bt-amber:#ECA406;          /* kunyit */
   --bt-indigo:#2B3A67;         /* nila */
 
-  --surface-page:#F3F2F2;
-  --surface-card:#FAF9F7;
+  /* Material: the brand's two grounds, made of something. Paper is the
+     brand paper under warm gallery light, with fibre in it; cards are a
+     heavier stock laid on it, with a shadow that says how far they sit
+     above the page. Corners stay square, as labels and prints are. */
+  --surface-page:#F3F1EC;
+  --surface-card:#FCFBF8;
   --surface-ink:#201E1D;
+  --paper-fibre:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.85 .42' numOctaves='3' seed='7' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .2  0 0 0 0 .16  0 0 0 0 .12  0 0 0 .11 0'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>");
+  --shadow-rest:0 1px 0 rgba(32,30,29,.04), 0 1px 2px rgba(32,30,29,.07), 0 12px 24px -16px rgba(32,30,29,.3);
+  --shadow-lift:0 1px 0 rgba(32,30,29,.04), 0 8px 16px -6px rgba(32,30,29,.14), 0 30px 54px -22px rgba(32,30,29,.42);
+  --shadow-field:inset 0 0 0 1px var(--bt-stone), inset 0 2px 3px rgba(32,30,29,.07);
 
   --ring:0 0 0 1px var(--bt-stone-2);
   --ring-hover:0 0 0 1px var(--bt-stone);
@@ -113,6 +125,9 @@
   --color-primary-foreground:var(--bt-ink);
   --ring:0 0 0 1px rgba(255,255,255,.16);
   --ring-hover:0 0 0 1px rgba(255,255,255,.32);
+  --paper-fibre:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.85 .42' numOctaves='3' seed='7' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 .96  0 0 0 0 .9  0 0 0 .05 0'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>");
+  --shadow-rest:inset 0 1px 0 rgba(255,255,255,.06), 0 22px 44px -26px rgba(0,0,0,.75);
+  --shadow-lift:inset 0 1px 0 rgba(255,255,255,.08), 0 30px 60px -26px rgba(0,0,0,.85);
   --cloth-warp:repeating-linear-gradient(90deg,rgba(255,255,255,.045) 0 1px,transparent 1px 9px);
   --cloth-weft:repeating-linear-gradient(0deg,rgba(255,255,255,.028) 0 1px,transparent 1px 11px);
 }
@@ -120,9 +135,12 @@
 /* Paper inside ink: a certificate or a book page laid on the gallery wall
    keeps its own light ground and dark type. */
 [data-theme="light"]{
-  --surface-page:var(--bt-paper);
-  --surface-card:#FAF9F7;
-  --color-card:#FAF9F7;
+  --surface-page:#F3F1EC;
+  --surface-card:#FCFBF8;
+  --color-card:#FCFBF8;
+  --paper-fibre:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.85 .42' numOctaves='3' seed='7' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .2  0 0 0 0 .16  0 0 0 0 .12  0 0 0 .11 0'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>");
+  --shadow-rest:0 1px 0 rgba(32,30,29,.04), 0 1px 2px rgba(32,30,29,.07), 0 12px 24px -16px rgba(32,30,29,.3);
+  --shadow-lift:0 1px 0 rgba(32,30,29,.04), 0 8px 16px -6px rgba(32,30,29,.14), 0 30px 54px -22px rgba(32,30,29,.42);
   --color-card-foreground:var(--bt-ink);
   --color-muted:#E9E6E1;
   --color-muted-foreground:var(--bt-ink-2);
@@ -281,6 +299,65 @@
   .fade-y {
     mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
   }
+}
+
+/* ── Material ──────────────────────────────────────────────────────────
+   Beyond Tenun's flat grounds and square corners, given a body: paper with
+   fibre in it, card stock that rests on it and lifts toward the hand,
+   buttons with an edge you can press, threads that are round, and a pool of
+   gallery light on the ink walls. */
+@utility paper {
+  background-color: var(--surface-page);
+  background-image: var(--paper-fibre);
+  background-size: 260px 260px;
+}
+@utility card-stock {
+  background-color: var(--surface-card);
+  background-image: var(--paper-fibre);
+  background-size: 260px 260px;
+  box-shadow: var(--shadow-rest);
+}
+/* a card that rises a little toward the pointer */
+@utility lift {
+  transition: transform 460ms var(--ease-out), box-shadow 460ms var(--ease-out);
+  @media (hover: hover) {
+    &:hover { transform: translateY(-4px); box-shadow: var(--shadow-lift); }
+  }
+}
+/* a button with a lower edge, pressed in when pressed */
+@utility tactile {
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .18), 0 1px 1px rgba(32, 30, 29, .14), 0 8px 16px -10px rgba(32, 30, 29, .5);
+  &:active { box-shadow: inset 0 2px 3px rgba(0, 0, 0, .22); transform: translateY(1px); }
+}
+/* the ink walls, lit from above like a gallery */
+@utility gallery-light {
+  background-image: radial-gradient(110% 55% at 50% 0%, rgba(255, 230, 204, .085), rgba(255, 230, 204, 0) 64%);
+}
+/* a thread seen close: round, lit on one side, plied */
+.thread-round {
+  background-image:
+    repeating-linear-gradient(-62deg, rgba(0, 0, 0, .1) 0 1.5px, rgba(0, 0, 0, 0) 1.5px 5px),
+    linear-gradient(90deg, rgba(0, 0, 0, .26), rgba(255, 255, 255, .16) 40%, rgba(255, 255, 255, .04) 60%, rgba(0, 0, 0, .3));
+}
+/* a swatch of plain weave: warp and weft crossing, lit from the top left */
+.weave-cloth {
+  background-image:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, .16) 0 1px, rgba(0, 0, 0, 0) 1px 3px),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, .09) 0 1px, rgba(255, 255, 255, 0) 1px 3px),
+    linear-gradient(135deg, rgba(255, 255, 255, .14), rgba(0, 0, 0, .16));
+}
+/* a woven band: warp ticks across, lit on top */
+.woven {
+  position: relative;
+}
+.woven::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, .2) 0 1px, rgba(0, 0, 0, 0) 1px 4px),
+    linear-gradient(180deg, rgba(255, 255, 255, .22), rgba(0, 0, 0, .18));
 }
 
 @keyframes rise { to { opacity: 1; transform: translateY(0); } }

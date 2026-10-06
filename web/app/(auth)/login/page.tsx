@@ -29,7 +29,7 @@ export default async function Login({
     const claiming = claimingCode ? getRecord(claimingCode) : undefined;
 
     return (
-        <div className="grid min-h-screen grid-cols-1 bg-background lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <div className="paper grid min-h-screen grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
             {/* the wall of cloth */}
             <div className="relative hidden overflow-hidden bg-ink lg:block" data-theme="dark">
                 <div className="absolute inset-0 grid grid-cols-4 gap-1.5 p-1.5 opacity-80">
@@ -113,7 +113,7 @@ export default async function Login({
                             </p>
                         )}
 
-                        <div className="mt-8 bg-card p-5 shadow-[inset_0_0_0_1px_var(--bt-stone-2)] sm:p-7">
+                        <div className="card-stock mt-8 border-t-2 border-bt-red p-5 sm:p-7">
                             <LoginForm
                                 next={safeNext}
                                 initialMode={mode === "register" ? "register" : "login"}

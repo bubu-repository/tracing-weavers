@@ -80,7 +80,7 @@ export function Chapter({
         <section
             id={id}
             data-chapter
-            className={cn("relative scroll-mt-16", ink && "grain bg-ink text-white", className)}
+            className={cn("relative scroll-mt-16", ink && "grain gallery-light bg-ink text-white", className)}
             data-theme={ink ? "dark" : undefined}
         >
             <motion.span

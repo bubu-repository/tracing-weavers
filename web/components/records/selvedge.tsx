@@ -18,7 +18,7 @@ export function Selvedge({
         return <div aria-hidden className={cn("selvedge-dye", className)} />;
     }
     return (
-        <div aria-hidden className={cn("flex h-1.5 w-full", className)}>
+        <div aria-hidden className={cn("woven flex h-1.5 w-full", className)}>
             {palette.colors.map((color) => (
                 <span
                     key={color.hex}

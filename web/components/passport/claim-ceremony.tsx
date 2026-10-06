@@ -194,7 +194,7 @@ export function ClaimCeremony({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.35 }}
-            className="fixed inset-0 z-[100] overflow-y-auto overscroll-contain bg-ink text-white"
+            className="gallery-light fixed inset-0 z-[100] overflow-y-auto overscroll-contain bg-ink text-white"
         >
             <button
                 type="button"

@@ -142,6 +142,7 @@ export function ColourLoom({ threads }: { threads: LoomThread[] }) {
                                     style={{ background: color.hex, flexGrow: Math.max(color.share, 0.04) }}
                                 />
                             ))}
+                            <span aria-hidden className="thread-round pointer-events-none absolute inset-0" />
                         </motion.button>
                     );
                 })}

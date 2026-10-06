@@ -170,7 +170,7 @@ export function RecordGallery({
     return (
         <div className={className}>
             {/* the filter bar: sticky on a desk, where there is room for it */}
-            <div className="z-30 -mx-4 border-y border-border bg-background px-4 py-4 sm:-mx-6 sm:px-6 lg:sticky lg:top-[68px] lg:-mx-10 lg:px-10">
+            <div className="z-30 -mx-4 paper border-y border-border px-4 py-4 sm:-mx-6 sm:px-6 lg:sticky lg:top-[68px] lg:-mx-10 lg:px-10">
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:gap-6">
                     <label className="relative block lg:w-[20rem] lg:shrink-0">
                         <span className="sr-only">Search the cloths</span>
@@ -187,7 +187,7 @@ export function RecordGallery({
                             autoComplete="off"
                             spellCheck={false}
                             enterKeyHint="search"
-                            className="h-12 w-full bg-card pr-11 pl-11 text-[16px] shadow-[inset_0_0_0_1px_var(--bt-stone)] transition-shadow duration-[160ms] placeholder:text-ink-3 focus-visible:shadow-[inset_0_0_0_2px_var(--bt-ink)] focus-visible:outline-none [&::-webkit-search-cancel-button]:hidden"
+                            className="h-12 w-full bg-card pr-11 pl-11 text-[16px] shadow-[var(--shadow-field)] transition-shadow duration-[160ms] placeholder:text-ink-3 focus-visible:shadow-[inset_0_0_0_2px_var(--bt-ink)] focus-visible:outline-none [&::-webkit-search-cancel-button]:hidden"
                         />
                         {query && (
                             <button
@@ -323,7 +323,7 @@ export function RecordGallery({
             </div>
 
             {shown.length ? (
-                <div className="mt-8 grid grid-cols-2 gap-x-3 gap-y-9 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-12 lg:grid-cols-4 lg:gap-x-8">
+                <div className="mt-8 grid grid-cols-2 gap-x-3 gap-y-4 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-8 lg:grid-cols-4 lg:gap-x-7">
                     {shown.map((record, i) => (
                         <RecordCard
                             key={record.code}

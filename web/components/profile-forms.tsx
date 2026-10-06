@@ -98,7 +98,7 @@ export function ProfileForms({
     }
 
     return (
-        <div className="overflow-hidden border-t border-ink bg-card">
+        <div className="card-stock overflow-hidden border-t-2 border-ink">
             {/* ── name ── */}
             <Row label="Name" value={name}>
                 <form

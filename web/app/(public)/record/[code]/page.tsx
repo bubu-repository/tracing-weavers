@@ -122,7 +122,7 @@ export default async function RecordPage({
 
             <div className="container-x grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-16">
                 {/* the photograph: edge to edge on a phone, a vitrine on a desk */}
-                <div className="-mx-4 sm:mx-0 lg:sticky lg:top-[92px] lg:self-start">
+                <div className="-mx-4 sm:card-stock sm:mx-0 sm:p-2.5 lg:sticky lg:top-[92px] lg:self-start">
                     <ClothViewer
                         src={recordVisual(record)}
                         alt={`${name}, handwoven cloth from ${origin}`}

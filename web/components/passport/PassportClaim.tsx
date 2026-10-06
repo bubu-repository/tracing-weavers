@@ -113,7 +113,7 @@ export function PassportClaim({
             <section
                 id="claim"
                 tabIndex={-1}
-                className="scroll-mt-24 outline-none bg-card p-6 shadow-[inset_0_0_0_1px_var(--bt-stone-2)] sm:p-7"
+                className="card-stock scroll-mt-24 border-t-2 border-bt-red p-6 outline-none sm:p-7"
             >
                 <div className="eyebrow">
                     {issued ? t.claimedEyebrow : soldOut ? "Certificate" : t.claimEyebrow}

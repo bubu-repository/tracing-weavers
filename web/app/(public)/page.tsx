@@ -317,8 +317,8 @@ export default async function Home() {
 
                         {/* a specimen, on a small stack of pages */}
                         <FadeIn className="relative mx-auto w-full max-w-[22rem]">
-                            <div aria-hidden className="absolute inset-0 translate-x-4 translate-y-4 bg-card shadow-[var(--ring)]" />
-                            <div aria-hidden className="absolute inset-0 translate-x-2 translate-y-2 bg-card shadow-[var(--ring)]" />
+                            <div aria-hidden className="card-stock absolute inset-0 translate-x-4 translate-y-4 rotate-[1.2deg]" />
+                            <div aria-hidden className="card-stock absolute inset-0 translate-x-2 translate-y-2 -rotate-[0.6deg]" />
                             <div className="relative">
                                 <PassportLeaf passport={specimen} record={specimenRecord} specimen />
                             </div>

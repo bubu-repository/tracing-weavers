@@ -99,11 +99,11 @@ export default function ScanPage() {
                 <h2 id="steps" className="eyebrow">
                     Four steps
                 </h2>
-                <ol className="mt-5 grid grid-cols-1 border-t border-ink sm:grid-cols-2 lg:grid-cols-4">
+                <ol className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {STEPS.map((step, i) => (
                         <li
                             key={step.title}
-                            className="border-b border-border py-6 sm:pr-6 lg:border-r lg:px-6 lg:first:pl-0 lg:last:border-r-0"
+                            className="card-stock border-t-2 border-bt-red p-6"
                         >
                             <span className="numeral text-[64px] text-bt-red">
                                 {String(i + 1).padStart(2, "0")}

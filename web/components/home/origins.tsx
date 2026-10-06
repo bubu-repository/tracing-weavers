@@ -67,8 +67,8 @@ export function Origins() {
                                         href={`/record/${encodeURIComponent(cloth.code)}`}
                                         title={`${cloth.name} · ${cloth.place}`}
                                         aria-label={`${cloth.name}, ${cloth.place}`}
-                                        className="group relative block h-11 w-11 overflow-hidden sm:h-12 sm:w-12"
-                                        style={{ background: cloth.hex }}
+                                        className="weave-cloth group relative block h-11 w-11 overflow-hidden shadow-[var(--shadow-rest)] sm:h-12 sm:w-12"
+                                        style={{ backgroundColor: cloth.hex }}
                                     >
                                         {/* the colour first; the cloth itself on hover */}
                                         {/* eslint-disable-next-line @next/next/no-img-element */}

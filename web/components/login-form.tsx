@@ -261,7 +261,7 @@ export function Field({
                     minLength={minLength}
                     aria-describedby={hint ? `${id}-hint` : undefined}
                     onChange={(e) => onChange(e.target.value)}
-                    className={`h-12 w-full bg-white px-3.5 text-[16px] shadow-[inset_0_0_0_1px_var(--bt-stone)] transition-shadow duration-[160ms] ease-[cubic-bezier(0.23,1,0.32,1)] placeholder:text-ink-3 focus-visible:shadow-[inset_0_0_0_2px_var(--bt-ink)] focus-visible:outline-none ${
+                    className={`h-12 w-full bg-white px-3.5 text-[16px] shadow-[var(--shadow-field)] transition-shadow duration-[160ms] ease-[cubic-bezier(0.23,1,0.32,1)] placeholder:text-ink-3 focus-visible:shadow-[inset_0_0_0_2px_var(--bt-ink)] focus-visible:outline-none ${
                         secret ? "pr-12" : ""
                     }`}
                 />

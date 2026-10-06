@@ -22,11 +22,11 @@ export function RecordTraits({ record }: { record: ProductRecord }) {
             <h2 id="cloth-notes" className="eyebrow">
                 Cloth notes
             </h2>
-            <dl className="mt-4 grid grid-cols-2 border-t border-ink">
+            <dl className="card-stock mt-4 grid grid-cols-2 border-t-2 border-ink px-4 sm:px-5">
                 {rows.map((row, i) => (
                     <div
                         key={row.label}
-                        className={`border-b border-border py-3.5 ${i % 2 === 0 ? "pr-4" : "border-l pl-4"}`}
+                        className={`border-border py-3.5 ${i < rows.length - (rows.length % 2 === 0 ? 2 : 1) ? "border-b" : ""} ${i % 2 === 0 ? "pr-4" : "border-l pl-4"}`}
                     >
                         <dt className="label">{row.label}</dt>
                         <dd className="mt-1.5 text-[17px] leading-snug text-ink sm:text-[18px]">{row.value}</dd>

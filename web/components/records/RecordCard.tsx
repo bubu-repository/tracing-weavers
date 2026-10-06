@@ -18,6 +18,9 @@ export const catalogueNumber = (code: string) => {
 /**
  * One entry in the catalogue, set like a museum label.
  *
+ * A print mounted on card stock: the photograph inset in a narrow mat, the
+ * caption on the card below it, and the card lifts toward the pointer.
+ *
  * The photograph, square-cornered, with the cloth's own colours woven along
  * its lower edge; then the number from the label beside the cloth in the
  * room — big, light, the way a catalogue sets it — and the caption: name,
@@ -39,10 +42,10 @@ export default function RecordCard({
     const palette = paletteFor(record);
 
     return (
-        <article className="rise" style={{ ["--i" as string]: String(index % 8) }}>
+        <article className="rise h-full" style={{ ["--i" as string]: String(index % 8) }}>
             <Link
                 href={`/record/${encodeURIComponent(record.code)}`}
-                className="group block text-ink hover:text-ink"
+                className="card-stock lift group block h-full p-1.5 pb-3.5 text-ink hover:text-ink sm:p-2.5 sm:pb-5"
             >
                 <div
                     className="relative aspect-4/5 overflow-hidden bg-ink"
@@ -68,17 +71,17 @@ export default function RecordCard({
                 </div>
                 <Selvedge palette={palette} />
 
-                <div className="mt-3 flex items-start gap-3">
-                    <span className="numeral text-[34px] text-ink-3 transition-colors duration-200 group-hover:text-bt-red sm:text-[40px]">
+                <div className="mt-2.5 flex items-start gap-2 px-1 sm:mt-3 sm:gap-3">
+                    <span className="numeral text-[26px] text-ink-3 transition-colors duration-200 group-hover:text-bt-red sm:text-[40px]">
                         {catalogueNumber(record.code)}
                     </span>
                     <div className="min-w-0 pt-0.5">
-                        <div className="label truncate">{record.collection ?? "Record"}</div>
-                        <h3 className="mt-1 line-clamp-2 text-[17px] leading-[1.08] sm:text-[19px]">
+                        <div className="label line-clamp-2 sm:truncate">{record.collection ?? "Record"}</div>
+                        <h3 className="mt-1 line-clamp-3 text-[16px] leading-[1.1] sm:line-clamp-2 sm:text-[19px]">
                             {clothName(record)}
                         </h3>
                         {origin && (
-                            <p className="mt-1 truncate text-[13px] text-muted-foreground sm:text-[14px]">
+                            <p className="mt-1 line-clamp-2 text-[13px] leading-snug text-muted-foreground sm:truncate sm:text-[14px]">
                                 {origin}
                             </p>
                         )}

@@ -75,8 +75,8 @@ export function PassportLeaf({
     return (
         <article
             data-theme="light"
-            className={`relative flex w-full flex-col overflow-hidden bg-card text-ink ${
-                fill ? "h-full" : "aspect-[3/4] shadow-[var(--ring),0_24px_50px_-28px_rgba(32,30,29,.45)]"
+            className={`relative flex w-full flex-col overflow-hidden bg-card bg-[image:var(--paper-fibre)] bg-size-[260px_260px] text-ink ${
+                fill ? "h-full" : "aspect-[3/4] shadow-[var(--shadow-lift)]"
             } ${className ?? ""}`}
         >
             {/* the cloth itself — the photograph is the point of the page */}
