@@ -160,7 +160,7 @@ export function RecordGallery({
         return (
             <div className="px-6 py-16 text-center shadow-[var(--ring)]">
                 <p className="display text-2xl">No records yet</p>
-                <p className="mx-auto mt-3 max-w-[46ch] text-[17px] text-muted-foreground">
+                <p className="read mx-auto mt-3 max-w-[46ch] text-[17px] text-muted-foreground">
                     Records appear as soon as the first cloth is registered.
                 </p>
             </div>

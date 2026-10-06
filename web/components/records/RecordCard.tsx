@@ -61,7 +61,7 @@ export default function RecordCard({
                         draggable={false}
                     />
                     {(claimed || (shared && remaining !== undefined)) && (
-                        <span className="absolute top-2.5 right-2.5 bg-ink px-2 py-1 text-[11px] tracking-[.12em] text-white uppercase">
+                        <span className={`stamp absolute top-3 right-3 ${claimed ? "" : "stamp-ink"}`}>
                             {claimed ? "Claimed" : `${remaining} left`}
                         </span>
                     )}

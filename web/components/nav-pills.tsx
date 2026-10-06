@@ -8,7 +8,7 @@ import { BookOpen, Compass, LayoutGrid, UserRound, type LucideIcon } from "lucid
 /**
  * The four places in the app, in two shapes, both on ink.
  *
- * From `md` up they are text links in the header, with a salmon thread under
+ * From `md` up they are text links in the header, with a red thread under
  * the current one that slides between them (`layoutId`). On a phone they are
  * a tab bar at the bottom of the screen, where a thumb already is.
  *
@@ -48,7 +48,7 @@ export function NavPills({ className }: { className?: string }) {
                                 href={item.href}
                                 aria-current={on ? "page" : undefined}
                                 className={`relative flex h-16 items-center px-3.5 text-[13px] tracking-[.16em] uppercase transition-colors duration-150 ${
-                                    on ? "text-white hover:text-white" : "text-white/55 hover:text-white"
+                                    on ? "text-ink hover:text-ink" : "text-ink-2 hover:text-ink"
                                 }`}
                             >
                                 {item.label}
@@ -56,7 +56,7 @@ export function NavPills({ className }: { className?: string }) {
                                     <motion.span
                                         layoutId="nav-thread"
                                         aria-hidden
-                                        className="absolute inset-x-3.5 bottom-0 h-[3px] bg-salmon"
+                                        className="absolute inset-x-3.5 bottom-0 h-[3px] bg-bt-red"
                                         transition={{ type: "spring", duration: 0.36, bounce: 0.12 }}
                                     />
                                 )}
@@ -69,15 +69,14 @@ export function NavPills({ className }: { className?: string }) {
     );
 }
 
-/** The phone's tab bar: ink, fixed to the bottom, clear of the home indicator. */
+/** The phone's tab bar: cotton paper, fixed to the bottom, clear of the home indicator. */
 export function BottomNav() {
     const current = useCurrent();
 
     return (
         <nav
             aria-label="Sections"
-            className="no-print fixed inset-x-0 bottom-0 z-50 bg-ink pb-[env(safe-area-inset-bottom)] md:hidden"
-            data-theme="dark"
+            className="no-print paper fixed inset-x-0 bottom-0 z-50 pb-[env(safe-area-inset-bottom)] shadow-[0_-1px_0_var(--bt-stone-2),0_-10px_24px_-18px_rgba(32,30,29,.4)] md:hidden"
         >
             <ul className="mx-auto grid h-16 max-w-md grid-cols-4">
                 {ITEMS.map(({ href, label, icon: Icon }) => {
@@ -88,14 +87,14 @@ export function BottomNav() {
                                 href={href}
                                 aria-current={on ? "page" : undefined}
                                 className={`pressable flex h-full flex-col items-center justify-center gap-1 text-[11px] tracking-[.1em] uppercase ${
-                                    on ? "text-salmon hover:text-salmon" : "text-white/65 hover:text-white"
+                                    on ? "text-bt-red hover:text-bt-red" : "text-ink-2 hover:text-ink"
                                 }`}
                             >
                                 {on && (
                                     <motion.span
                                         layoutId="bottom-nav-mark"
                                         aria-hidden
-                                        className="absolute inset-x-6 top-0 h-[3px] bg-salmon"
+                                        className="absolute inset-x-6 top-0 h-[3px] bg-bt-red"
                                         transition={{ type: "spring", duration: 0.3, bounce: 0.12 }}
                                     />
                                 )}

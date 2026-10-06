@@ -39,7 +39,7 @@ export default async function TagPage({
         <div className="container-x max-w-3xl py-14 sm:py-20">
             <div className="eyebrow">Code not found</div>
             <h1 className="mt-4 text-[clamp(2.4rem,6vw,4rem)]">No cloth answers to that code.</h1>
-            <p className="mt-4 max-w-[52ch] text-[17px] text-muted-foreground">
+            <p className="read mt-4 max-w-[52ch] text-[17px] text-muted-foreground">
                 We looked for <span className="data text-[15px] text-ink">{shown}</span>{" "}
                 and found nothing. Check the label beside the cloth and try again —
                 the code looks like <span className="data text-[15px] text-ink">07/TM</span>.

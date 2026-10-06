@@ -27,7 +27,7 @@ export default function Error({
         <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col justify-center px-4">
             <div className="eyebrow">Something came loose</div>
             <h1 className="mt-4">This page cannot be opened right now.</h1>
-            <p className="mt-4 max-w-[48ch] text-[17px] text-muted-foreground">
+            <p className="read mt-4 max-w-[48ch] text-[17px] text-muted-foreground">
                 Try again. If it keeps failing, the passport store or the signing key on this deployment is not ready.
             </p>
 

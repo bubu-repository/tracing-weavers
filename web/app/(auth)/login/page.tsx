@@ -54,7 +54,7 @@ export default async function Login({
                         <p className="display text-[clamp(2.4rem,4vw,3.6rem)] leading-[.95] text-white">
                             A certificate needs a name to belong to.
                         </p>
-                        <p className="mt-5 text-[18px] leading-relaxed text-white/75">
+                        <p className="read mt-5 text-[18px] leading-relaxed text-white/75">
                             Reading a record is open to anyone. Claiming it is not — a
                             certificate saying “issued to you” has to be issued to
                             someone who can be proved.
@@ -107,7 +107,7 @@ export default async function Login({
                                 </p>
                             </div>
                         ) : (
-                            <p className="mt-4 text-[16px] leading-relaxed text-muted-foreground">
+                            <p className="read mt-4 text-[16px] leading-relaxed text-muted-foreground">
                                 Your certificates are kept under your account — sign in to
                                 see them, or create one in a minute.
                             </p>

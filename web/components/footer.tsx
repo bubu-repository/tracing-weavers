@@ -20,7 +20,7 @@ export default function Footer() {
                 <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)]">
                     <div className="col-span-2 max-w-[44ch] lg:col-span-1">
                         <div className="eyebrow">Indonesia Heritage for Human Flourishing</div>
-                        <p className="mt-4 text-[17px] leading-relaxed text-white/70">
+                        <p className="read mt-4 text-[17px] leading-relaxed text-white/70">
                             Tracing every thread back to the hands that wove it. A
                             digital record for handwoven cloth from across
                             Indonesia — one page per weave, from seed to loom and

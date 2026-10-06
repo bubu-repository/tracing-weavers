@@ -251,7 +251,7 @@ export function ClaimCeremony({
                     <motion.p
                         id="ceremony-holder"
                         {...up(1.3)}
-                        className="mt-5 max-w-[44ch] text-[17px] leading-relaxed text-white/72 sm:text-[19px]"
+                        className="read mt-5 max-w-[44ch] text-[17px] leading-relaxed text-white/72 sm:text-[19px]"
                     >
                         Certificate <span className="num text-white">#{passport.serial}</span> is issued to{" "}
                         <span className="font-script text-[1.6em] leading-none text-salmon">{passport.holder}</span>.

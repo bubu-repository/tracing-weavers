@@ -25,6 +25,7 @@ import { StoryNav } from "@/components/story/story-nav";
 import { FadeIn } from "@/components/story/fade-in";
 import { PassportLeaf } from "@/components/passport/passport-leaf";
 import { TagLookupForm } from "@/components/nfc/tag-lookup-form";
+import { MarginNote } from "@/components/motif/margin-note";
 import { Button } from "@/components/ui/button";
 import { RevealText } from "@/components/ui/reveal-text";
 import type { Passport } from "@/lib/types";
@@ -120,59 +121,58 @@ export default async function Home() {
 
     return (
         <>
-            {/* ── the cover: a loom you weave on ─────────────────────────── */}
-            <LivingLoom
-                cloths={loomCloths}
-                className="h-[calc(100svh-7.75rem)] min-h-[600px] lg:h-[calc(100svh-68px)] lg:min-h-[640px]"
-            >
-                {/* shade behind the words, so the loom stays bright elsewhere */}
-                <div
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink/92 via-ink/70 to-transparent lg:bg-gradient-to-r lg:from-ink/95 lg:via-ink/72 lg:to-transparent"
-                />
-                <div className="container-x relative flex flex-col pt-8 sm:pt-14 lg:h-[70%] lg:justify-center lg:pt-6">
-                    <div className="max-w-2xl">
+            {/* ── the cover: the title on plain paper, and a loom you weave on ── */}
+            <section className="relative">
+                <div className="container-x grid grid-cols-1 items-center gap-x-14 gap-y-12 pt-9 pb-14 sm:pt-14 lg:min-h-[calc(100svh-68px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:py-10">
+                    <div className="max-w-xl">
                         <div className="eyebrow">{t.homeEyebrow}</div>
                         <RevealText
                             as="h1"
-                            className="t-hero mt-4 text-[clamp(3.2rem,14vw,6.6rem)] text-white"
+                            className="t-hero mt-4 text-ink [--hero-size:clamp(3rem,12.5vw,6.2rem)] lg:[--hero-size:clamp(3.6rem,6.2vw,5.5rem)]"
                             text={`${t.homeTitleA} ${t.homeTitleB}.`}
                             accentFrom={2}
-                            accentClass="text-salmon"
+                            accentClass="text-bt-red"
                         />
-                        <p className="mt-5 hidden max-w-[44ch] text-[17px] leading-relaxed text-white/75 sm:block sm:text-[18px]">
+                        <p className="read mt-5 max-w-[42ch] text-[18px] leading-[1.55] text-ink-2 sm:text-[20px]">
                             {t.homeLead}
                         </p>
-                        <p className="mt-4 border-l-2 border-salmon pl-3 text-[14px] text-white/85 lg:hidden">
-                            This cover is a loom: sweep across it to weave, tap a thread to pluck it.
-                        </p>
 
-                        <div className="mt-6 max-w-md">
-                            <TagLookupForm tone="ink" label="Have a label in front of you? Type its code" />
+                        <div className="mt-7 max-w-md">
+                            <TagLookupForm label="Have a label in front of you? Type its code" />
                         </div>
 
                         <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3">
                             <a
                                 href="#chapter-name"
-                                className="group inline-flex items-center gap-2 text-[16px] text-white hover:text-salmon"
+                                className="group inline-flex min-h-11 items-center gap-2 text-[16px] font-medium text-ink hover:text-bt-red"
                             >
                                 Follow the thread
                                 <span aria-hidden className="transition-transform duration-200 group-hover:translate-y-0.5">
                                     ↓
                                 </span>
                             </a>
-                            <a href="#collection" className="text-[16px] text-white/65 hover:text-white">
+                            <a href="#collection" className="inline-flex min-h-11 items-center text-[16px] text-ink-2 hover:text-ink">
                                 {t.exploreCloths}
                             </a>
                             {identity && (
-                                <Link href="/collection" className="text-[16px] text-white/65 hover:text-white">
+                                <Link href="/collection" className="inline-flex min-h-11 items-center text-[16px] text-ink-2 hover:text-ink">
                                     {t.openPassport} →
                                 </Link>
                             )}
                         </div>
                     </div>
+
+                    <div className="relative pt-12">
+                        <MarginNote arrow="down-left" className="absolute top-0 right-1 text-[22px] whitespace-nowrap text-bt-red sm:text-[24px]">
+                            try it — sweep across the threads
+                        </MarginNote>
+                        <LivingLoom
+                            cloths={loomCloths}
+                            stageClassName="h-[min(58svh,460px)] sm:h-[500px] lg:h-[min(64svh,620px)]"
+                        />
+                    </div>
                 </div>
-            </LivingLoom>
+            </section>
 
             <StoryNav chapters={CHAPTERS} />
 
@@ -184,7 +184,8 @@ export default async function Home() {
                         <ScrollWords
                             text="In Adonara a weaver's name rarely appears anywhere. The cloth is sold, the motifs are photographed, the price is noted — the name is not."
                             accent={["name", "not"]}
-                            className="display mt-12 max-w-[22ch] text-[clamp(2rem,5.6vw,4.4rem)] leading-[1.02] tracking-[-.035em]"
+                            accentClass="text-bt-red italic"
+                            className="read mt-12 max-w-[24ch] text-[clamp(1.9rem,5vw,3.9rem)] leading-[1.12] tracking-[-.015em]"
                         />
                         <div className="mt-16 grid grid-cols-1 items-end gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
                             <FadeIn>
@@ -199,11 +200,11 @@ export default async function Home() {
                                 </figure>
                             </FadeIn>
                             <FadeIn delay={0.12}>
-                                <p className="max-w-[44ch] text-[19px] leading-relaxed text-ink sm:text-[21px]">
+                                <p className="read max-w-[44ch] text-[19px] leading-relaxed text-ink sm:text-[21px]">
                                     Yet one length can mean eleven weeks of work, three dye
                                     baths, and a motif only certain families may wear.
                                 </p>
-                                <p className="mt-5 max-w-[46ch] text-[17px] leading-relaxed text-muted-foreground">
+                                <p className="read mt-5 max-w-[46ch] text-[17px] leading-relaxed text-muted-foreground">
                                     This record writes the name down. Every cloth that leaves
                                     the garden and the loom carries one page: who made it, from
                                     what, for how long. That page goes wherever the cloth goes.
@@ -225,7 +226,13 @@ export default async function Home() {
                             title="Every cloth keeps its colours."
                             lead="Each thread below is one cloth, made of its own main colours — each as long as the share of the cloth it covers, measured from the photograph. Thread them by colour, and the collection reads as one weave."
                         />
-                        <div className="mt-12">
+                        <div className="relative mt-12">
+                            <MarginNote
+                                arrow="down-left"
+                                className="absolute -top-10 right-0 hidden max-w-[17ch] text-[23px] text-ink-2 md:flex"
+                            >
+                                one thread, one cloth — point at any of them
+                            </MarginNote>
                             <ColourLoom threads={threads} />
                         </div>
                     </div>
@@ -253,7 +260,7 @@ export default async function Home() {
                     <div className="container-x">
                         <div className="grid grid-cols-1 gap-6 pb-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:items-end">
                             <ChapterHead numeral="V" kicker={t.recordsEyebrow} title={t.recordsTitle} />
-                            <p className="max-w-[48ch] text-[17px] leading-relaxed text-muted-foreground lg:justify-self-end">
+                            <p className="read max-w-[48ch] text-[17px] leading-relaxed text-muted-foreground lg:justify-self-end">
                                 {t.recordsLead}
                             </p>
                         </div>

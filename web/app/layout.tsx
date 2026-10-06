@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo_Narrow, Caveat, Hanken_Grotesk } from "next/font/google";
+import { Archivo_Narrow, Caveat, Hanken_Grotesk, Newsreader } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { ScrollThread } from "@/components/motif/scroll-thread";
@@ -22,6 +22,16 @@ const archivo = Archivo_Narrow({
     variable: "--font-body",
     subsets: ["latin"],
     weight: ["400", "500", "600", "700"],
+});
+
+/* The reading voice: long prose (chapter leads, a cloth's description, the
+   story paragraphs) is set in a book face with optical sizes, so the page
+   reads like a catalogue essay rather than a screen. */
+const newsreader = Newsreader({
+    variable: "--font-serif-family",
+    subsets: ["latin"],
+    style: ["normal", "italic"],
+    axes: ["opsz"],
 });
 
 const caveat = Caveat({
@@ -49,7 +59,7 @@ export const metadata: Metadata = {
 /* `viewport-fit=cover` is what makes env(safe-area-inset-bottom) non-zero, so
    the phone tab bar clears the home indicator instead of sitting under it. */
 export const viewport: Viewport = {
-    themeColor: "#201E1D",
+    themeColor: "#F0EADF",
     viewportFit: "cover",
 };
 
@@ -59,7 +69,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body
-                className={`${hanken.variable} ${archivo.variable} ${caveat.variable} antialiased`}
+                className={`${hanken.variable} ${archivo.variable} ${newsreader.variable} ${caveat.variable} antialiased`}
                 style={{
                     ["--font-mono-family" as string]:
                         "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",

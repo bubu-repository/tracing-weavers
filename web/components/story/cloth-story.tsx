@@ -120,12 +120,16 @@ export function ClothStory({ record, remaining }: { record: ProductRecord; remai
 
                 <Row n="04" kicker="Where it is now" title={displayedAt ? "On display" : "In the collection"} flip
                     visual={
-                        <div className="bg-ink p-6 text-white sm:p-8" data-theme="dark">
-                            <div className="label">Certificate</div>
-                            <p className="display mt-2 text-[clamp(2rem,5vw,3rem)] text-white">
-                                {remaining <= 0 ? "Claimed." : record.supply > 1 ? `${remaining} of ${record.supply} left.` : "Still to claim."}
+                        <div className="card-stock relative overflow-hidden p-6 sm:p-8">
+                            <div aria-hidden className="stitch absolute inset-x-4 top-3" />
+                            {remaining <= 0 && (
+                                <span className="stamp absolute top-8 right-6 text-[13px]">Claimed</span>
+                            )}
+                            <div className="label mt-2">Certificate</div>
+                            <p className="display mt-2 text-[clamp(2rem,5vw,3rem)] text-ink">
+                                {remaining <= 0 ? "Held." : record.supply > 1 ? `${remaining} of ${record.supply} left.` : "Still to claim."}
                             </p>
-                            <p className="mt-3 text-[15px] text-white/70">
+                            <p className="read mt-3 text-[16px] text-ink-2">
                                 {remaining <= 0
                                     ? "Its certificate is held. The record stays open for anyone to read."
                                     : "One certificate, issued in the name of whoever claims it first."}
@@ -133,7 +137,7 @@ export function ClothStory({ record, remaining }: { record: ProductRecord; remai
                             {remaining > 0 && (
                                 <a
                                     href="#claim"
-                                    className="mt-6 inline-flex items-center gap-2 bg-salmon px-5 py-3 text-[15px] font-medium text-ink hover:bg-white hover:text-ink"
+                                    className="tactile mt-6 inline-flex items-center gap-2 bg-bt-red px-5 py-3 text-[15px] font-medium text-white hover:bg-bt-red-bright hover:text-white"
                                 >
                                     Claim its certificate <span aria-hidden>↑</span>
                                 </a>
@@ -190,7 +194,7 @@ function Row({
                     <span className="eyebrow pb-3">{kicker}</span>
                 </div>
                 <h3 className="mt-2 text-[clamp(2rem,4.5vw,3.25rem)] leading-[.95]">{title}</h3>
-                <div className="mt-5 max-w-[46ch] space-y-4 text-[17px] leading-relaxed text-muted-foreground">
+                <div className="read mt-5 max-w-[46ch] space-y-4 text-[17px] leading-relaxed text-muted-foreground">
                     {children}
                 </div>
             </FadeIn>

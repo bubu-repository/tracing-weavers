@@ -13,14 +13,16 @@ const SHUTTLES = [
     { id: "indigo", label: "Indigo", hex: "#2F4479" },
     { id: "turmeric", label: "Turmeric", hex: "#E3A21A" },
     { id: "clay", label: "Clay", hex: "#E8916A" },
-    { id: "cotton", label: "Undyed cotton", hex: "#E9E2D6" },
+    { id: "cotton", label: "Undyed cotton", hex: "#DCCFBB" },
 ];
 
 /* The cloth already on the loom when you arrive — a few bands to start from. */
 const OPENING = ["cotton", "cotton", "morinda", "morinda", "cotton", "indigo", "indigo", "indigo", "turmeric", "indigo", "cotton", "cotton", "clay", "cotton"];
 
 const POINTS = 26; // control points along each warp thread
-const BG = "#201E1D";
+/* the loom stands in daylight on undyed cotton paper */
+const PAPER = "#F0EADF";
+const SHADOW = "rgba(60, 44, 28, 0.17)";
 
 type Thread = {
     x: number;
@@ -78,13 +80,14 @@ function shake(threads: Thread[], amount: number) {
 export function LivingLoom({
     cloths,
     className,
-    children,
+    stageClassName,
 }: {
     cloths: LoomCloth[];
     className?: string;
-    children?: React.ReactNode;
+    /** the height of the warp, e.g. "h-[480px]" */
+    stageClassName?: string;
 }) {
-    const host = useRef<HTMLElement | null>(null);
+    const host = useRef<HTMLDivElement | null>(null);
     const canvas = useRef<HTMLCanvasElement | null>(null);
     const label = useRef<HTMLDivElement | null>(null);
     const [shuttle, setShuttle] = useState(SHUTTLES[0]);
@@ -275,38 +278,56 @@ export function LivingLoom({
         const ctx = cv?.getContext("2d");
         if (!cv || !ctx) return;
         ctx.setTransform(s.dpr, 0, 0, s.dpr, 0, 0);
-        ctx.fillStyle = BG;
-        ctx.fillRect(0, 0, s.w, s.h);
+        /* the paper shows through: the section is the sheet the loom stands on */
+        ctx.clearRect(0, 0, s.w, s.h);
+        const fell = s.h - s.wovenH;
+        const gap = fell / (POINTS - 1);
+
+        /* one warp thread, from the top of the loom to the fell */
+        const trace = (t: Thread, dx: number) => {
+            ctx.beginPath();
+            ctx.moveTo(t.x + t.p[0] + dx, 0);
+            for (let k = 1; k < POINTS; k++) {
+                const x0 = t.x + t.p[k - 1] + dx;
+                const y0 = (k - 1) * gap;
+                const x1 = t.x + t.p[k] + dx;
+                const y1 = k * gap;
+                ctx.quadraticCurveTo(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2);
+            }
+            ctx.lineTo(t.x + dx, fell);
+        };
+        ctx.lineCap = "round";
+
+        /* the warp is stretched a finger's width above the sheet, so each
+           thread throws a soft shadow down and to the right of it */
+        ctx.strokeStyle = SHADOW;
+        ctx.lineWidth = s.tw + 1.6;
+        for (const t of s.threads) {
+            trace(t, 3);
+            ctx.stroke();
+        }
+        /* the threads themselves */
+        ctx.lineWidth = s.tw;
+        for (const t of s.threads) {
+            ctx.strokeStyle = t.color;
+            trace(t, 0);
+            ctx.stroke();
+        }
+
+        /* the cloth on the beam, with the shadow it lays on the paper above it */
         if (s.woven) {
+            const shade = ctx.createLinearGradient(0, fell - 14, 0, fell);
+            shade.addColorStop(0, "rgba(60,44,28,0)");
+            shade.addColorStop(1, "rgba(60,44,28,0.2)");
+            ctx.fillStyle = shade;
+            ctx.fillRect(0, fell - 14, s.w, 14);
             ctx.setTransform(1, 0, 0, 1, 0, 0);
             ctx.drawImage(s.woven, 0, 0);
             ctx.setTransform(s.dpr, 0, 0, s.dpr, 0, 0);
         }
-        const fell = s.h - s.wovenH;
 
-        /* the open warp, from the top of the loom to the fell */
-        ctx.lineCap = "round";
-        ctx.lineWidth = s.tw;
-        ctx.globalAlpha = 0.92;
-        const gap = fell / (POINTS - 1);
-        for (const t of s.threads) {
-            ctx.strokeStyle = t.color;
-            ctx.beginPath();
-            ctx.moveTo(t.x + t.p[0], 0);
-            for (let k = 1; k < POINTS; k++) {
-                const x0 = t.x + t.p[k - 1];
-                const y0 = (k - 1) * gap;
-                const x1 = t.x + t.p[k];
-                const y1 = k * gap;
-                ctx.quadraticCurveTo(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2);
-            }
-            ctx.lineTo(t.x, fell);
-            ctx.stroke();
-        }
-        ctx.globalAlpha = 1;
-
-        /* the reed, just above the fell; it flashes on each beat */
-        ctx.fillStyle = `rgba(255,151,131,${0.18 + s.beat * 0.6})`;
+        /* the reed, just above the fell; it darkens on each beat */
+        ctx.fillStyle = `rgba(174,24,0,${0.22 + s.beat * 0.55})`;
         ctx.fillRect(0, fell - s.rh - 5, s.w, 1.5);
 
         /* the pass in progress: weft laid as far as the shuttle has gone */
@@ -329,10 +350,17 @@ export function LivingLoom({
             const sx = pass.to;
             ctx.save();
             ctx.translate(sx, y + s.rh / 2);
-            ctx.fillStyle = "#C9A27A";
+            ctx.fillStyle = SHADOW;
+            ctx.beginPath();
+            ctx.ellipse(3, 3, 17, 4.5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#B8895C";
             ctx.beginPath();
             ctx.ellipse(0, 0, 17, 4.5, 0, 0, Math.PI * 2);
             ctx.fill();
+            ctx.strokeStyle = "#7A5634";
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
             ctx.fillStyle = color;
             ctx.fillRect(-6, -1.5, 12, 3);
             ctx.restore();
@@ -523,8 +551,13 @@ export function LivingLoom({
             out.height = H;
             const ctx = out.getContext("2d");
             if (!ctx) return;
-            ctx.fillStyle = BG;
+            ctx.fillStyle = PAPER;
             ctx.fillRect(0, 0, W, H);
+            /* fibre in the sheet */
+            for (let i = 0; i < 2600; i++) {
+                ctx.fillStyle = `rgba(90,68,44,${0.03 + Math.random() * 0.06})`;
+                ctx.fillRect(Math.random() * W, Math.random() * H, 1 + Math.random() * 5, 0.8);
+            }
 
             /* the cloth, re-woven at print size from the record of rows */
             const clothH = 1040;
@@ -541,14 +574,16 @@ export function LivingLoom({
             const fit = Math.floor(clothH / rh);
             const rows = s.rows.slice(-fit);
             const top = clothH - rows.length * rh;
-            /* the warp above the cloth, still on the loom */
-            ctx.lineWidth = tw;
-            for (const w of warps) {
-                ctx.strokeStyle = w.color;
-                ctx.beginPath();
-                ctx.moveTo(w.x, 0);
-                ctx.lineTo(w.x, top);
-                ctx.stroke();
+            /* the warp above the cloth, still on the loom, with its shadow */
+            for (const [dx, width, colour] of [[4, tw + 2, SHADOW], [0, tw, ""]] as const) {
+                ctx.lineWidth = width;
+                for (const w of warps) {
+                    ctx.strokeStyle = colour || w.color;
+                    ctx.beginPath();
+                    ctx.moveTo(w.x + dx, 0);
+                    ctx.lineTo(w.x + dx, top);
+                    ctx.stroke();
+                }
             }
             rows.forEach((row, k) => {
                 const index = s.rows.length - rows.length + k;
@@ -568,16 +603,17 @@ export function LivingLoom({
             });
 
             /* the label, like the one beside a cloth in the room */
+            /* a running stitch along the hem */
             ctx.fillStyle = "#AE1800";
-            ctx.fillRect(0, clothH, W, 6);
-            ctx.fillStyle = "#FF9783";
+            for (let x = 0; x < W; x += 22) ctx.fillRect(x, clothH + 14, 13, 3);
+            ctx.fillStyle = "#AE1800";
             ctx.font = "600 22px ui-monospace, Menlo, monospace";
             ctx.fillText(`WOVEN BY YOU · ${s.rows.length} ROWS`, 64, clothH + 76);
-            ctx.fillStyle = "#FFFFFF";
+            ctx.fillStyle = "#201E1D";
             ctx.font = "900 64px system-ui, -apple-system, Segoe UI, sans-serif";
             ctx.fillText("A cloth no one else will weave.", 64, clothH + 160);
-            ctx.fillStyle = "rgba(255,255,255,0.6)";
-            ctx.font = "400 26px system-ui, -apple-system, Segoe UI, sans-serif";
+            ctx.fillStyle = "#55504A";
+            ctx.font = "400 26px Georgia, 'Times New Roman', serif";
             const date = new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
             ctx.fillText(`On the loom at Tracing Weavers · ${date}`, 64, clothH + 218);
             ctx.fillText("The warp is dyed in the colours of the collection's cloths.", 64, clothH + 258);
@@ -608,92 +644,105 @@ export function LivingLoom({
     }
 
     return (
-        <section
-            ref={host}
-            onPointerMove={onMove}
-            onPointerLeave={onLeave}
-            onPointerUp={(e) => {
-                if (e.pointerType !== "mouse") onLeave();
-            }}
-            onPointerCancel={onLeave}
-            onPointerDown={onDown}
-            className={cn("grain relative isolate overflow-hidden bg-ink text-white", className)}
-            style={{ touchAction: "pan-y" }}
-            data-theme="dark"
-            data-cursor="off"
-        >
-            <canvas ref={canvas} aria-hidden className="absolute inset-0 -z-10 h-full w-full" />
-            <p className="sr-only">
-                An interactive loom. Its warp threads are coloured from the cloths in the
-                collection; moving across it weaves rows of cloth, and tapping a thread plucks it.
-            </p>
-            <div
-                ref={label}
-                aria-hidden
-                className="pointer-events-none absolute top-0 left-0 z-20 bg-ink/90 px-2.5 py-1.5 text-[12px] tracking-[.06em] whitespace-nowrap text-white opacity-0 transition-opacity duration-150"
-            />
+        <div className={cn("relative", className)}>
+            {/* the loom: warp stretched between two beams, on a sheet of paper */}
+            <div className="card-stock relative px-2 py-1 sm:px-2.5">
+                <Beam />
+                <div
+                    ref={host}
+                    onPointerMove={onMove}
+                    onPointerLeave={onLeave}
+                    onPointerUp={(e) => {
+                        if (e.pointerType !== "mouse") onLeave();
+                    }}
+                    onPointerCancel={onLeave}
+                    onPointerDown={onDown}
+                    className={cn("paper relative isolate h-[440px] overflow-hidden", stageClassName)}
+                    style={{ touchAction: "pan-y" }}
+                    data-cursor="off"
+                >
+                    <canvas ref={canvas} aria-hidden className="absolute inset-0 -z-10 h-full w-full" />
+                    <p className="sr-only">
+                        An interactive loom. Its warp threads are coloured from the cloths in the
+                        collection; moving across it weaves rows of cloth, and tapping a thread plucks it.
+                    </p>
+                    <div
+                        ref={label}
+                        aria-hidden
+                        className="card-stock pointer-events-none absolute top-0 left-0 z-20 px-2.5 py-1.5 text-[12.5px] tracking-[.04em] whitespace-nowrap text-ink opacity-0 transition-opacity duration-150"
+                    />
+                </div>
+                <Beam />
+            </div>
 
-            {children}
-
-            {/* the weaver's tools */}
-            <div className="absolute inset-x-0 bottom-0 z-10">
-                <div className="container-x flex flex-wrap items-end justify-between gap-3 pb-4 sm:pb-5">
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 bg-ink/85 px-3 py-2">
-                        <span className="hidden text-[13px] text-white/75 lg:inline">
-                            Sweep across to weave · tap a thread to pluck it
-                        </span>
-                        <span className="hidden h-5 w-px bg-white/20 lg:inline" aria-hidden />
-                        <span className="text-[11px] tracking-[.18em] text-white/60 uppercase">Your shuttle</span>
-                        <div role="group" aria-label="Choose the weft colour" className="flex gap-1.5">
-                            {SHUTTLES.map((s) => (
-                                <button
-                                    key={s.id}
-                                    type="button"
-                                    aria-pressed={shuttle.id === s.id}
-                                    aria-label={`Weave in ${s.label.toLowerCase()}`}
-                                    title={s.label}
-                                    onClick={() => setShuttle(s)}
-                                    className={cn(
-                                        "pressable h-7 w-7 rounded-full",
-                                        shuttle.id === s.id
-                                            ? "shadow-[0_0_0_2px_var(--bt-ink),0_0_0_4px_#fff]"
-                                            : "hover:shadow-[0_0_0_2px_var(--bt-ink),0_0_0_3px_rgba(255,255,255,.5)]",
-                                    )}
-                                    style={{ background: s.hex }}
-                                />
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                        <span className="num hidden bg-ink/80 px-3 py-2 text-[12px] tracking-[.14em] text-white/70 uppercase sm:inline">
-                            {rowCount} {rowCount === 1 ? "row" : "rows"} woven
-                        </span>
-                        <button
-                            type="button"
-                            onClick={toggleSound}
-                            aria-pressed={sound}
-                            className="pressable inline-flex h-10 items-center gap-2 bg-ink/80 px-3 text-[13px] text-white/85 shadow-[inset_0_0_0_1px_rgba(255,255,255,.22)] hover:bg-white hover:text-ink"
-                        >
-                            {sound ? (
-                                <Volume2 aria-hidden className="h-4 w-4" strokeWidth={1.75} />
-                            ) : (
-                                <VolumeX aria-hidden className="h-4 w-4" strokeWidth={1.75} />
-                            )}
-                            {sound ? "Sound on" : "Play the loom"}
-                        </button>
-                        <button
-                            type="button"
-                            onClick={keep}
-                            disabled={saving}
-                            className="pressable inline-flex h-10 items-center gap-2 bg-salmon px-3.5 text-[13px] font-medium text-ink hover:bg-white disabled:opacity-60"
-                        >
-                            <Download aria-hidden className="h-4 w-4" strokeWidth={1.75} />
-                            {saving ? "Weaving…" : "Keep your weave"}
-                        </button>
+            {/* the weaver's tools, under the loom */}
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+                <div className="flex items-center gap-3">
+                    <span className="text-[12px] tracking-[.14em] text-ink-3 uppercase">Shuttle</span>
+                    <div role="group" aria-label="Choose the weft colour" className="flex gap-2">
+                        {SHUTTLES.map((s) => (
+                            <button
+                                key={s.id}
+                                type="button"
+                                aria-pressed={shuttle.id === s.id}
+                                aria-label={`Weave in ${s.label.toLowerCase()}`}
+                                title={s.label}
+                                onClick={() => setShuttle(s)}
+                                className={cn(
+                                    "pressable h-8 w-8 rounded-full",
+                                    shuttle.id === s.id
+                                        ? "shadow-[0_0_0_2px_var(--surface-page),0_0_0_3.5px_var(--bt-ink)]"
+                                        : "shadow-[inset_0_0_0_1px_rgba(32,30,29,.18)] hover:shadow-[0_0_0_2px_var(--surface-page),0_0_0_3px_var(--bt-stone)]",
+                                )}
+                                style={{ background: s.hex }}
+                            />
+                        ))}
                     </div>
                 </div>
+
+                <div className="flex items-center gap-2">
+                    <span className="num hidden pr-1 text-[13px] text-ink-3 sm:inline">
+                        {rowCount} {rowCount === 1 ? "row" : "rows"} woven
+                    </span>
+                    <button
+                        type="button"
+                        onClick={toggleSound}
+                        aria-pressed={sound}
+                        className="pressable inline-flex h-10 items-center gap-2 px-3 text-[14px] text-ink shadow-[inset_0_0_0_1px_var(--bt-stone)] hover:bg-ink hover:text-white"
+                    >
+                        {sound ? (
+                            <Volume2 aria-hidden className="h-4 w-4" strokeWidth={1.75} />
+                        ) : (
+                            <VolumeX aria-hidden className="h-4 w-4" strokeWidth={1.75} />
+                        )}
+                        {sound ? "Sound on" : "Play the loom"}
+                    </button>
+                    <button
+                        type="button"
+                        onClick={keep}
+                        disabled={saving}
+                        className="pressable tactile inline-flex h-10 items-center gap-2 bg-bt-red px-3.5 text-[14px] font-medium text-white hover:bg-bt-red-bright disabled:opacity-60"
+                    >
+                        <Download aria-hidden className="h-4 w-4" strokeWidth={1.75} />
+                        {saving ? "Weaving…" : "Keep your weave"}
+                    </button>
+                </div>
             </div>
-        </section>
+        </div>
+    );
+}
+
+/* A beam of the loom: a rod of wood, turned and oiled, a little longer than
+   the warp is wide. */
+function Beam() {
+    return (
+        <div
+            aria-hidden
+            className="relative z-10 -mx-3 h-3.5 rounded-full shadow-[0_3px_4px_-1px_rgba(60,44,28,.45)] sm:-mx-4 sm:h-4"
+            style={{
+                backgroundImage:
+                    "repeating-linear-gradient(90deg, rgba(60,36,16,.12) 0 1px, transparent 1px 9px, rgba(255,240,220,.08) 9px 10px, transparent 10px 23px), linear-gradient(180deg, #D9AE80 0%, #B98A5C 38%, #93683F 78%, #7A5533 100%)",
+            }}
+        />
     );
 }

@@ -57,7 +57,7 @@ export async function generateMetadata({
  *
  * It wears the cloth's own colours — a selvedge measured from the photograph
  * runs under the header — and leads with the photograph, edge to edge on a
- * phone, in a dark vitrine on a desk, with a viewer for looking closer. Then
+ * phone, mounted on a linen board on a desk, with a viewer for looking closer. Then
  * the catalogue entry: number, name, place, what it is, its colours, its
  * specification, and the claim. At the foot, the cloths either side of it
  * and the rest of its collection, so the exhibition can be walked from here.
@@ -95,6 +95,8 @@ export default async function RecordPage({
     const origin = formatPlace(attr(record, "Origin"));
     const name = clothName(record);
     const palette = paletteFor(record);
+    /* width / height of the photograph, measured by `npm run images` */
+    const photoRatio = palette?.ratio && palette.ratio > 0 ? Number(palette.ratio.toFixed(4)) : 0.8;
     const { previous, next } = neighbours(record.code);
     const related = sameCollection(record, 8);
     const status =
@@ -121,29 +123,36 @@ export default async function RecordPage({
             </div>
 
             <div className="container-x grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-16">
-                {/* the photograph: edge to edge on a phone, a vitrine on a desk */}
-                <div className="-mx-4 sm:card-stock sm:mx-0 sm:p-2.5 lg:sticky lg:top-[92px] lg:self-start">
-                    <ClothViewer
-                        src={recordVisual(record)}
-                        alt={`${name}, handwoven cloth from ${origin}`}
-                        title={`${catalogueNumber(record.code)} · ${name}`}
-                        className="bg-ink"
-                        style={palette ? { background: palette.colors[0]?.hex } : undefined}
-                        imgClassName="aspect-4/5 w-full object-cover lg:aspect-auto lg:h-[calc(100svh-150px)] lg:max-h-[860px] lg:min-h-[480px] lg:object-contain lg:bg-[#1a1918]"
+                {/* the photograph, mounted on card at its own proportions — a tall
+                    cloth stays tall, a wide one wide; nothing cropped, no empty
+                    board around it. As tall as the screen allows, never taller. */}
+                <div className="lg:sticky lg:top-[92px] lg:self-start">
+                    <div
+                        className="card-stock mx-auto p-1.5 [--photo-h:min(60svh,600px)] sm:p-2.5 lg:[--photo-h:min(calc(100svh-170px),860px)]"
+                        style={{ width: `min(100%, calc(var(--photo-h) * ${photoRatio} + 1.25rem))` }}
                     >
-                        <span className="pointer-events-none absolute top-3 left-3 bg-ink/80 px-2 py-1 font-mono text-[13px] tracking-[.04em] text-white sm:top-4 sm:left-4">
-                            {record.code}
-                        </span>
-                        <span
-                            className={`pointer-events-none absolute top-3 right-3 px-2.5 py-1 text-[11px] tracking-[.16em] uppercase sm:top-4 sm:right-4 ${
-                                remaining <= 0 ? "bg-ink text-white" : "bg-salmon text-ink"
-                            }`}
+                        <ClothViewer
+                            src={recordVisual(record)}
+                            alt={`${name}, handwoven cloth from ${origin}`}
+                            title={`${catalogueNumber(record.code)} · ${name}`}
+                            className="bg-ink"
+                            style={{ aspectRatio: String(photoRatio), background: palette?.colors[0]?.hex }}
+                            imgClassName="block h-full w-full object-cover"
                         >
-                            {status}
-                        </span>
-                    </ClothViewer>
+                            <span className="woven-label pointer-events-none absolute top-3 left-3 sm:top-4 sm:left-4">
+                                {record.code}
+                            </span>
+                            <span
+                                className={`stamp pointer-events-none absolute top-4 right-4 text-[12.5px] sm:top-5 sm:right-5 ${
+                                    remaining <= 0 ? "" : "stamp-ink"
+                                }`}
+                            >
+                                {status}
+                            </span>
+                        </ClothViewer>
+                    </div>
                     {!isPlaceholder(record.photoCredit) && (
-                        <p className="mt-2.5 px-4 text-[13px] text-ink-2 sm:px-0">
+                        <p className="mt-2.5 text-center text-[13px] text-ink-2">
                             Photo: {record.photoCredit}
                         </p>
                     )}
@@ -171,7 +180,7 @@ export default async function RecordPage({
                                     : t.supplyUnique}
                             </span>
                         </p>
-                        <p className="mt-6 max-w-[52ch] border-l-2 border-bt-red pl-4 text-[19px] leading-relaxed text-ink sm:text-[21px]">
+                        <p className="read mt-6 max-w-[52ch] border-l-2 border-bt-red pl-4 text-[19px] leading-relaxed text-ink sm:text-[21px]">
                             {record.description}
                         </p>
                     </header>

@@ -1,10 +1,10 @@
 /** Three warp threads and the weft carried across them — the app's mark, the
-    same drawing as app/icon.svg. Inherits nothing: it is always salmon on
-    morinda, so it reads on ink and on paper alike. */
-export function BrandMark({ className }: { className?: string }) {
+    same drawing as app/icon.svg. On ink the warp is salmon; on paper it is
+    ink, with the red weft carried across it. */
+export function BrandMark({ className, tone = "ink" }: { className?: string; tone?: "ink" | "paper" }) {
     return (
         <svg aria-hidden viewBox="0 0 32 32" className={className}>
-            <g stroke="#FF9783" strokeWidth="2.4" strokeLinecap="square">
+            <g stroke={tone === "paper" ? "#201E1D" : "#FF9783"} strokeWidth="2.4" strokeLinecap="square">
                 <line x1="9" y1="5" x2="9" y2="27" />
                 <line x1="16" y1="5" x2="16" y2="27" />
                 <line x1="23" y1="5" x2="23" y2="27" />

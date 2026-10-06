@@ -73,23 +73,21 @@ export default function ScanPage() {
 
             {/* the tool first */}
             <section className="container-x mt-10">
-                <div
-                    className="ink-band cloth relative overflow-hidden p-6 sm:p-10"
-                    data-theme="dark"
-                >
-                    <WarpField className="pointer-events-none absolute inset-0 h-full w-full text-white/7" />
+                <div className="card-stock relative overflow-hidden p-6 sm:p-10">
+                    <WarpField className="pointer-events-none absolute inset-0 h-full w-full text-ink/[.05]" />
+                    <div aria-hidden className="stitch absolute inset-x-5 top-3.5" />
                     <div className="relative grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end">
                         <div>
-                            <h2 className="text-[clamp(1.8rem,5vw,3rem)] text-white">
+                            <h2 className="text-[clamp(1.8rem,5vw,3rem)] text-ink">
                                 Have a code from a label?
                             </h2>
-                            <p className="mt-3 max-w-[40ch] text-[16px] text-white/70">
-                                Type it as printed — <span className="font-mono">07/TM</span>,{" "}
-                                <span className="font-mono">07tm</span> or just{" "}
-                                <span className="font-mono">7</span> all open the same cloth.
+                            <p className="read mt-3 max-w-[40ch] text-[17px] leading-[1.9] text-ink-2">
+                                Type it as printed — <span className="woven-label mx-0.5">07/TM</span>{" "}
+                                <span className="woven-label mx-0.5">07tm</span> or just{" "}
+                                <span className="woven-label mx-0.5">7</span> — all open the same cloth.
                             </p>
                         </div>
-                        <TagLookupForm tone="ink" />
+                        <TagLookupForm />
                     </div>
                 </div>
             </section>
@@ -109,7 +107,7 @@ export default function ScanPage() {
                                 {String(i + 1).padStart(2, "0")}
                             </span>
                             <h3 className="mt-4 text-[24px]">{step.title}</h3>
-                            <p className="mt-2 text-[16px] leading-relaxed text-muted-foreground">{step.body}</p>
+                            <p className="read mt-2 text-[16px] leading-relaxed text-muted-foreground">{step.body}</p>
                         </li>
                     ))}
                 </ol>
@@ -134,7 +132,7 @@ export default function ScanPage() {
                                         +
                                     </span>
                                 </summary>
-                                <p className="max-w-[60ch] pb-6 text-[16px] leading-relaxed text-muted-foreground">
+                                <p className="read max-w-[60ch] pb-6 text-[16px] leading-relaxed text-muted-foreground">
                                     {item.a}
                                 </p>
                             </details>

@@ -140,7 +140,7 @@ export function PassportShelf({
             content: (
                 <div className="cloth flex h-full w-full flex-col justify-between bg-[#EDE7DC] p-6 sm:p-7">
                     <div className="eyebrow">{brand}</div>
-                    <p className="max-w-[26ch] text-[16px] leading-relaxed text-ink-2">
+                    <p className="read max-w-[26ch] text-[16px] leading-relaxed text-ink-2">
                         The record travels with the cloth, including when it changes
                         hands. Every resale returns value to the household that wove
                         it.

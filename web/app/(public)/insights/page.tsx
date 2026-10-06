@@ -52,7 +52,7 @@ export default async function InsightsPage({
             <header>
                 <div className="eyebrow">Insights · Vercel Web Analytics</div>
                 <h1 className="mt-3">How many people read the cloth.</h1>
-                <p className="mt-3 max-w-[52ch] text-[17px] text-muted-foreground">
+                <p className="read mt-3 max-w-[52ch] text-[17px] text-muted-foreground">
                     {totals.ok
                         ? `${totals.value.visitors.toLocaleString("en-GB")} visitors and ${totals.value.pageviews.toLocaleString("en-GB")} page views in the last seven days.`
                         : "Seven days of traffic."}
@@ -139,7 +139,7 @@ function Page({ eyebrow, title, children }: { eyebrow: string; title: string; ch
         <div className="container-x max-w-3xl py-10 sm:py-14">
             <div className="eyebrow">{eyebrow}</div>
             <h1 className="mt-4">{title}</h1>
-            <div className="mt-4 space-y-4 text-[17px] text-muted-foreground">{children}</div>
+            <div className="read mt-4 space-y-4 text-[17px] text-muted-foreground">{children}</div>
         </div>
     );
 }

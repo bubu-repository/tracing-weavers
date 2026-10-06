@@ -16,7 +16,7 @@ export default function NotFound() {
             <div className="max-w-xl">
                 <div className="eyebrow">Not found</div>
                 <h1 className="mt-4 text-[clamp(2.4rem,6vw,4rem)]">A dropped stitch.</h1>
-                <p className="mt-4 max-w-[46ch] text-[17px] leading-relaxed text-muted-foreground">
+                <p className="read mt-4 max-w-[46ch] text-[17px] leading-relaxed text-muted-foreground">
                     This address points at nothing — the link may be mistyped, or the
                     page has moved. If you have a code from a cloth&apos;s label, type it
                     here.

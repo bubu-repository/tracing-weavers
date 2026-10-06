@@ -90,11 +90,11 @@ export default async function VerifyPage({
                                     <Check className="h-9 w-9" strokeWidth={2} />
                                 )}
                             </span>
-                            <h1 className="t-hero text-[clamp(3rem,12vw,6.5rem)] text-white">
+                            <h1 className="t-hero text-white [--hero-size:clamp(3rem,12vw,6.5rem)]">
                                 {revoked ? "Revoked." : "Genuine."}
                             </h1>
                         </div>
-                        <p className="mt-6 max-w-[48ch] text-[18px] leading-relaxed text-white/75 sm:text-[20px]">
+                        <p className="read mt-6 max-w-[48ch] text-[18px] leading-relaxed text-white/75 sm:text-[20px]">
                             {revoked ? (
                                 <>
                                     This certificate was issued for{" "}
@@ -119,7 +119,7 @@ export default async function VerifyPage({
             <div className="container-x mt-12 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:gap-16">
                 <section>
                     <h2 className="eyebrow">{t.verifyProves}</h2>
-                    <p className="mt-4 max-w-[56ch] text-[17px] leading-relaxed text-muted-foreground">
+                    <p className="read mt-4 max-w-[56ch] text-[17px] leading-relaxed text-muted-foreground">
                         {stored
                             ? "This certificate is in the Tracing Weavers register, under the name shown. The cloth it names has its own public record, so the two can be checked against each other."
                             : "The register is not answering right now, but the signature on this link proves the certificate was issued by Tracing Weavers. Open the record to match the cloth."}
@@ -137,7 +137,7 @@ export default async function VerifyPage({
                 {!alreadyHeld && !revoked && (
                     <section className="border-t border-ink pt-5 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-10">
                         <h2 className="eyebrow">Is this yours?</h2>
-                        <p className="mt-4 max-w-[46ch] text-[16px] leading-relaxed text-muted-foreground">
+                        <p className="read mt-4 max-w-[46ch] text-[16px] leading-relaxed text-muted-foreground">
                             Save it to this device and it appears in your traces whenever
                             you are signed in here.
                         </p>

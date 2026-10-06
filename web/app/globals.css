@@ -2,12 +2,14 @@
 @import "tw-animate-css";
 
 /* ═══════════════════════════════════════════════════════════════════════
-   Tracing Weavers — visual system, second edition: the living catalogue
+   Tracing Weavers — visual system, third edition: the field catalogue
 
-   The app is an exhibition catalogue that you carry in your pocket. The
-   cloths are the only colour that matters, so the frame around them is
-   quiet and dark — an ink header and footer, like the walls of a gallery —
-   and the pages between are paper.
+   The app is an exhibition catalogue that you carry in your pocket, printed
+   on undyed cotton paper and kept like a field archive. The cloths are the
+   only colour that matters; everything around them is made of the things a
+   cloth is made of and recorded with — cotton, thread, card stock, a
+   rubber stamp, a woven label, a pencil note in the margin. Ink is kept for
+   the back cover and the darkened room where the photographs hang.
 
    · Beyond Tenun underneath: ink #201E1D, paper #F3F2F2, morinda #AE1800
      (salmon #FF9783 on ink), letterspaced eyebrows, Hanken Grotesk 900 for
@@ -27,12 +29,12 @@
 
 :root{
   --bt-ink:#201E1D;
-  --bt-ink-2:#5A5755;          /* warm secondary — never a cool grey */
-  --bt-ink-3:#6B6866;          /* warm grey, 4.5:1 on paper and card */
+  --bt-ink-2:#55504A;          /* warm secondary — never a cool grey */
+  --bt-ink-3:#665F58;          /* warm grey, 4.5:1 on paper, card and muted */
   --bt-white:#FFFFFF;
   --bt-paper:#F3F2F2;
-  --bt-stone:#CFC8BB;
-  --bt-stone-2:#E2DDD4;        /* hairline */
+  --bt-stone:#C9BDAA;
+  --bt-stone-2:#DDD3C3;        /* hairline */
   --bt-red:#AE1800;            /* morinda root */
   --bt-red-bright:#EC3013;
   --bt-salmon:#FF9783;
@@ -45,10 +47,10 @@
      brand paper under warm gallery light, with fibre in it; cards are a
      heavier stock laid on it, with a shadow that says how far they sit
      above the page. Corners stay square, as labels and prints are. */
-  --surface-page:#F3F1EC;
-  --surface-card:#FCFBF8;
+  --surface-page:#F0EADF;      /* undyed cotton paper */
+  --surface-card:#FBF8F2;      /* card stock */
   --surface-ink:#201E1D;
-  --paper-fibre:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.85 .42' numOctaves='3' seed='7' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .2  0 0 0 0 .16  0 0 0 0 .12  0 0 0 .11 0'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>");
+  --paper-fibre:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.85 .42' numOctaves='3' seed='7' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .24  0 0 0 0 .18  0 0 0 0 .12  0 0 0 .13 0'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>");
   --shadow-rest:0 1px 0 rgba(32,30,29,.04), 0 1px 2px rgba(32,30,29,.07), 0 12px 24px -16px rgba(32,30,29,.3);
   --shadow-lift:0 1px 0 rgba(32,30,29,.04), 0 8px 16px -6px rgba(32,30,29,.14), 0 30px 54px -22px rgba(32,30,29,.42);
   --shadow-field:inset 0 0 0 1px var(--bt-stone), inset 0 2px 3px rgba(32,30,29,.07);
@@ -78,7 +80,7 @@
   --color-foreground: var(--bt-ink);
   --color-card: var(--surface-card);
   --color-card-foreground: var(--bt-ink);
-  --color-muted: #E9E6E1;
+  --color-muted: #E6DED1;
   --color-muted-foreground: var(--bt-ink-2);
   --color-border: var(--bt-stone-2);
   --color-primary: var(--bt-red);
@@ -107,6 +109,7 @@
   --font-display: var(--font-display-family);
   --font-mono: var(--font-mono-family);
   --font-script: var(--font-script-family), cursive;
+  --font-serif: var(--font-serif-family), Georgia, serif;
   --radius-sm: 2px;
   --radius-md: 3px;
   --radius-lg: 4px;
@@ -135,14 +138,14 @@
 /* Paper inside ink: a certificate or a book page laid on the gallery wall
    keeps its own light ground and dark type. */
 [data-theme="light"]{
-  --surface-page:#F3F1EC;
-  --surface-card:#FCFBF8;
-  --color-card:#FCFBF8;
-  --paper-fibre:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.85 .42' numOctaves='3' seed='7' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .2  0 0 0 0 .16  0 0 0 0 .12  0 0 0 .11 0'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>");
+  --surface-page:#F0EADF;
+  --surface-card:#FBF8F2;
+  --color-card:#FBF8F2;
+  --paper-fibre:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='p'><feTurbulence type='fractalNoise' baseFrequency='.85 .42' numOctaves='3' seed='7' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .24  0 0 0 0 .18  0 0 0 0 .12  0 0 0 .13 0'/></filter><rect width='100%' height='100%' filter='url(%23p)'/></svg>");
   --shadow-rest:0 1px 0 rgba(32,30,29,.04), 0 1px 2px rgba(32,30,29,.07), 0 12px 24px -16px rgba(32,30,29,.3);
   --shadow-lift:0 1px 0 rgba(32,30,29,.04), 0 8px 16px -6px rgba(32,30,29,.14), 0 30px 54px -22px rgba(32,30,29,.42);
   --color-card-foreground:var(--bt-ink);
-  --color-muted:#E9E6E1;
+  --color-muted:#E6DED1;
   --color-muted-foreground:var(--bt-ink-2);
   --color-border:var(--bt-stone-2);
   --color-primary:var(--bt-red);
@@ -236,19 +239,22 @@
   .t-hero {
     font-family: var(--font-display);
     font-weight: 900;
-    font-size: clamp(3.1rem, 13.5vw, 8.25rem);
+    /* a page may set its own size through --hero-size (a utility class
+       cannot: this rule is emitted after the generated utilities) */
+    font-size: var(--hero-size, clamp(3.1rem, 13.5vw, 8.25rem));
     letter-spacing: -.05em;
     line-height: .88;
     text-wrap: balance;
   }
 
   /* The catalogue numeral: "07", set big and light against the black title. */
+  /* set in the book face, light, like the numbers in a catalogue raisonné */
   .numeral {
-    font-family: var(--font-display);
-    font-weight: 400;
-    letter-spacing: -.04em;
+    font-family: var(--font-serif-family), Georgia, serif;
+    font-weight: 300;
+    letter-spacing: -.03em;
     line-height: .85;
-    font-variant-numeric: tabular-nums;
+    font-variant-numeric: lining-nums tabular-nums;
   }
 
   .label {
@@ -358,6 +364,94 @@
   background-image:
     repeating-linear-gradient(90deg, rgba(0, 0, 0, .2) 0 1px, rgba(0, 0, 0, 0) 1px 4px),
     linear-gradient(180deg, rgba(255, 255, 255, .22), rgba(0, 0, 0, .18));
+}
+
+/* ── The field archive ──────────────────────────────────────────────────
+   What a cloth is recorded with, used as the page's furniture: a reading
+   voice set in a book face, a running stitch for a rule, a woven label for a
+   code, a rubber stamp for a status, a pencil note in the margin. */
+
+@layer components {
+  /* the reading voice: prose is set like a catalogue essay, not a screen */
+  .read {
+    font-family: var(--font-serif-family), Georgia, serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    letter-spacing: -.004em;
+    line-height: 1.58;
+  }
+  .read em, .read i { font-style: italic; }
+
+  /* a running stitch, in red thread, where a hairline would be */
+  .stitch {
+    height: 2px;
+    background-image: repeating-linear-gradient(90deg, var(--stitch, var(--bt-red)) 0 9px, transparent 9px 15px);
+    opacity: .75;
+  }
+  [data-theme="dark"] .stitch { --stitch: var(--bt-salmon); }
+
+  /* a woven label, the kind sewn into the hem: the code, on cotton */
+  .woven-label {
+    display: inline-flex;
+    align-items: center;
+    gap: .5em;
+    padding: .32em .7em .3em;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--bt-ink);
+    background-color: #F8F3E9;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(32, 30, 29, .055) 0 1px, transparent 1px 2.5px),
+      repeating-linear-gradient(0deg, rgba(255, 255, 255, .5) 0 1px, transparent 1px 3px);
+    box-shadow:
+      inset 3px 0 0 -1px #F8F3E9, inset -3px 0 0 -1px #F8F3E9,
+      inset 0 0 0 1px rgba(32, 30, 29, .14),
+      0 1px 2px rgba(32, 30, 29, .2);
+    position: relative;
+  }
+  /* the stitches that hold it at either end */
+  .woven-label::before, .woven-label::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    width: 1.5px;
+    background-image: repeating-linear-gradient(180deg, var(--bt-red) 0 3px, transparent 3px 5px);
+    opacity: .8;
+  }
+  .woven-label::before { left: 3px; }
+  .woven-label::after { right: 3px; }
+
+  /* a rubber stamp: inked once, a little unevenly, never quite straight */
+  .stamp {
+    display: inline-block;
+    padding: .55em .8em .5em;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 11.5px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--stamp, var(--bt-red));
+    box-shadow: inset 0 0 0 1.5px currentColor, inset 0 0 0 3.5px transparent, inset 0 0 0 4.5px currentColor;
+    transform: rotate(-2.5deg);
+    -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='s'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='11'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 2.05'/></filter><rect width='100%' height='100%' filter='url(%23s)'/></svg>");
+    mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='s'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='11'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 2.05'/></filter><rect width='100%' height='100%' filter='url(%23s)'/></svg>");
+    background-color: rgba(251, 248, 242, .9);
+  }
+  .stamp-ink { --stamp: var(--bt-ink); }
+
+  /* a pencil note in the margin, in the cataloguer's hand */
+  .note {
+    font-family: var(--font-script-family), cursive;
+    font-weight: 600;
+    font-size: 1.35em;
+    line-height: 1.05;
+    letter-spacing: 0;
+    color: var(--bt-ink-2);
+    transform: rotate(-2deg);
+  }
 }
 
 @keyframes rise { to { opacity: 1; transform: translateY(0); } }

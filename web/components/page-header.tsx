@@ -43,7 +43,7 @@ export function PageHeader({
                         {lead && (
                             <p
                                 className={cn(
-                                    "mt-5 max-w-[52ch] text-[17px] leading-relaxed sm:text-[19px]",
+                                    "read mt-5 max-w-[52ch] text-[17px] leading-relaxed sm:text-[19px]",
                                     ink ? "text-white/70" : "text-muted-foreground",
                                 )}
                             >
