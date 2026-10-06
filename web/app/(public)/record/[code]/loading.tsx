@@ -15,7 +15,7 @@ export default function Loading() {
 
             <div className="mt-6 grid gap-8 lg:grid-cols-2 lg:gap-14">
                 <div>
-                    <Skeleton className="aspect-4/5 w-full rounded-none" />
+                    <Skeleton className="aspect-square w-full rounded-none" />
                     <Skeleton className="mt-3 h-3 w-40" />
                 </div>
 

@@ -95,8 +95,6 @@ export default async function RecordPage({
     const origin = formatPlace(attr(record, "Origin"));
     const name = clothName(record);
     const palette = paletteFor(record);
-    /* width / height of the photograph, measured by `npm run images` */
-    const photoRatio = palette?.ratio && palette.ratio > 0 ? Number(palette.ratio.toFixed(4)) : 0.8;
     const { previous, next } = neighbours(record.code);
     const related = sameCollection(record, 8);
     const status =
@@ -123,20 +121,18 @@ export default async function RecordPage({
             </div>
 
             <div className="container-x grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:gap-16">
-                {/* the photograph, mounted on card at its own proportions — a tall
-                    cloth stays tall, a wide one wide; nothing cropped, no empty
-                    board around it. As tall as the screen allows, never taller. */}
+                {/* the photograph, mounted on card as a square — every cloth in the
+                    catalogue is shown at the same size and shape, and "Look
+                    closer" opens the whole photograph. On a desk it is as big as
+                    the screen allows, never taller. */}
                 <div className="lg:sticky lg:top-[92px] lg:self-start">
-                    <div
-                        className="card-stock mx-auto p-1.5 [--photo-h:min(60svh,600px)] sm:p-2.5 lg:[--photo-h:min(calc(100svh-170px),860px)]"
-                        style={{ width: `min(100%, calc(var(--photo-h) * ${photoRatio} + 1.25rem))` }}
-                    >
+                    <div className="card-stock mx-auto w-full p-1.5 sm:p-2.5 lg:w-[min(100%,calc(100svh-150px),660px)]">
                         <ClothViewer
                             src={recordVisual(record)}
                             alt={`${name}, handwoven cloth from ${origin}`}
                             title={`${catalogueNumber(record.code)} · ${name}`}
                             className="bg-ink"
-                            style={{ aspectRatio: String(photoRatio), background: palette?.colors[0]?.hex }}
+                            style={{ aspectRatio: "1", background: palette?.colors[0]?.hex }}
                             imgClassName="block h-full w-full object-cover"
                         >
                             <span className="woven-label pointer-events-none absolute top-3 left-3 sm:top-4 sm:left-4">
@@ -292,7 +288,7 @@ function Neighbour({
                 src={recordThumb(record)}
                 alt=""
                 loading="lazy"
-                className="h-20 w-16 shrink-0 object-cover transition-transform duration-500 group-hover:scale-[1.04] sm:h-28 sm:w-22"
+                className="h-16 w-16 shrink-0 object-cover transition-transform duration-500 group-hover:scale-[1.04] sm:h-24 sm:w-24"
                 draggable={false}
             />
             <span className="min-w-0">

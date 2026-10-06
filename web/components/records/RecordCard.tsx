@@ -48,7 +48,7 @@ export default function RecordCard({
                 className="card-stock lift group block h-full p-1.5 pb-3.5 text-ink hover:text-ink sm:p-2.5 sm:pb-5"
             >
                 <div
-                    className="relative aspect-4/5 overflow-hidden bg-ink"
+                    className="relative aspect-square overflow-hidden bg-ink"
                     style={palette ? { background: palette.colors[0]?.hex } : undefined}
                 >
                     {/* eslint-disable-next-line @next/next/no-img-element */}

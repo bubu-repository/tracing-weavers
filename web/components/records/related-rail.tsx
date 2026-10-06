@@ -24,7 +24,7 @@ export function RelatedRail({ records }: { records: ProductRecord[] }) {
                             className="card-stock lift group block h-full p-1.5 pb-3 text-ink hover:text-ink sm:p-2"
                         >
                             <div
-                                className="aspect-4/5 overflow-hidden"
+                                className="aspect-square overflow-hidden"
                                 style={{ background: palette?.colors[0]?.hex ?? "var(--bt-ink)" }}
                             >
                                 {/* eslint-disable-next-line @next/next/no-img-element */}
