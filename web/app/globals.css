@@ -306,7 +306,22 @@
 .settle { animation: settle 900ms var(--ease-out) both; }
 @keyframes settle { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: scale(1); } }
 
+/* ── Story: the scroll-driven chapters ─────────────────────────────────
+   The red thread runs down the left edge of the page column; chapter knots
+   sit on it. Everything that moves with the scroll carries .story-motion, so
+   reduced motion can put it all at rest in one place, below. */
+.story-thread-x { left: calc(max(0px, (100% - 1280px) / 2) + 1.1rem); }
+
+/* the hero's invitation: a stitch of red running down an empty thread */
+.thread-drip { animation: thread-drip 2.2s var(--ease-out) infinite; }
+@keyframes thread-drip { from { transform: translateY(-100%); } to { transform: translateY(220%); } }
+
 @media (prefers-reduced-motion: reduce) {
+  .story-motion { transform: none !important; opacity: 1 !important; }
+  .story-words span { opacity: 1 !important; }
+  .thread-drip { animation: none !important; }
+  path.story-motion { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; }
+  .story-needle { display: none !important; }
   *, *::before, *::after {
     animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;

@@ -6,6 +6,8 @@
  * Writes, for each record in data/records.json:
  *   public/imagery/thumbs/<name>.webp  — 520px wide, for catalogue cards
  *   public/imagery/swatches/<name>.webp — 240px square, for strips and lists
+ *   public/imagery/story/<name>.webp   — 1400px, the documentary photos the
+ *                                        home page's story chapters use
  *   data/palettes.json                 — the cloth's five main colours
  *
  * Why: the catalogue used to load every full-size photo (120–390 KB each, ~7
@@ -168,6 +170,26 @@ for (const record of records) {
         out[record.code].colors.map((c) => c.hex).join(" "),
         out[record.code].families.join(","),
     );
+}
+
+/* The story chapters' photographs: documentary, not cloth records. */
+const STORY = [
+    "cotton-carding.jpg",
+    "weaving-hands-loom.jpg",
+    "weaving-detail.jpg",
+    "weaver-portrait.jpg",
+    "village-flores.jpg",
+    "cloth-hanging.jpg",
+];
+const storyDir = resolve(root, "public/imagery/story");
+mkdirSync(storyDir, { recursive: true });
+for (const name of STORY) {
+    const file = resolve(root, "public/imagery", name);
+    if (!existsSync(file)) continue;
+    await sharp(file)
+        .resize({ width: 1400, withoutEnlargement: true })
+        .webp({ quality: 68 })
+        .toFile(resolve(storyDir, `${basename(name, extname(name))}.webp`));
 }
 
 writeFileSync(

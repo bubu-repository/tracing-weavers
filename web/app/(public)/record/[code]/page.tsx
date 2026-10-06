@@ -24,7 +24,8 @@ import { RecordTraits } from "@/components/records/RecordTraits";
 import { ClothViewer } from "@/components/records/cloth-viewer";
 import { ClaimBar } from "@/components/records/claim-bar";
 import { RelatedRail } from "@/components/records/related-rail";
-import { PaletteSwatches, Selvedge } from "@/components/records/selvedge";
+import { Selvedge } from "@/components/records/selvedge";
+import { ClothStory } from "@/components/story/cloth-story";
 import { catalogueNumber } from "@/components/records/RecordCard";
 import { JourneyRail } from "@/components/journey-rail";
 import { ShareButton } from "@/components/share-button";
@@ -175,18 +176,22 @@ export default async function RecordPage({
                         </p>
                     </header>
 
-                    <PaletteSwatches palette={palette} />
-
                     <RecordTraits record={record} />
 
-                    <div className="max-w-[56ch]">
-                        <div className="text-[11px] tracking-[.2em] uppercase text-bt-red">The motif</div>
-                        <p className="mt-1.5 text-[15px] leading-relaxed text-muted-foreground">
-                            The community decides how much of a motif may be recorded
-                            and shown. What it means stays with the weaver and their
-                            family.
-                        </p>
-                    </div>
+                    <a
+                        href="#cloth-story"
+                        className="group flex items-center justify-between gap-4 border-y border-border py-4 text-ink hover:text-bt-red"
+                    >
+                        <span>
+                            <span className="label block">Read its story</span>
+                            <span className="mt-1 block text-[17px]">
+                                Where it was woven, how, and from what — in four short chapters
+                            </span>
+                        </span>
+                        <span aria-hidden className="text-[22px] transition-transform duration-300 group-hover:translate-y-1">
+                            ↓
+                        </span>
+                    </a>
 
                     {mine ? (
                         <section id="claim" aria-labelledby="your-certificate" className="scroll-mt-24 space-y-4">
@@ -206,6 +211,8 @@ export default async function RecordPage({
                     )}
                 </div>
             </div>
+
+            <ClothStory record={record} remaining={remaining} />
 
             {/* walk the exhibition */}
             {(previous || next) && (

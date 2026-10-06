@@ -29,37 +29,3 @@ export function Selvedge({
         </div>
     );
 }
-
-/** The same colours as named chips, for the record page. */
-export function PaletteSwatches({
-    palette,
-    className,
-}: {
-    palette?: ClothPalette;
-    className?: string;
-}) {
-    if (!palette?.colors.length) return null;
-    return (
-        <div className={className}>
-            <div className="label">Colours in this cloth</div>
-            <ul className="mt-2.5 flex flex-wrap gap-2">
-                {palette.colors.map((color) => (
-                    <li key={color.hex} className="flex items-center gap-2">
-                        <span
-                            aria-hidden
-                            className="h-7 w-7 shadow-[inset_0_0_0_1px_rgba(32,30,29,.12)]"
-                            style={{ background: color.hex }}
-                        />
-                        <span className="data pr-1.5 text-[11px] text-ink-2">
-                            {color.hex}
-                            <span className="sr-only">, {Math.round(color.share * 100)}% of the cloth</span>
-                        </span>
-                    </li>
-                ))}
-            </ul>
-            <p className="mt-2 text-[13px] text-muted-foreground">
-                Measured from the photograph — light and camera shift them a little.
-            </p>
-        </div>
-    );
-}
