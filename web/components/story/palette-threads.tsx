@@ -25,7 +25,7 @@ export function PaletteThreads({ colors }: { colors: { hex: string; share: numbe
                             viewport={{ once: true, margin: "0px 0px -15% 0px" }}
                             transition={{ duration: 1, delay: 0.15 + i * 0.12, ease: [0.23, 1, 0.32, 1] }}
                         />
-                        <span className="data mt-2 text-[10px] text-ink-2 sm:text-[11px]">{color.hex}</span>
+                        <span className="data mt-2 text-[11px] text-ink-2 sm:text-[12px]">{color.hex}</span>
                         <span className="num text-[13px] text-ink">{Math.round(color.share * 100)}%</span>
                     </div>
                 ))}

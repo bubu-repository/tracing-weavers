@@ -195,13 +195,13 @@ export function JourneyRail({
 
                             <span
                                 className={cn(
-                                    "mt-3 block text-[11px] tracking-[.14em] whitespace-nowrap uppercase transition-colors duration-[160ms]",
+                                    "mt-3 block text-[12px] tracking-[.1em] whitespace-nowrap uppercase transition-colors duration-[160ms]",
                                     on
                                         ? ink
                                             ? "text-white"
                                             : "text-ink"
                                         : ink
-                                          ? "text-white/45"
+                                          ? "text-white/60"
                                           : "text-ink-3",
                                     ink
                                         ? "[@media(hover:hover)]:group-hover/step:text-white/80"
@@ -214,7 +214,7 @@ export function JourneyRail({
                             {isRecord && (
                                 <span
                                     className={cn(
-                                        "data mt-1 block text-[9px] leading-none tracking-[.12em] whitespace-nowrap",
+                                        "data mt-1 block text-[11px] leading-none tracking-[.08em] whitespace-nowrap",
                                         ink ? "text-salmon" : "text-bt-red",
                                     )}
                                 >

@@ -98,7 +98,7 @@ export function PassportLeaf({
                         {record?.code ?? passport.code}
                     </span>
                     <span
-                        className={`px-2 py-0.5 text-[10px] tracking-[.18em] uppercase ${
+                        className={`px-2 py-0.5 text-[11px] tracking-[.14em] uppercase ${
                             specimen
                                 ? "bg-amber-bt text-ink"
                                 : revoked

@@ -281,7 +281,7 @@ export function ClaimCeremony({
                             Stay with the cloth
                         </button>
                     </motion.div>
-                    <motion.p {...up(1.6)} className="data mt-6 text-[11px] break-all text-white/35">
+                    <motion.p {...up(1.6)} className="data mt-6 text-[11px] break-all text-white/55">
                         {passport.id}
                     </motion.p>
                 </div>

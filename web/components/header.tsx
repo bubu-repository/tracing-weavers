@@ -38,7 +38,7 @@ export default async function Header() {
                     >
                         <BrandMark className="h-7 w-7 shrink-0" />
                         <span className="display text-[19px] whitespace-nowrap">{brand}</span>
-                        <span className="hidden border-l border-white/20 pl-2.5 text-[10px] tracking-[.28em] whitespace-nowrap text-white/50 uppercase xl:inline">
+                        <span className="hidden border-l border-white/20 pl-2.5 text-[11px] tracking-[.22em] whitespace-nowrap text-white/60 uppercase xl:inline">
                             {t.brandLine}
                         </span>
                     </Link>

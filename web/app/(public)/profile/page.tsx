@@ -119,7 +119,7 @@ export default async function ProfilePage() {
                                 <BrandMark className="h-6 w-6" />
                                 <span className="display text-[16px] text-white">{brand}</span>
                             </div>
-                            <span className="text-[10px] tracking-[.22em] text-white/50 uppercase">Member</span>
+                            <span className="text-[11px] tracking-[.18em] text-white/65 uppercase">Member</span>
                         </div>
 
                         <div className="relative">

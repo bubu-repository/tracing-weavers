@@ -230,7 +230,7 @@ export function RecordGallery({
                                         }`}
                                     >
                                         {name}
-                                        <span className="num ml-1.5 opacity-55">{count}</span>
+                                        <span className={`num ml-1.5 ${on ? "text-white/70" : "text-ink-3"}`}>{count}</span>
                                     </span>
                                 </button>
                             );

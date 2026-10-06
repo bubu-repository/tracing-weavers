@@ -308,7 +308,7 @@ export default async function Home() {
                             <dl className="mt-12 grid grid-cols-1 gap-x-8 gap-y-5 sm:grid-cols-3">
                                 {t.explain.map((item) => (
                                     <div key={item.title} className="border-t border-border pt-3">
-                                        <dt className="text-[11px] tracking-[.22em] text-bt-red uppercase">{item.title}</dt>
+                                        <dt className="text-[12px] tracking-[.18em] text-bt-red uppercase">{item.title}</dt>
                                         <dd className="mt-1.5 text-[15px] leading-snug text-muted-foreground">{item.body}</dd>
                                     </div>
                                 ))}

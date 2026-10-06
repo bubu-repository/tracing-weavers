@@ -79,7 +79,7 @@ export default function Footer() {
                     {brand}
                 </p>
 
-                <div className="mt-8 flex flex-col gap-2 border-t border-white/14 pt-5 text-[12px] tracking-[.12em] text-white/45 uppercase sm:flex-row sm:items-center sm:justify-between">
+                <div className="mt-8 flex flex-col gap-2 border-t border-white/14 pt-5 text-[12px] tracking-[.12em] text-white/60 uppercase sm:flex-row sm:items-center sm:justify-between">
                     <span>
                         &copy; {brand} &middot; All rights reserved &middot; Confidential
                     </span>

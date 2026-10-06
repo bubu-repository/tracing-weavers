@@ -52,7 +52,7 @@ export function ClothMarquee({
                         draggable={false}
                         className="h-full w-full object-cover opacity-90 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] group-hover:scale-105 group-hover:opacity-100 group-focus-visible:opacity-100"
                     />
-                    <span className="data absolute bottom-1.5 left-1.5 bg-ink/70 px-1 py-0.5 text-[10px] text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                    <span className="data absolute bottom-1.5 left-1.5 bg-ink/70 px-1 py-0.5 text-[11px] text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                         {record.code}
                     </span>
                 </Link>

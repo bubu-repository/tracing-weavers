@@ -109,7 +109,7 @@ export default async function VerifyPage({
                                 </>
                             )}
                         </p>
-                        <p className="data mt-4 text-white/45">{passport.id}</p>
+                        <p className="data mt-4 text-white/60">{passport.id}</p>
                     </div>
 
                     <PassportLeaf passport={passport} record={record} className="mx-auto max-w-sm lg:max-w-none" />

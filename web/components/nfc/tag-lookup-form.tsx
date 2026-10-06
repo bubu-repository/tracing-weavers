@@ -57,7 +57,7 @@ export function TagLookupForm({
                     className={cn(
                         "h-13 w-0 min-w-0 flex-1 px-4 font-mono text-[18px] tracking-[.06em] uppercase transition-shadow duration-[160ms] placeholder:normal-case focus-visible:outline-none",
                         ink
-                            ? "bg-white/8 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,.28)] placeholder:text-white/35 focus-visible:shadow-[inset_0_0_0_2px_var(--bt-salmon)]"
+                            ? "bg-white/8 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,.28)] placeholder:text-white/55 focus-visible:shadow-[inset_0_0_0_2px_var(--bt-salmon)]"
                             : "bg-white text-ink shadow-[inset_0_0_0_1px_var(--bt-stone)] placeholder:text-ink-3 focus-visible:shadow-[inset_0_0_0_2px_var(--bt-ink)]",
                     )}
                 />

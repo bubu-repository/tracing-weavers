@@ -87,8 +87,8 @@ export function BottomNav() {
                             <Link
                                 href={href}
                                 aria-current={on ? "page" : undefined}
-                                className={`pressable flex h-full flex-col items-center justify-center gap-1 text-[10.5px] tracking-[.12em] uppercase ${
-                                    on ? "text-salmon hover:text-salmon" : "text-white/50 hover:text-white"
+                                className={`pressable flex h-full flex-col items-center justify-center gap-1 text-[11px] tracking-[.1em] uppercase ${
+                                    on ? "text-salmon hover:text-salmon" : "text-white/65 hover:text-white"
                                 }`}
                             >
                                 {on && (

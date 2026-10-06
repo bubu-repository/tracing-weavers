@@ -170,7 +170,7 @@ export function PassportShelf({
                 with the weaver and their community.
             </p>
             <div className="flex items-end justify-between gap-3">
-                <span className="data text-[10px] text-ink-3">Adonara · Lembata</span>
+                <span className="data text-[11px] text-ink-3">Adonara · Lembata</span>
                 <span
                     aria-hidden
                     className="grid h-12 w-12 place-items-center rounded-full text-[9px] leading-tight tracking-[.1em] text-bt-red/70 uppercase shadow-[0_0_0_1.5px_rgba(174,24,0,.35)]"
